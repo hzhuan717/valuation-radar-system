@@ -2,7 +2,7 @@
 """把门户 HTML 发布到 GitHub Pages（永久公开网址）。
 
 - 通过 Windows Credential Manager 的 GitHub 凭据认证（git credential fill），token 不打印、不落日志
-- 仓库默认 hzhuan717/valuation-radar-valuation-portal，可在同级 deploy.json 覆盖
+- 仓库默认 hzhuan717/valuation-radar-portal，可在同级 deploy.json 覆盖
 - 首次运行自动建公开仓库并开启 Pages；之后每次推送覆盖 index.html
 - 被 update_daily.py 调用时以子进程方式执行（每日流水线末尾自动同步公开网址）
 
@@ -96,7 +96,7 @@ def ensure_repo(token: str, cfg: dict) -> bool:
     if status == 404:
         status2, body2 = api("POST", "/user/repos", token, {
             "name": repo, "public": True,
-            "description": "估值雷达估值区间六步决策台（研究/教学/回测用途，自动同步）",
+            "description": "估值雷达六步决策台（研究/教学/回测用途，自动同步）",
         })
         if status2 in (200, 201):
             log(f"已创建公开仓库 {owner}/{repo}")

@@ -2,7 +2,7 @@
   "meta": {
     "created": "2026-08-09 08:11:10",
     "count": 21,
-    "method": "valuation-radar-valuation-band-decision",
+    "method": "valuation-radar",
     "decision_schema": "2026.08-v2",
     "quality_policy": "fail-closed：关键来源、预测期间或专用模型输入不完整时，不输出可执行估值区间与仓位动作",
     "disclaimer": "研究/教学/回测用途，不构成投资建议，不连接券商，不执行交易。"

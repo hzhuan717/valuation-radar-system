@@ -1,4 +1,4 @@
-# 估值雷达估值区间决策系统（终端仪表盘）
+# 估值雷达（ValuationRadar · 终端仪表盘）
 
 A 股自选池估值区间决策门户：单文件 HTML 终端仪表盘 + 每日自动更新流水线 + fail-closed 估值引擎。
 
@@ -6,7 +6,7 @@ A 股自选池估值区间决策门户：单文件 HTML 终端仪表盘 + 每日
 
 ## 在线访问
 
-- 公开门户（每日 15:05 后自动刷新）：https://hzhuan717.github.io/valuation-radar-valuation-portal/
+- 公开门户（每日 15:05 后自动刷新）：https://hzhuan717.github.io/valuation-radar-portal/
 
 ## 目录结构
 

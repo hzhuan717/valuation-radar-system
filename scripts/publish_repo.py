@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """把项目发布到 GitHub 并打版本标签（每版一个版本）。
 
-- 项目仓库：hzhuan717/valuation-radar-valuation-system（可在 repo.json 覆盖）
+- 项目仓库：hzhuan717/valuation-radar-system（可在 repo.json 覆盖）
 - 版本号来自仓库根目录 VERSION 文件（主.次.修订）
 - 每次发布：提交全部改动（遵守 .gitignore）→ 打标签 v<版本> → push origin main --tags
 - 通过 Windows 凭据管理器 GitHub token 认证（不打印、不落日志）
@@ -94,7 +94,7 @@ def ensure_repo(token, cfg):
     if status == 404:
         status2, body2 = api("POST", "/user/repos", token, {
             "name": repo, "public": True,
-            "description": "估值雷达估值区间决策系统（六步决策台 · 终端仪表盘，研究/教学/回测用途）",
+            "description": "估值雷达 · 估值区间决策系统（六步决策台 · 终端仪表盘，研究/教学/回测用途）",
         })
         if status2 in (200, 201):
             log(f"已创建公开仓库 {owner}/{repo}")

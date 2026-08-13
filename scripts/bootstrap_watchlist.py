@@ -163,7 +163,7 @@ def main():
         "meta": {
             "created": now(),
             "count": len(stocks),
-            "method": "valuation-radar-valuation-band-decision",
+            "method": "valuation-radar",
             "disclaimer": "研究/教学/回测用途，不构成投资建议，不连接券商，不执行交易。",
         },
         "stocks": stocks,
