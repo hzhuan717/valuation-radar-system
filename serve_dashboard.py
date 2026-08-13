@@ -13,7 +13,7 @@ import sys
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE, "output")
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8976
-HOME = "估值雷达估值区间决策门户.html"
+HOME = "估值雷达门户.html"
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):

@@ -20,7 +20,7 @@ import time
 BASE = r"E:\财报解读\watchlist"
 CFG = os.path.join(BASE, "repo.json")
 
-DEFAULT = {"owner": "hzhuan717", "repo": "valuation-radar-valuation-system", "branch": "main"}
+DEFAULT = {"owner": "hzhuan717", "repo": "valuation-radar-system", "branch": "main"}
 
 
 def log(msg):

@@ -17,11 +17,11 @@ import time
 import urllib.request
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PORTAL = os.path.join(BASE, "output", "估值雷达估值区间决策门户.html")
+PORTAL = os.path.join(BASE, "output", "估值雷达门户.html")
 CFG = os.path.join(BASE, "deploy.json")
 WORK = os.path.join(BASE, "deploy", "repo")
 
-DEFAULT = {"owner": "hzhuan717", "repo": "valuation-radar-valuation-portal", "branch": "main"}
+DEFAULT = {"owner": "hzhuan717", "repo": "valuation-radar-portal", "branch": "main"}
 
 
 def log(msg):

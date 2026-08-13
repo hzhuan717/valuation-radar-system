@@ -35,7 +35,7 @@ WATCHLIST = os.path.join(BASE, "watchlist.json")
 STATE = os.path.join(BASE, "state.json")
 SNAP_DIR = os.path.join(BASE, "snapshots")
 LOG = os.path.join(BASE, "logs", "update.log")
-PORTAL = os.path.join(BASE, "output", "估值雷达估值区间决策门户.html")
+PORTAL = os.path.join(BASE, "output", "估值雷达门户.html")
 BUILD = os.path.join(BASE, "scripts", "build_dashboard.py")
 
 

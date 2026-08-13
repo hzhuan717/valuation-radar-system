@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""估值区间 · 终端仪表盘生成器 v6（K线为主、三栏环绕，单屏全览）
+"""估值雷达 · 终端仪表盘生成器 v6（K线为主、三栏环绕，单屏全览）
 
 设计规范（2026-08-13 用户确认，终端风格）：
   · 宽屏 ≥1400px：左导航200px + 中央K线主图 + 右数据墙380px，100vh 单屏，页面禁止滚动
@@ -19,7 +19,7 @@ import os
 
 BASE = r"E:\财报解读\watchlist"
 STATE = os.path.join(BASE, "state.json")
-OUT = os.path.join(BASE, "output", "估值雷达估值区间决策门户.html")
+OUT = os.path.join(BASE, "output", "估值雷达门户.html")
 
 
 def auto_sr(st: dict) -> tuple:
@@ -90,7 +90,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>估值区间 · 终端仪表盘</title>
+<title>估值雷达 · 终端仪表盘</title>
 <style>
 /* ============ Design Tokens（终端密度） ============ */
 :root{
@@ -336,7 +336,7 @@ a{color:var(--blue)}
 <body>
 
 <header class="topbar">
-  <button class="brand" onclick="showOverview()"><i></i>估值决策台</button>
+  <button class="brand" onclick="showOverview()"><i></i>估值雷达</button>
   <button class="stock-trig" id="stockTrig" onclick="togglePop()">
     <span id="trigName">—</span><span class="arr">▾</span>
   </button>
