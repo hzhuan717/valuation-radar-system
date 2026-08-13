@@ -358,6 +358,15 @@ b{font-weight:600}
 .chart-foot{display:flex;gap:16px;font-size:12px;color:var(--sub2);padding:5px 2px 0;flex-wrap:wrap;line-height:1.5}
 .legend-mini{display:inline-flex;align-items:center;gap:5px}
 .legend-mini i{width:10px;height:3px;border-radius:2px;display:inline-block}
+.srfoot{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;max-width:100%;justify-content:flex-end}
+.srfoot .cap{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:12px;
+  border:1px solid var(--hair);border-radius:999px;padding:2px 10px;background:var(--bg2);cursor:pointer;
+  white-space:nowrap;line-height:1.5;transition:border-color .15s,transform .15s}
+.srfoot .cap:hover{border-color:var(--blue);transform:translateY(-1px)}
+.srfoot .cap i{width:6px;height:6px;border-radius:50%;display:inline-block;flex:none}
+.srfoot .cap.s i{background:var(--color-support)}
+.srfoot .cap.r i{background:var(--color-resist)}
+.srfoot .cap .v{color:var(--sub2);font-variant-numeric:tabular-nums}
 .ktip{position:absolute;left:8px;top:8px;right:auto;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);
   border:1px solid var(--hair2);
   border-radius:10px;padding:10px 14px;font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--ink);
@@ -612,6 +621,7 @@ b{font-weight:600}
         <span class="legend-mini"><i style="background:#a0742f"></i>斐波那契回撤</span>
         <span class="legend-mini"><i style="background:var(--candle-up)"></i>上涨</span>
         <span class="legend-mini"><i style="background:var(--candle-dn)"></i>下跌</span>
+        <div class="srfoot" id="srFoot" title="点击定位到对应价格"></div>
       </div>
     </div>
 
@@ -1278,6 +1288,8 @@ class ValuationChartEngine {
     this._drag = null; this._raf = 0; this._anim = null; this._resT = null; this._ro = null;
     this._ch = null; this._animateSR = false; this._custom = false;
     this._dataTok = 0;
+    this._yShift = 0; this._yAnim = null; this._bandAnim = null;
+    this._loopOn = false; this._hoverOn = false; this._hoverT = null; this._flashT = null; this._hl = [];
     this._isMobile = window.matchMedia ? window.matchMedia('(max-width:699px)').matches : false;
     if(this.tip) this.tip.classList.toggle('mobile', this._isMobile);
     this._bind();
@@ -1292,6 +1304,7 @@ class ValuationChartEngine {
     sv.addEventListener('pointerup', e => this._onUp(e));
     sv.addEventListener('pointercancel', () => { this._drag = null; });
     sv.addEventListener('pointerleave', () => {
+      this._hoverReset();
       if(!this.pinned){ this._hideCross(); this.tip.classList.remove('show'); }
     });
     sv.addEventListener('wheel', e => { e.preventDefault(); this._zoom(e); }, {passive:false});
@@ -1312,7 +1325,7 @@ class ValuationChartEngine {
     this.W = w; this.H = h;
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.AX = w < 560 ? 62 : 72;
-    this.GUT = w < 560 ? 58 : 96;   /* 右缘标签槽：锚/MA/斐波标签专用，K线不进入 */
+    this.GUT = w < 560 ? 72 : 96;   /* 右缘标签槽：锚/MA/斐波标签专用，K线不进入 */
     this.TL = 12; this.BX = 26;
     this.px0 = 8; this.px1 = w - this.AX - this.GUT;
     this.axX = w - this.AX;
@@ -1357,7 +1370,15 @@ class ValuationChartEngine {
       if(isFinite(v) && v > 0){ lo = Math.min(lo, v); hi = Math.max(hi, v); }
     });
     const pad = (hi - lo) * 0.08;
-    this._pr = { pmin: lo - pad, pmax: hi + pad, hasV, vlow, vmid, vhigh, i0, i1, bars };
+    /* scrollToPrice 居中动画（_yAnim/_yShift） */
+    if(this._yAnim){
+      const e = Math.min(1, (performance.now() - this._yAnim.t0) / this._yAnim.dur);
+      const p = 1 - Math.pow(1 - e, 3);
+      this._yShift = this._yAnim.from + (this._yAnim.to - this._yAnim.from) * p;
+      if(e >= 1) this._yAnim = null;
+    }
+    let ys = this._yShift || 0;
+    this._pr = { pmin: lo - pad + ys, pmax: hi + pad + ys, hasV, vlow, vmid, vhigh, i0, i1, bars };
     return this._pr;
   }
 
@@ -1377,12 +1398,121 @@ class ValuationChartEngine {
     if(!pr.hasV) return;
     const yLow = this.yOf(pr.vlow), yHigh = this.yOf(pr.vhigh);
     const w = this.px1 - this.px0;
-    ctx.fillStyle = 'rgba(48,209,88,.06)';
+    /* 入场动画：色带从顶部向下展开（0.5s） */
+    let p = 1;
+    if(this._bandAnim){
+      const e = Math.min(1, (performance.now() - this._bandAnim.t0) / this._bandAnim.dur);
+      p = 1 - Math.pow(1 - e, 3);
+      if(e >= 1) this._bandAnim = null;
+    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(this.px0, this.TL, w, Math.max(1, this.priceH * p));
+    ctx.clip();
+    /* 基础色带 */
+    ctx.fillStyle = 'rgba(48,209,88,.10)';
     ctx.fillRect(this.px0, yLow, w, this.TL + this.priceH - yLow);
-    ctx.fillStyle = 'rgba(0,113,227,.04)';
+    ctx.fillStyle = 'rgba(0,113,227,.08)';
     ctx.fillRect(this.px0, yHigh, w, yLow - yHigh);
-    ctx.fillStyle = 'rgba(255,59,48,.06)';
+    ctx.fillStyle = 'rgba(255,59,48,.10)';
     ctx.fillRect(this.px0, this.TL, w, yHigh - this.TL);
+    /* 横向纹理虚线（20px 步长 · 极度缩小时跳过） */
+    if(this.slot >= 2){
+      const bands = [
+        {y0: yLow, y1: this.TL + this.priceH, col: 'rgba(48,209,88,.06)', dash: [2, 6]},
+        {y0: yHigh, y1: yLow, col: 'rgba(0,113,227,.05)', dash: [2, 8]},
+        {y0: this.TL, y1: yHigh, col: 'rgba(255,59,48,.06)', dash: [2, 6]},
+      ];
+      bands.forEach(bd => {
+        if(bd.y1 - bd.y0 < 4) return;
+        ctx.strokeStyle = bd.col;
+        ctx.lineWidth = 1;
+        ctx.setLineDash(bd.dash);
+        ctx.beginPath();
+        for(let yy = bd.y0 + 20; yy < bd.y1; yy += 20){
+          ctx.moveTo(this.px0, yy);
+          ctx.lineTo(this.px1, yy);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    }
+    /* 边界发光带（3px/2px 渐变过渡） */
+    const glow = (y0, y1, c0, c1) => {
+      const g = ctx.createLinearGradient(0, y0, 0, y1);
+      g.addColorStop(0, c0); g.addColorStop(1, c1);
+      ctx.fillStyle = g;
+      ctx.fillRect(this.px0, Math.min(y0, y1), w, Math.abs(y1 - y0));
+    };
+    if(yLow < this.TL + this.priceH) glow(yLow + 2, yLow + 5, 'rgba(48,209,88,.18)', 'rgba(48,209,88,0)');
+    if(yLow > this.TL) glow(yLow - 2, yLow, 'rgba(0,113,227,0)', 'rgba(0,113,227,.14)');
+    if(yHigh < this.TL + this.priceH) glow(yHigh, yHigh + 2, 'rgba(0,113,227,.14)', 'rgba(0,113,227,0)');
+    if(yHigh > this.TL) glow(yHigh - 3, yHigh, 'rgba(255,59,48,0)', 'rgba(255,59,48,.18)');
+    ctx.restore();
+  }
+
+  _drawBreath(ctx){
+    if(this.N < 2 || !this._pr) return;
+    const x = this.xOf(this.N - 1);
+    const yy = this.yOf(this.rows[this.N - 1].c);
+    if(!isFinite(yy) || x < this.px0 - 4 || x > this.px1 + 4) return;
+    const col = this._zoneColOf(this.rows[this.N - 1].c);
+    const b = this.pinned ? 0.5 : (0.5 + 0.5 * Math.sin(Date.now() / 400));
+    ctx.fillStyle = col;
+    ctx.globalAlpha = 0.12 * b;
+    ctx.beginPath(); ctx.arc(x, yy, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.25 * b;
+    ctx.beginPath(); ctx.arc(x, yy, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(x, yy, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  _zoneColOf(c){
+    const pr = this._pr;
+    if(!pr || !pr.hasV) return '#0071e3';
+    if(c < pr.vlow) return '#34c759';
+    if(c < pr.vhigh) return '#0071e3';
+    return '#ff3b30';
+  }
+
+  _zoneCard(c, pr){
+    if(!pr.hasV) return null;
+    const mob = this._isMobile;
+    let name, col, dist;
+    if(c < pr.vlow){ name = '深度低估'; col = '#1f9d4d'; dist = '低于保守线'; }
+    else if(c < pr.vmid){ name = '低估区'; col = '#1f9d4d'; dist = '距基准线 ' + ((pr.vmid / c - 1) * 100).toFixed(1) + '%'; }
+    else if(c <= pr.vhigh){ name = '合理区'; col = '#0071e3'; dist = '距乐观线 ' + ((pr.vhigh / c - 1) * 100).toFixed(1) + '%'; }
+    else { name = '高估区'; col = '#d70015'; dist = '高于乐观线'; }
+    const w = mob ? 110 : 140, h = mob ? 34 : 52;
+    const x0 = this.px0 + 8;
+    const svg = y0 => {
+      let t = '<rect x="' + x0 + '" y="' + y0.toFixed(1) + '" width="' + w + '" height="' + h + '" rx="6" fill="#ffffff" fill-opacity=".96" stroke="rgba(0,0,0,.08)"/>';
+      if(mob){
+        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 14).toFixed(1) + '" font-size="10" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">¥' + fmt2(c) + '</text>'
+           + '<text x="' + (x0 + 8) + '" y="' + (y0 + 27).toFixed(1) + '" font-size="10" fill="' + col + '" font-family="SF Mono,monospace">' + name + '</text>';
+      } else {
+        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 17).toFixed(1) + '" font-size="11" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">现价 ¥' + fmt2(c) + '</text>'
+           + '<text x="' + (x0 + 8) + '" y="' + (y0 + 33).toFixed(1) + '" font-size="11" fill="' + col + '" font-family="SF Mono,monospace">处于 · ' + name + '</text>'
+           + '<text x="' + (x0 + 8) + '" y="' + (y0 + 47).toFixed(1) + '" font-size="11" fill="#86868b" font-family="SF Mono,monospace">' + dist + '</text>';
+      }
+      return t;
+    };
+    return { w, h, svg };
+  }
+
+  _redrawCanvas(){
+    this.layout();
+    const ctx = this.ctx;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.clearRect(0, 0, this.W, this.H);
+    if(this.N < 2) return;
+    this._range();
+    this._drawBands(ctx);
+    this._drawCandles(ctx);
+    this._drawVolume(ctx);
+    this._drawMAs(ctx);
+    this._drawBreath(ctx);
   }
 
   _drawCandles(ctx){
@@ -1482,7 +1612,7 @@ class ValuationChartEngine {
       this._ch = null;
       return;
     }
-    s.push('<style>.srl{animation:srmarch .6s ease-out}@keyframes srmarch{to{stroke-dashoffset:-28}}.srtouch{animation:srflash .9s ease-out 1}@keyframes srflash{0%{stroke-width:2.6;opacity:1}100%{stroke-width:1;opacity:.55}}</style>');
+    s.push('<style>.srl{animation:srmarch .8s ease-out}@keyframes srmarch{to{stroke-dashoffset:-28}}.srtouch{animation:srflash .9s ease-out 1}@keyframes srflash{0%{stroke-width:2.6;opacity:1}100%{stroke-width:1;opacity:.55}}.sr-pulse{animation:srpulse 1.2s ease-in-out infinite}@keyframes srpulse{0%,100%{opacity:1}50%{opacity:.55}}.srlbl{animation:srlabel .4s ease-out}@keyframes srlabel{from{transform:translateX(-12px);opacity:0}to{transform:none;opacity:1}}</style>');
     const st = this.st;
     const priceB = this.TL + this.priceH;
     const lastClose = this.rows[this.N-1].c;
@@ -1490,64 +1620,139 @@ class ValuationChartEngine {
     const res = (st.resistance||[]).filter(x => isFinite(+x.level) && (x.method||'').indexOf('估值锚') !== 0);
     const edgeTop = [], edgeBot = [];
     const srLbls = [];
-
-    const drawSR = (arr, isSup) => {
-      arr.forEach((sr, idx) => {
-        const vv = +sr.level;
-        const yy = y(vv);
-        if(!isFinite(yy) || yy < this.TL - 6 || yy > priceB + 6){
-          if(vv > pr.pmax) edgeTop.push({lab: (isSup?'S':'R') + (idx+1) + ' ¥' + fmt0(vv), col: isSup ? '#1f9d4d' : '#d70015'});
-          else if(vv < pr.pmin) edgeBot.push({lab: (isSup?'S':'R') + (idx+1) + ' ¥' + fmt0(vv), col: isSup ? '#1f9d4d' : '#d70015'});
-          return;
-        }
-        const ev = sr.level_ev === 'A' ? 'A' : (sr.level_ev === 'C' ? 'C' : 'B');
-        const touch = Math.abs(lastClose / vv - 1) <= 0.005;
-        const col = isSup ? '#34c759' : '#ff3b30';
-        const colD = isSup ? '#1f9d4d' : '#d70015';
-        const cls = [];
-        if(this._animateSR) cls.push('srl');
-        if(touch) cls.push('srtouch');
-        const cattr = cls.length ? ' class="' + cls.join(' ') + '"' : '';
-        s.push('<line' + cattr + ' x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + col + '" stroke-width="' + (ev === 'A' ? 1.5 : 1) + '"' + (ev === 'C' ? ' stroke-dasharray="4 3"' : '') + ' opacity="' + (ev === 'A' ? 0.8 : (ev === 'B' ? 0.6 : 0.4)) + '"/>');
-        let m = sr.method || '';
-        if(m.length > 12) m = m.slice(0, 12) + '…';
-        const lab = (isSup?'S':'R') + (idx+1) + ' ¥' + fmt0(vv) + (m ? ' · ' + m : '');
-        srLbls.push({y: yy, lab, col: colD, ev, isSup});
-      });
+    const hl = [];
+    const SR_STYLE = {
+      A: {sw: 2.2, up: '#34c759', dn: '#ff3b30', op: .90, dash: ''},
+      B: {sw: 1.6, up: '#30d158', dn: '#ff6b6b', op: .75, dash: '8 4'},
+      C: {sw: 1.2, up: '#8ce8a8', dn: '#ffb3b3', op: .55, dash: '4 4'},
     };
-    drawSR(sup, true);
-    drawSR(res, false);
+    const mo = this._isMobile ? 0.3 : 0;
+    let srSeq = 0;
 
-    /* S/R 左侧标签（强度圆点 + 防重叠堆叠） */
-    packLbl(srLbls, 17).forEach(it => {
-      if(it.yy < this.TL + 9 || it.yy > priceB - 9) return;
-      const wdt = 12 + it.lab.length * 6.2;
-      s.push('<rect x="6" y="' + (it.yy - 8).toFixed(1) + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="#ffffff" fill-opacity=".92"/>');
-      if(it.ev === 'A') s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="3.5" fill="' + it.col + '"/>');
-      else if(it.ev === 'B') s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="2.4" fill="' + it.col + '"/>');
-      else s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="2.4" fill="none" stroke="' + it.col + '" stroke-width="1.2"/>');
-      s.push('<text x="24" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="11" fill="' + it.col + '" font-family="SF Mono,monospace">' + it.lab + '</text>');
+    /* 两阶段：先画线（按等级排序 A 优先），再画标签（数量>8 时 C 级不画标签） */
+    const srRows = [];
+    sup.forEach((sr, idx) => srRows.push({sr, isSup: true, idx}));
+    res.forEach((sr, idx) => srRows.push({sr, isSup: false, idx}));
+    const evOrder = {A: 0, B: 1, C: 2};
+    const inViewRows = srRows.filter(rr => {
+      const vv = +rr.sr.level;
+      const yy = y(vv);
+      return isFinite(yy) && yy >= this.TL - 6 && yy <= priceB + 6;
+    });
+    inViewRows.sort((a, b) => evOrder[a.sr.level_ev] - evOrder[b.sr.level_ev] || +a.sr.level - +b.sr.level);
+
+    inViewRows.forEach(rr => {
+      const sr = rr.sr, isSup = rr.isSup;
+      const vv = +sr.level;
+      const yy = y(vv);
+      const ev = sr.level_ev === 'A' ? 'A' : (sr.level_ev === 'C' ? 'C' : 'B');
+      const stl = SR_STYLE[ev];
+      const touch = Math.abs(lastClose / vv - 1) <= 0.008;
+      const lw = Math.max(0.9, stl.sw - mo + (touch ? 1 : 0));
+      const col = touch ? (isSup ? '#0a5c28' : '#8b0000') : (isSup ? stl.up : stl.dn);
+      const labCol = touch ? col : (isSup ? '#1f9d4d' : '#d70015');
+      const cls = [];
+      if(this._animateSR) cls.push('srl');
+      if(touch) cls.push('sr-pulse');
+      const cattr = cls.length ? ' class="' + cls.join(' ') + '"' : '';
+      const lineId = 'sr-' + (srSeq++);
+      /* 左端标签徽章宽度（决定主线段起点） */
+      const priceTxt = fmt0(vv);
+      const methodTxt = (!this._isMobile && ev !== 'C') ? ((sr.method || '').slice(0, 8)) : '';
+      const badgeW = this._isMobile ? 64 : (20 + 18 + priceTxt.length * 6.6 + (methodTxt ? methodTxt.length * 5.4 + 10 : 0) + 8);
+      const x0 = Math.min(6 + badgeW + 30, this.px1 - 24);
+      /* 主线段 */
+      s.push('<line' + cattr + ' id="' + lineId + '" x1="' + x0.toFixed(0) + '" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + col + '" stroke-width="' + lw.toFixed(1) + '"' + (stl.dash ? ' stroke-dasharray="' + stl.dash + '"' : '') + ' opacity="' + stl.op + '"/>');
+      /* 连接虚线：徽章右缘 → 主线段起点 */
+      s.push('<line x1="' + (6 + badgeW + 2).toFixed(0) + '" y1="' + yy.toFixed(1) + '" x2="' + x0.toFixed(0) + '" y2="' + yy.toFixed(1) + '" stroke="' + col + '" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/>');
+      /* 左端方向三角（支撑▲ / 压力▼） */
+      if(isSup){
+        s.push('<polygon points="' + (x0 - 3).toFixed(0) + ',' + (yy - 2).toFixed(1) + ' ' + (x0 + 3).toFixed(0) + ',' + (yy - 2).toFixed(1) + ' ' + x0.toFixed(0) + ',' + (yy - 7).toFixed(1) + '" fill="' + col + '"/>');
+      } else {
+        s.push('<polygon points="' + (x0 - 3).toFixed(0) + ',' + (yy + 2).toFixed(1) + ' ' + (x0 + 3).toFixed(0) + ',' + (yy + 2).toFixed(1) + ' ' + x0.toFixed(0) + ',' + (yy + 7).toFixed(1) + '" fill="' + col + '"/>');
+      }
+      /* 触碰同心圆（桌面端） */
+      if(touch && !this._isMobile){
+        s.push('<circle cx="' + (this.px1 - 4).toFixed(0) + '" cy="' + yy.toFixed(1) + '" r="8" fill="' + col + '" opacity=".15"/>'
+             + '<circle cx="' + (this.px1 - 4).toFixed(0) + '" cy="' + yy.toFixed(1) + '" r="4" fill="' + col + '" opacity=".8"/>');
+      }
+      hl.push({id: lineId, yy, price: vv, name: sr.method || '', ev, isSup, sw: lw, op: stl.op, kind: 'sr'});
+      /* 标签（>8 时仅 A/B；C 级仅价格无方法） */
+      if(inViewRows.length > 8 && ev === 'C') return;
+      srLbls.push({y: yy, type: (isSup?'S':'R') + (rr.idx + 1), price: priceTxt, methodTxt, ev, isSup, col: labCol});
     });
 
-    /* 估值锚边界虚线 + 右缘标签 + 参考级提示 */
+    /* 越界 S/R 边缘提示 */
+    srRows.forEach(rr => {
+      const vv = +rr.sr.level;
+      const yy = y(vv);
+      if(isFinite(yy) && yy >= this.TL - 6 && yy <= priceB + 6) return;
+      const isSup = rr.isSup;
+      const col = isSup ? '#1f9d4d' : '#d70015';
+      if(vv > pr.pmax) edgeTop.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ¥' + fmt0(vv), col, method: rr.sr.method || '', up: true, sup: isSup});
+      else if(vv < pr.pmin) edgeBot.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ¥' + fmt0(vv), col, method: rr.sr.method || '', up: false, sup: isSup});
+    });
+
+    /* S/R 左侧胶囊标签（强度图标 + 类型 + 价格 + 方法缩写 + 连接虚线，间距 22px） */
+    packLbl(srLbls, 22).forEach(it => {
+      if(it.yy < this.TL + 11 || it.yy > priceB - 11) return;
+      const ev = it.ev;
+      const bgA = it.isSup ? 'rgba(52,199,89,.12)' : 'rgba(255,59,48,.12)';
+      const bgB = it.isSup ? 'rgba(52,199,89,.08)' : 'rgba(255,59,48,.08)';
+      const badgeW = this._isMobile ? 64 : (20 + 18 + it.price.length * 6.6 + (it.methodTxt ? it.methodTxt.length * 5.4 + 10 : 0) + 8);
+      const gOpen = this._animateSR ? '<g class="srlbl">' : '<g>';
+      s.push(gOpen);
+      if(ev === 'C'){
+        s.push('<rect x="6" y="' + (it.yy - 10).toFixed(1) + '" width="' + badgeW.toFixed(0) + '" height="20" rx="10" fill="#ffffff" fill-opacity=".95" stroke="' + it.col + '" stroke-width="1"/>');
+      } else {
+        s.push('<rect x="6" y="' + (it.yy - 10).toFixed(1) + '" width="' + badgeW.toFixed(0) + '" height="20" rx="10" fill="' + (ev === 'A' ? bgA : bgB) + '"/>');
+      }
+      if(ev === 'A') s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="4" fill="' + it.col + '"/>');
+      else if(ev === 'B') s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="4" fill="' + it.col + '" opacity=".35"/><circle cx="16" cy="' + it.yy.toFixed(1) + '" r="2.2" fill="' + it.col + '"/>');
+      else s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="3.5" fill="none" stroke="' + it.col + '" stroke-width="1.2"/>');
+      s.push('<text x="24" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="10" font-weight="700" fill="' + it.col + '" font-family="SF Mono,monospace">' + it.type + '</text>');
+      s.push('<text x="46" y="' + (it.yy + 4).toFixed(1) + '" font-size="11" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">¥' + it.price + '</text>');
+      if(it.methodTxt){
+        s.push('<text x="' + (52 + it.price.length * 6.6).toFixed(0) + '" y="' + (it.yy + 4).toFixed(1) + '" font-size="9" fill="#86868b" font-family="SF Mono,monospace">' + it.methodTxt + '</text>');
+      }
+      s.push('</g>');
+    });
+
+    /* 估值锚边界线（1.6px + 左端圆点 + 入场动画）+ 右缘标签 + 参考级提示 */
     const rightItems = [];
+    let zoneY = this.TL + 14;
     if(pr.hasV){
-      [['low', pr.vlow, '#34c759', 'rgba(52,199,89,.15)', '保守'],
-       ['mid', pr.vmid, '#0071e3', 'rgba(0,113,227,.15)', '基准'],
-       ['high', pr.vhigh, '#ff3b30', 'rgba(255,59,48,.15)', '乐观']].forEach(a => {
+      [['low', pr.vlow, '#1f9d4d', 'rgba(52,199,89,.22)', '保守', '#34c759', '6 4'],
+       ['mid', pr.vmid, '#0071e3', 'rgba(0,113,227,.22)', '基准', '#0071e3', ''],
+       ['high', pr.vhigh, '#d70015', 'rgba(255,59,48,.22)', '乐观', '#ff3b30', '6 4']].forEach(a => {
         const yy = y(a[1]);
         if(isFinite(yy) && yy >= this.TL && yy <= priceB){
-          s.push('<line x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + a[2] + '" stroke-width="1" stroke-dasharray="4 4" opacity=".6"/>');
-          rightItems.push({y: yy, lab: a[4] + ' ¥' + fmt2(a[1]), col: a[2], bg: a[3]});
+          const cls = this._animateSR ? ' class="srl"' : '';
+          const dashAttr = a[6] ? ' stroke-dasharray="' + a[6] + '"' : '';
+          s.push('<line' + cls + ' id="anchor-' + a[0] + '" x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + a[2] + '" stroke-width="1.6" stroke-linecap="round"' + dashAttr + ' opacity=".7"/>'
+               + '<circle cx="8" cy="' + yy.toFixed(1) + '" r="2.5" fill="' + a[2] + '"/>');
+          rightItems.push({y: yy, lab: a[4] + ' ¥' + fmt2(a[1]), col: a[2], bg: a[3], bar: a[5]});
+          hl.push({id: 'anchor-' + a[0], yy, price: a[1], name: '估值锚 V_' + a[0] + '（' + a[4] + '）', ev: 'A', isSup: a[0] !== 'high', sw: 1.6, op: .7, kind: 'anchor'});
         }
       });
-      if(!st.decision_usable && W >= 560){
+      /* 区间定位卡片（左上角，与 S/R 标签避让） */
+      let guard = 0;
+      while(guard++ < 12){
+        const hit = srLbls.find(l => Math.abs(zoneY + 26 - l.yy) < 30);
+        if(!hit) break;
+        zoneY = hit.yy + 28;
+      }
+      const zoneCard = this._zoneCard(lastClose, pr);
+      if(zoneCard && zoneY + zoneCard.h <= priceB - 4){
+        s.push(zoneCard.svg(zoneY));
+      }
+      if(!st.decision_usable && W >= 560 && (zoneY > this.TL + 80 || !zoneCard)){
         s.push('<rect x="6" y="' + this.TL + '" width="150" height="22" rx="4" fill="#ffffff" fill-opacity=".94" stroke="rgba(0,0,0,.12)"/>'
              + '<text x="14" y="' + (this.TL + 15) + '" font-size="12" fill="#48484a" font-weight="600">参考区间 · 不可执行</text>');
       }
     } else if(isFinite(+st.v_low) && isFinite(+st.v_high)){
-      edgeBot.push({lab: 'V_low ¥' + fmt0(+st.v_low), col: '#1f9d4d'});
-      edgeTop.push({lab: 'V_high ¥' + fmt0(+st.v_high), col: '#d70015'});
+      edgeBot.push({lab: 'V_low ¥' + fmt0(+st.v_low), col: '#1f9d4d', method: '', up: false, sup: true});
+      edgeTop.push({lab: 'V_high ¥' + fmt0(+st.v_high), col: '#d70015', method: '', up: true, sup: false});
     }
 
     /* 斐波那契回撤（250日高低点 · 仅在接近全量视图显示） */
@@ -1590,6 +1795,9 @@ class ValuationChartEngine {
       s.push('<line x1="' + this.px1.toFixed(0) + '" y1="' + it.y.toFixed(1) + '" x2="' + (this.px1 + 4).toFixed(0) + '" y2="' + it.y.toFixed(1) + '" stroke="' + it.col + '" stroke-width="1" opacity=".45"/>');
       if(Math.abs(it.yy - it.y) > 3){
         s.push('<line x1="' + (this.px1 + 4).toFixed(0) + '" y1="' + it.y.toFixed(1) + '" x2="' + (this.px1 + 4).toFixed(0) + '" y2="' + it.yy.toFixed(1) + '" stroke="' + it.col + '" stroke-width="1" opacity=".45"/>');
+      }
+      if(it.bar){
+        s.push('<rect x="' + (xR - wdt - 6).toFixed(0) + '" y="' + (it.yy - 8).toFixed(1) + '" width="3" height="16" rx="1.5" fill="' + it.bar + '"/>');
       }
       s.push('<rect x="' + (xR - wdt).toFixed(0) + '" y="' + (it.yy - 8).toFixed(1) + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="' + it.bg + '"/>'
            + '<text x="' + (xR - wdt + 5).toFixed(0) + '" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="' + (this.W < 560 ? 10 : 11) + '" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">' + lab + '</text>');
@@ -1691,18 +1899,28 @@ class ValuationChartEngine {
       s.push('<text x="' + x.toFixed(1) + '" y="' + (this.volBot + 16) + '" font-size="11" fill="#48484a" text-anchor="middle" font-family="SF Mono,monospace">' + d + '</text>');
     }
 
-    /* 边缘聚合提示（视窗外锚点/点位） */
+    /* 越界 S/R 边缘提示（箭头 + 价格徽章 + 原生 title） */
     const edge = (arr, yTop) => {
-      const seen = arr.slice(0, 2);
-      let lab = seen.map(x => x.lab).join('  ');
-      if(arr.length > 2) lab += ' +' + (arr.length - 2);
-      const wdt = 16 + lab.length * 6.2;
-      const yy = yTop ? this.TL + 2 : priceB - 18;
-      s.push('<rect x="6" y="' + yy + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="#ffffff" fill-opacity=".92" stroke="rgba(0,0,0,.1)"/>'
-           + '<text x="12" y="' + (yy + 11.5) + '" font-size="11" fill="' + seen[0].col + '" font-family="SF Mono,monospace">' + lab + '</text>');
+      let ex = 6;
+      arr.slice(0, 3).forEach(x => {
+        const yy = yTop ? this.TL + 4 : priceB - 20;
+        const lab = (x.up ? '↑ ' : '↓ ') + x.lab;
+        const wdt = 16 + lab.length * 6.2;
+        s.push('<rect x="' + ex + '" y="' + yy + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="#ffffff" fill-opacity=".92" stroke="rgba(0,0,0,.1)" opacity=".85">'
+             + '<title>' + x.method + '</title></rect>'
+             + '<text x="' + (ex + 8) + '" y="' + (yy + 11.5) + '" font-size="11" fill="' + x.col + '" font-family="SF Mono,monospace">' + lab + '</text>');
+        ex += wdt + 6;
+      });
     };
     if(edgeTop.length) edge(edgeTop, true);
     if(edgeBot.length) edge(edgeBot, false);
+
+    /* hover 高亮浮动标签（独立于 chartTip） */
+    s.push('<g id="hoverHl" opacity="0">'
+      + '<rect id="hoverHlR" x="0" y="0" width="120" height="38" rx="6" fill="#ffffff" fill-opacity=".96" stroke="rgba(0,0,0,.08)"/>'
+      + '<text id="hoverHlT1" x="8" y="0" font-size="11" font-weight="700" fill="#1d1d1f" font-family="SF Mono,monospace"></text>'
+      + '<text id="hoverHlT2" x="8" y="0" font-size="10" fill="#86868b" font-family="SF Mono,monospace"></text>'
+      + '</g>');
 
     /* 十字光标组 */
     s.push('<g id="chG" opacity="0">'
@@ -1722,21 +1940,13 @@ class ValuationChartEngine {
       xpill: document.getElementById('chXpill'), xtxt: document.getElementById('chXtxt'),
       dot: document.getElementById('chDot')
     };
+    this._hl = hl;
     this._animateSR = false;
   }
 
   /* ---- 主绘制入口 ---- */
   draw(){
-    this.layout();
-    const ctx = this.ctx;
-    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    ctx.clearRect(0, 0, this.W, this.H);
-    if(this.N < 2){ this.overlay(); return; }
-    this._range();
-    this._drawBands(ctx);
-    this._drawCandles(ctx);
-    this._drawVolume(ctx);
-    this._drawMAs(ctx);
+    this._redrawCanvas();
     this.overlay();
     if(this.pinned && this.pinIdx >= 0 && this._pinY != null) this._updateCross(this.pinIdx, this._pinY);
   }
@@ -1850,6 +2060,103 @@ class ValuationChartEngine {
     this.tip.style.top = Math.max(2, ty) + 'px';
   }
 
+  /* ---- hover 高亮：S/R 线与估值锚线（≤6px）聚焦 ---- */
+  _hoverCheck(mx, my){
+    const hls = this._hl || [];
+    let hit = null, best = 6;
+    for(const h of hls){
+      const d = Math.abs(my - h.yy);
+      if(d < best){ best = d; hit = h; }
+    }
+    if(hit){
+      clearTimeout(this._hoverT);
+      this._hoverT = null;
+      if(!this._hoverOn){ this._hoverOn = true; }
+      for(const h of hls){
+        const el = document.getElementById(h.id);
+        if(!el) continue;
+        if(h === hit){
+          el.setAttribute('stroke-width', (h.sw + 1.5).toFixed(1));
+          el.setAttribute('opacity', '1');
+        } else {
+          el.setAttribute('opacity', '0.3');
+        }
+      }
+      /* 浮动详情标签 */
+      const g = document.getElementById('hoverHl');
+      if(g){
+        const name = hit.kind === 'anchor' ? hit.name : (hit.name || ((hit.isSup ? '支撑' : '压力') + '位'));
+        const t1 = (hit.kind === 'anchor' ? '' : (hit.ev + '级 ')) + name.slice(0, 14) + ' ¥' + fmt2(hit.price);
+        const t2 = hit.kind === 'anchor' ? '估值锚边界' : ((hit.isSup ? '支撑 S' : '压力 R') + ' · ' + hit.ev + '级强度');
+        const r1 = document.getElementById('hoverHlT1'), r2 = document.getElementById('hoverHlT2');
+        if(r1){ r1.textContent = t1; }
+        if(r2){ r2.textContent = t2; }
+        const tw = Math.max(100, (t1.length > t2.length ? t1.length : t2.length) * 6.4 + 16);
+        const rr = document.getElementById('hoverHlR');
+        if(rr) rr.setAttribute('width', tw.toFixed(0));
+        let gx = mx + 14, gy = my + 10;
+        if(gx + tw > this.W - 6) gx = mx - tw - 14;
+        if(gy + 38 > this.H - 6) gy = my - 48;
+        g.setAttribute('transform', 'translate(' + Math.max(2, gx).toFixed(0) + ',' + Math.max(2, gy).toFixed(0) + ')');
+        r1.setAttribute('y', '14'); r2.setAttribute('y', '30');
+        g.setAttribute('opacity', '1');
+      }
+    } else {
+      if(this._hoverOn){
+        this._hoverOn = false;
+        clearTimeout(this._hoverT);
+        this._hoverT = setTimeout(() => { this._hoverReset(); }, 200);
+      }
+    }
+  }
+
+  _hoverReset(){
+    const hls = this._hl || [];
+    for(const h of hls){
+      const el = document.getElementById(h.id);
+      if(!el) continue;
+      el.setAttribute('stroke-width', h.sw);
+      el.setAttribute('opacity', h.op);
+    }
+    const g = document.getElementById('hoverHl');
+    if(g) g.setAttribute('opacity', '0');
+  }
+
+  /* ---- scrollToPrice：图例点击 → 居中或闪烁 ---- */
+  scrollToPrice(level){
+    if(!this._pr || !isFinite(+level)) return;
+    const pr = this._pr;
+    if(level >= pr.pmin && level <= pr.pmax){
+      this._flashSR(level);
+      return;
+    }
+    this._centerOn(level);
+  }
+
+  _flashSR(level){
+    const hit = (this._hl || []).find(h => h.kind === 'sr' && Math.abs(h.price - level) < 0.005);
+    if(!hit) return;
+    const el = document.getElementById(hit.id);
+    if(!el) return;
+    el.classList.add('sr-pulse');
+    clearTimeout(this._flashT);
+    this._flashT = setTimeout(() => {
+      try{ el.classList.remove('sr-pulse'); }catch(err){}
+    }, 2400);
+  }
+
+  _centerOn(level){
+    const pr = this._pr;
+    const mid = (pr.pmin + pr.pmax) / 2;
+    this._yAnim = { from: this._yShift || 0, to: mid - level, t0: performance.now(), dur: 400 };
+    this._startLoop();
+  }
+
+  _resetYShift(){
+    this._yShift = 0;
+    this._yAnim = null;
+  }
+
   /* ---- 交互：拖拽平移 / 点击固定 / 滚轮缩放 ---- */
   _onDown(e){
     if(e.button !== 0 || this.N < 2) return;
@@ -1869,6 +2176,7 @@ class ValuationChartEngine {
       if(this.pinned && bi === this.pinIdx){
         this.pinned = false; this.pinIdx = -1; this._pinY = null;
         this._hideCross(); this.tip.classList.remove('show');
+        this._startLoop();
       } else {
         this.pinned = true; this.pinIdx = bi; this._pinY = my; this._tipIdx = bi;
         this._renderTip(bi);
@@ -1889,8 +2197,10 @@ class ValuationChartEngine {
       const dx = e.clientX - this._drag.startX;
       this.viewStart = this._drag.vs - dx / Math.max(this.slot, 0.05);
       this._clampView();
+      this._resetYShift();
       this._scheduleDraw();
     }
+    this._hoverCheck(mx, my);
     if(this.pinned) return;
     const bi = this._barAt(mx);
     this._updateCross(bi, my);
@@ -1916,6 +2226,7 @@ class ValuationChartEngine {
     this.slot = newSlot;
     this.viewStart = bx - (mx - this.px0) / newSlot;
     this._clampView();
+    this._resetYShift();
     this._custom = true;
     document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('on'));
     this._scheduleDraw();
@@ -1925,6 +2236,7 @@ class ValuationChartEngine {
   setRange(n){
     this.rangeN = n;
     this._custom = false;
+    this._resetYShift();
     document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('on', +b.dataset.n === n));
     if(this.N < 2) return;
     this.layout();
@@ -2007,6 +2319,8 @@ class ValuationChartEngine {
     this.pinned = false; this.pinIdx = -1; this._pinY = null; this._tipIdx = -1;
     this._animateSR = true;
     this._custom = false;
+    this._resetYShift();
+    this._bandAnim = { t0: performance.now(), dur: 500 };
     document.getElementById('chartInfo').textContent = this.N < 2
       ? '暂无足够K线数据'
       : '数据截止 ' + DATA.data_date + ' · ' + this.N + ' 根 · 前复权 · 红涨绿跌 · 滚轮缩放 · 拖拽平移 · 双击复位';
@@ -2018,8 +2332,29 @@ class ValuationChartEngine {
       this.layout();
       this._fitRange();
       this.draw();
+      this._updateSrFoot(st);
       this.wrap.classList.remove('fade');
+      this._startLoop();
     }, 130);
+  }
+
+  _updateSrFoot(st){
+    const foot = document.getElementById('srFoot');
+    if(!foot) return;
+    const all = (st.support || []).map(x => Object.assign({}, x, {s: true}))
+      .concat((st.resistance || []).map(x => Object.assign({}, x, {s: false})))
+      .filter(x => isFinite(+x.level) && (x.method || '').indexOf('估值锚') !== 0);
+    const pr = this._pr;
+    const inView = all.filter(x => {
+      if(!pr) return true;
+      const yy = this.yOf(+x.level);
+      return isFinite(yy) && yy >= this.TL - 6 && yy <= this.TL + this.priceH + 6;
+    });
+    const evOrder = {A: 0, B: 1, C: 2};
+    inView.sort((a, b) => evOrder[a.level_ev] - evOrder[b.level_ev] || +a.level - +b.level);
+    foot.innerHTML = inView.map((x, i) =>
+      '<button class="cap ' + (x.s ? 's' : 'r') + '" title="' + (x.method || '') + ' ¥' + fmt2(+x.level) + '" onclick="KENGINE.scrollToPrice(' + (+x.level) + ')">'
+      + '<i></i><span class="v">' + (x.s ? 'S' : 'R') + (i + 1) + ' ¥' + fmt2(+x.level) + '</span></button>').join('');
   }
 
   _fitRange(){
@@ -2028,12 +2363,29 @@ class ValuationChartEngine {
     this.viewStart = Math.max(0, this.N - bars);
   }
 
+  _startLoop(){
+    if(this._loopOn) return;
+    this._loopOn = true;
+    const tick = () => {
+      if(!this._loopOn) return;
+      const need = (this._bandAnim != null) || (this._yAnim != null) || (!this.pinned && this.N >= 2);
+      if(need) this._redrawCanvas();
+      if(this._bandAnim != null || this._yAnim != null || (!this.pinned && this.N >= 2)){
+        requestAnimationFrame(tick);
+      } else {
+        this._loopOn = false;
+      }
+    };
+    requestAnimationFrame(tick);
+  }
+
   resize(){
     this.layout();
     if(this.N < 2){ this.draw(); return; }
     const bars = Math.max(10, Math.min(this.N, this.barsPerView()));
     this.slot = (this.px1 - this.px0) / bars;
     this._clampView();
+    this._resetYShift();
     this.draw();
   }
 }
