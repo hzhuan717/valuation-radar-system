@@ -73,23 +73,78 @@ b{font-weight:600}
   font-size:var(--fs-title);font-weight:600;letter-spacing:.05em;color:var(--sub);text-transform:uppercase}
 .sb-search{margin:0 10px 8px;border:1px solid var(--hair);border-radius:6px;padding:7px 10px;font-size:13px}
 .sb-list{flex:1;overflow-y:auto;min-height:0}
-.sb-item{display:block;width:100%;text-align:left;border:none;background:none;padding:8px 12px;
-  border-bottom:1px solid var(--hair);font-size:13px;position:relative;transition:background .15s,transform .15s}
+/* ============ 左导航 — 自选池列表（双行 Flex） ============ */
+.sb-item{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  width:100%;
+  text-align:left;
+  border:none;
+  background:none;
+  padding:8px 12px 12px;        /* 底部 +4px 给 bar 留呼吸空间 */
+  border-bottom:1px solid var(--hair);
+  font-size:13px;
+  position:relative;
+  transition:background .15s,transform .15s;
+  min-height:0;
+}
 .sb-item:hover{background:var(--blue-lt);transform:translateX(2px)}
 .sb-item.on{background:var(--blue-lt);box-shadow:inset 3px 0 0 var(--blue)}
-.sb-item .nm{font-weight:600;font-size:13px}
-.sb-item .cd{color:var(--meta);font-family:var(--font-mono);font-size:12px;margin-left:4px}
-.sb-item .px{margin-left:auto;font-family:var(--font-mono);font-weight:600;font-size:13px}
-.sb-item .chg{font-size:12px;font-family:var(--font-mono)}
-.sb-item .l1{display:flex;align-items:baseline;gap:6px;min-width:0}
+/* 双行容器：左标识 / 右数据 */
+.sb-row-top,.sb-row-btm{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-width:0;
+  gap:8px;
+}
+.sb-name-group,.sb-price-group,
+.sb-change-group,.sb-zone-group{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+}
+.sb-price-group,.sb-zone-group{justify-content:flex-end}
+/* 文本统一截断，防止长名撑破 */
+.sb-item .nm,.sb-item .cd,.sb-item .px,.sb-item .chg,.sb-item .sb-zone{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.sb-item .nm{font-weight:600;font-size:13px;color:var(--ink)}
+.sb-item .cd{color:var(--meta);font-family:var(--font-mono);font-size:12px}
+.sb-item .px{
+  font-family:var(--font-mono);
+  font-weight:600;
+  font-size:13px;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+.sb-item .chg{
+  font-size:12px;
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+}
 .sb-item .code{display:none}
-/* 估值位置条：三色底 + 当前价竖线标记 */
-.sb-item .bar{position:absolute;left:12px;right:12px;bottom:0;height:4px;border-radius:2px;overflow:hidden;
+/* 估值位置条：抬高 + mark 垂直居中 */
+.sb-item .bar{position:absolute;left:12px;right:12px;bottom:4px;height:4px;border-radius:2px;overflow:hidden;
   background:linear-gradient(90deg,rgba(52,199,89,.55) 0 25%,rgba(0,113,227,.45) 25% 75%,rgba(255,59,48,.55) 75% 100%)}
 .sb-item .bar i{display:none}
-.sb-item .bar .mark{position:absolute;top:-1px;width:2px;height:6px;background:var(--ink);border-radius:1px}
+.sb-item .bar .mark{
+  position:absolute;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:2px;
+  height:5px;
+  background:var(--ink);
+  border-radius:1px;
+}
 .up-c{color:var(--candle-up)}.dn-c{color:var(--candle-dn)}
-.sb-zone{font-size:12px;margin-left:auto;color:var(--sub2)}
+/* 估值区域标签 */
+.sb-zone{font-size:12px;color:var(--sub2)}
 .sb-zone.z0,.sb-zone.z1{color:var(--green-d)}.sb-zone.z4,.sb-zone.z5{color:var(--red-d)}.sb-zone.z2,.sb-zone.z3{color:var(--gold)}
 
 /* ---- 中央区 ---- */
@@ -298,10 +353,13 @@ b{font-weight:600}
 @media(max-width:1399px){
   .shell{grid-template-columns:84px minmax(0,1fr) 340px}
   .sb-hd span:last-child,.sb-search{display:none}
-  .sb-item .nm,.sb-item .cd,.sb-item .px{display:none}
-  .sb-item{padding:10px 4px;text-align:center}
-  .sb-item .l1{flex-direction:column;gap:2px;align-items:center}
-  .sb-item .code{display:block;font-family:var(--font-mono);font-size:12px}
+  .sb-item{padding:10px 6px 12px;gap:3px}
+  .sb-item .nm,.sb-item .cd,.sb-item .px{display:none}   /* 保持原产品决策：窄屏隐藏价格与名称 */
+  .sb-item .code{display:block;font-family:var(--font-mono);font-size:12px;text-align:center;width:100%}
+  .sb-row-top,.sb-row-btm{justify-content:center;gap:4px}
+  .sb-row-btm{flex-wrap:wrap;gap:1px 4px}   /* 84px 内涨跌/估值换行堆叠，避免截断 */
+  .sb-change-group .chg{font-size:11px}
+  .sb-zone-group .sb-zone{font-size:11px}
   .sb-item .bar{left:6px;right:6px}
 }
 @media(max-width:1099px){
@@ -494,11 +552,14 @@ function renderList(filter){
       const rawPos = (s.v_low!=null && s.v_high!=null && s.v_high>s.v_low)
         ? Math.max(0, Math.min(100, (s.price - s.v_low) / (s.v_high - s.v_low) * 100)) : 50;
       return '<button class="sb-item '+(s.ticker===CUR?.ticker&&VIEW==='stock'?'on':'')+'" onclick="switchStock(\''+s.ticker+'\')">'
-        + '<div class="l1"><span class="nm">'+s.name+'</span><span class="cd">'+s.ticker+'</span>'
-        + '<span class="px">¥'+fmt2(s.price)+'</span>'
-        + '<span class="chg '+pctCol(s.pct)+'">'+(s.pct>0?'+':'')+fmt2(s.pct)+'%</span></div>'
-        + '<div class="l1"><span class="code">'+s.ticker+'</span>'
-        + '<span class="sb-zone '+zc+'">'+zm.label+'</span></div>'
+        + '<div class="sb-row-top">'
+        + '<div class="sb-name-group"><span class="nm">'+s.name+'</span><span class="cd">'+s.ticker+'</span><span class="code">'+s.ticker+'</span></div>'
+        + '<div class="sb-price-group"><span class="px">¥'+fmt2(s.price)+'</span></div>'
+        + '</div>'
+        + '<div class="sb-row-btm">'
+        + '<div class="sb-change-group"><span class="chg '+pctCol(s.pct)+'">'+(s.pct>0?'+':'')+fmt2(s.pct)+'%</span></div>'
+        + '<div class="sb-zone-group"><span class="sb-zone '+zc+'">'+zm.label+'</span></div>'
+        + '</div>'
         + '<div class="bar"><span class="mark" style="left:'+rawPos+'%"></span></div>'
         + '</button>';
     }).join('');
