@@ -381,7 +381,7 @@
         "title": "中国平安2025-12-31年报内含价值",
         "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
         "as_of": "2025-12-31",
-        "retrieved_at": "2026-08-13 20:33:41"
+        "retrieved_at": "2026-08-13 20:40:25"
       },
       "pev_low": 0.6,
       "pev_mid": 0.9,
@@ -409,7 +409,7 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-08-13 20:33:41"
+        "ok_at": "2026-08-13 20:40:25"
       }
     },
     {
@@ -514,7 +514,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:33:42"
+        "ok_at": "2026-08-13 20:40:27"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -535,7 +535,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:33:42"
+          "retrieved_at": "2026-08-13 20:40:27"
         }
       },
       "multiple_source": {
@@ -602,7 +602,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-08-13 20:33:43",
+        "failed_at": "2026-08-13 20:40:27",
         "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
       }
     },
@@ -640,7 +640,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:33:43"
+        "ok_at": "2026-08-13 20:40:28"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -661,7 +661,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:33:43"
+          "retrieved_at": "2026-08-13 20:40:28"
         }
       },
       "multiple_source": {
@@ -728,7 +728,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:33:45"
+        "ok_at": "2026-08-13 20:40:29"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -749,7 +749,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:33:45"
+          "retrieved_at": "2026-08-13 20:40:29"
         }
       },
       "multiple_source": {
@@ -865,7 +865,8 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-08-13 20:33:46"
+        "failed_at": "2026-08-13 20:40:30",
+        "note": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte"
       },
       "bank": {
         "bps": 8.46,
@@ -1220,11 +1221,11 @@
           "title": "中国铁建 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601186/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:33:47"
+          "retrieved_at": "2026-08-13 20:40:32"
         }
       },
       "special_refresh": {
-        "ok_at": "2026-08-13 20:33:47"
+        "ok_at": "2026-08-13 20:40:32"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,

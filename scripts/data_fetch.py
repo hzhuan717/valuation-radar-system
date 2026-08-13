@@ -191,7 +191,30 @@ def fetch_csindex_indicator(symbol: str) -> tuple:
         if not (c_date and c_pe1):
             raise ValueError("xls 缺少 日期/市盈率1 列")
         df = df[[c_date, c_pe1, c_pe2]].rename(columns={c_date: "日期", c_pe1: "市盈率1", c_pe2: "市盈率2"})
-        df["日期"] = pd.to_datetime(df["日期"], errors="coerce").dt.date
+
+        # 日期鲁棒解析：中证官网 xls 的日期列可能被 pandas 读成
+        # datetime / date / Excel 序列号(数字) / ISO 字符串；数字误按纳秒解析
+        # 会得到 1970-01-01（2026-08-13 出现过），统一转 Excel 序列号处理。
+        def _parse_date(v):
+            import datetime as _dt
+            if isinstance(v, _dt.datetime):
+                return v.date()
+            if isinstance(v, _dt.date):
+                return v
+            if isinstance(v, (int, float)):
+                fv = float(v)
+                if fv > 20000:  # Excel 1900 日期系统序列号
+                    return _dt.date(1899, 12, 30) + _dt.timedelta(days=int(fv))
+                return None
+            s = str(v).strip()
+            for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"):
+                try:
+                    return _dt.datetime.strptime(s[:10], fmt).date()
+                except ValueError:
+                    continue
+            return None
+
+        df["日期"] = [_parse_date(v) for v in df["日期"]]
         df["市盈率1"] = pd.to_numeric(df["市盈率1"], errors="coerce")
         df["市盈率2"] = pd.to_numeric(df["市盈率2"], errors="coerce")
     except Exception as e:

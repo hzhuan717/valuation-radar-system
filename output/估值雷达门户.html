@@ -1094,8 +1094,8 @@ class ValuationChartEngine {
 
   /* ---- 布局与比例 ---- */
   layout(){
-    const w = Math.max(420, this.wrap.clientWidth || 800);
-    const h = Math.max(320, this.wrap.clientHeight || 540);
+    const w = Math.max(260, this.wrap.clientWidth || 800);
+    const h = Math.max(180, this.wrap.clientHeight || 540);
     this.W = w; this.H = h;
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.AX = w < 560 ? 62 : 72;
