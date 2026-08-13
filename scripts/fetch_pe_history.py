@@ -34,6 +34,8 @@ ETF_INDEX_MAP = {
     "159141": {"code": None, "name": "中证科创创业人工智能指数", "legu": None},
     "510210": {"code": "000001", "name": "上证综合指数", "legu": "000001.SH"},
     "159330": {"code": "000300", "name": "沪深300指数", "legu": "000300.SH"},
+    # 指数实体：000001 自身即为上证综合指数（乐咕代码 000001.SH）
+    "000001": {"code": "000001", "name": "上证综合指数", "legu": "000001.SH"},
 }
 
 
@@ -156,7 +158,9 @@ def main():
                         "hist_last_date": str(last_date),
                         "source": f"乐咕乐股指数估值·{idx_name}",
                         "collected_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）",
+                        "note": ("指数实体按自身TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"
+                                 if code == "000001"
+                                 else "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"),
                     }
                 except Exception as e:
                     print(f"{code} {name}: 乐咕乐股指数PE失败({type(e).__name__}: {e})，回退中证官网")
@@ -199,7 +203,7 @@ def main():
                     "note": "指数PE序列暂时无法访问，观察；每日流水线自动重试",
                 }
             pe_stats[code] = stats
-            print(f"{code} {name}: ETF参考 指数PE={stats.get('pe')} 分位={None if stats.get('pctile') is None else round(stats['pctile']*100)}% -> {stats.get('signal')}")
+            print(f"{code} {name}: {'指数' if code == '000001' else 'ETF'}参考 指数PE={stats.get('pe')} 分位={None if stats.get('pctile') is None else round(stats['pctile']*100)}% -> {stats.get('signal')}")
             continue
 
         # 亏损股 → PB 分位

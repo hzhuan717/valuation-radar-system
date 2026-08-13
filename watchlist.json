@@ -9,6 +9,21 @@
   },
   "stocks": [
     {
+      "ticker": "000001",
+      "name": "上证指数",
+      "route": "etf",
+      "valuation_model": {
+        "code": "etf_index",
+        "label": "指数·估值分位",
+        "reason": "指数实体无个股EPS×PE口径；锚定上证综合指数(000001.SH)TTM PE全历史5年分位位置（D级工程化参考），手工价格带不冒充内在价值",
+        "rule_version": "2026.08-v2"
+      },
+      "bootstrap_date": "2026-08-13",
+      "needs_review": true,
+      "notes": "上证综合指数(000001.SH)：行情=指数点位；估值参考=乐咕乐股指数TTM PE(加权)全历史5年分位（D级工程化）：<30%低估可买 / 30~70%持有观望 / >70%高估观望；中证官网近20交易日PE为回退；禁止个股EPS×PE估值",
+      "manual_band": null
+    },
+    {
       "ticker": "600085",
       "name": "同仁堂",
       "route": "equity",
@@ -366,7 +381,7 @@
         "title": "中国平安2025-12-31年报内含价值",
         "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
         "as_of": "2025-12-31",
-        "retrieved_at": "2026-08-13 20:01:09"
+        "retrieved_at": "2026-08-13 20:33:41"
       },
       "pev_low": 0.6,
       "pev_mid": 0.9,
@@ -394,7 +409,7 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-08-13 20:01:09"
+        "ok_at": "2026-08-13 20:33:41"
       }
     },
     {
@@ -499,7 +514,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:01:10"
+        "ok_at": "2026-08-13 20:33:42"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -520,7 +535,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:01:10"
+          "retrieved_at": "2026-08-13 20:33:42"
         }
       },
       "multiple_source": {
@@ -587,7 +602,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-08-13 20:01:11",
+        "failed_at": "2026-08-13 20:33:43",
         "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
       }
     },
@@ -625,7 +640,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:01:11"
+        "ok_at": "2026-08-13 20:33:43"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -646,7 +661,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:01:11"
+          "retrieved_at": "2026-08-13 20:33:43"
         }
       },
       "multiple_source": {
@@ -713,7 +728,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-13 20:01:12"
+        "ok_at": "2026-08-13 20:33:45"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -734,7 +749,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:01:12"
+          "retrieved_at": "2026-08-13 20:33:45"
         }
       },
       "multiple_source": {
@@ -850,7 +865,7 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-08-13 20:01:13"
+        "ok_at": "2026-08-13 20:33:46"
       },
       "bank": {
         "bps": 8.46,
@@ -889,13 +904,13 @@
           "title": "光大银行 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601818/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:01:13"
+          "retrieved_at": "2026-08-13 20:33:46"
         },
         "f10_source": {
           "provider": "东方财富F10主要指标",
           "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH601818",
           "as_of": "2026-03-31",
-          "retrieved_at": "2026-08-13 20:01:13"
+          "retrieved_at": "2026-08-13 20:33:46"
         }
       },
       "pb_low": 0.4,
@@ -1205,11 +1220,11 @@
           "title": "中国铁建 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601186/finance.html",
           "as_of": "2026-08-13",
-          "retrieved_at": "2026-08-13 20:01:13"
+          "retrieved_at": "2026-08-13 20:33:47"
         }
       },
       "special_refresh": {
-        "ok_at": "2026-08-13 20:01:13"
+        "ok_at": "2026-08-13 20:33:47"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,

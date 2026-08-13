@@ -15,15 +15,19 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
 
 CN_PREFIX = {"6": "sh", "9": "sh", "0": "sz", "3": "sz", "5": "sh", "1": "sz", "2": "sz", "4": "sz"}
 
+# 指数实体特殊前缀：000001 同时是上证指数(sh)与平安银行(sz)代码，
+# 池内指数条目一律强制 sh 前缀，禁止误拉个股行情。
+INDEX_SPECIAL_PREFIX = {"000001": "sh"}
+
 
 def _code_tencent(symbol: str) -> str:
-    """股票代码 → 腾讯格式 sh600085 / sz002384；ETF 515220 → sh，159xxx → sz"""
-    p = CN_PREFIX.get(symbol[0], "sh")
+    """股票代码 → 腾讯格式 sh600085 / sz002384；ETF 515220 → sh，159xxx → sz；指数 000001 → sh000001"""
+    p = INDEX_SPECIAL_PREFIX.get(symbol) or CN_PREFIX.get(symbol[0], "sh")
     return p + symbol
 
 
 def _code_sina(symbol: str) -> str:
-    p = "sh" if symbol[0] in "69" else "sz"
+    p = INDEX_SPECIAL_PREFIX.get(symbol) or ("sh" if symbol[0] in "69" else "sz")
     return p + symbol
 
 
@@ -54,7 +58,10 @@ def fetch_spot(codes: list) -> tuple:
             continue
         try:
             price = float(parts[3])
-            total_mv = float(parts[45]) * 1e8  # 总市值（元，腾讯字段45单位为亿元）
+            try:
+                total_mv = float(parts[45]) * 1e8  # 总市值（元，腾讯字段45单位为亿元）
+            except (ValueError, IndexError):
+                total_mv = None  # 指数无总市值字段
             pe_raw = parts[39]
             pe = float(pe_raw) if pe_raw not in ("", "-", "--") else None
             pb_raw = parts[46]
@@ -66,7 +73,7 @@ def fetch_spot(codes: list) -> tuple:
                 "pe_ttm": pe,
                 "pb": pb,
                 "total_mv": total_mv,
-                "shares": round(total_mv / price / 1e8, 4) if price > 0 else None,  # 亿股
+                "shares": round(total_mv / price / 1e8, 4) if price > 0 and total_mv else None,  # 亿股
                 "time": parts[30],
             }
         except (ValueError, IndexError):
@@ -85,10 +92,14 @@ def fetch_kline(symbol: str, days: int = 260) -> tuple:
     start = end - datetime.timedelta(days=int(days * 1.8) + 30)
     sd, ed = start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
 
-    # 1) akshare 东财
+    # 1) akshare 东财（指数用 index_zh_a_hist，个股用 stock_zh_a_hist；
+    #    000001 是上证指数也是平安银行，走错接口会取到个股数据）
     try:
         import akshare as ak
-        df = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=sd, end_date=ed, adjust="qfq")
+        if symbol in INDEX_SPECIAL_PREFIX:
+            df = ak.index_zh_a_hist(symbol=symbol, period="daily", start_date=sd, end_date=ed)
+        else:
+            df = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=sd, end_date=ed, adjust="qfq")
         if df is not None and not df.empty:
             rows = [{"d": str(r["日期"]), "o": float(r["开盘"]), "c": float(r["收盘"]),
                      "h": float(r["最高"]), "l": float(r["最低"]), "v": float(r["成交量"])}
