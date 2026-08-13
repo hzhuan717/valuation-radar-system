@@ -17,46 +17,156 @@ v7 优化（2026-08-13 用户验收标准）：
   · 移动端：图表 45vh 置顶、卡片全宽大数字布局
 """
 import json
+import math
 import os
 
 BASE = r"E:\财报解读\watchlist"
 STATE = os.path.join(BASE, "state.json")
 OUT = os.path.join(BASE, "output", "估值雷达门户.html")
 
+PRICE_NEAR = 0.015   # 与现价 ±1.5% 内视为贴线，降 C 级
+MERGE_TOL = 0.02     # 同侧点位价差 <2% 合并去重
+EV_ORDER = {"A": 0, "B": 1, "C": 2}
+
+
+def _num(v):
+    return isinstance(v, (int, float)) and math.isfinite(v)
+
+
+def _price_of(st):
+    p = st.get("price")
+    if _num(p) and p > 0:
+        return p
+    k = st.get("kline") or []
+    if k and _num(k[-1].get("c")):
+        return k[-1]["c"]
+    return None
+
+
+def _anchor_item(item):
+    """V_low/V_mid/V_high 是估值锚（基本面），不是技术位：统一改名 + 降 C 级。
+    仅匹配方法名开头（合并后的复合文本不重命名）；锚点文本不带价格，避免合并后过期。"""
+    m = item.get("method") or ""
+    lv = item.get("level")
+    if m.startswith("V_low") or m.startswith("买入启动区") or m.startswith("估值锚 V_low"):
+        return {"level": lv, "method": "估值锚 V_low（下沿）", "level_ev": "C"}
+    if m.startswith("V_high") or m.startswith("卖出启动区") or m.startswith("估值锚 V_high"):
+        return {"level": lv, "method": "估值锚 V_high（上沿）", "level_ev": "C"}
+    if m.startswith("V_mid") or m.startswith("估值锚 V_mid"):
+        return {"level": lv, "method": "估值锚 V_mid（中枢）", "level_ev": "C"}
+    return item
+
+
+def _strip_notes(method):
+    """剥离历史标注后缀，保证 sanitize 幂等（可重复执行）。"""
+    for note in (" · 现价贴线，参考性弱", " · 已跌破转压", " · 已突破转支"):
+        method = method.replace(note, "")
+    return method
+
+
+def _flip_note(method, from_sup):
+    """破位/突破后角色转换标注。"""
+    if from_sup:
+        if any(t in method for t in ("低点", "缺口", "支撑", "启动")):
+            return method + " · 已跌破转压"
+    elif any(t in method for t in ("高点", "压力", "回撤")):
+        return method + " · 已突破转支"
+    return method
+
+
+def sanitize_sr(st: dict) -> tuple:
+    """支撑/压力统一校验（v8）：
+    1) 方向铁律：支撑必须低于现价、压力必须高于现价；±1.5% 贴线保留原侧但降 C 级；
+    2) 角色转换：原支撑跌破→转压力、原压力突破→转支撑（标注并降 C 级）；
+    3) 估值锚统一改名 + 降 C 级；
+    4) 同侧价差 <2% 合并去重（保留高等级，方法拼接）；
+    5) 每侧最多 5 条，支撑按距现价由近到远排列。
+    """
+    price = _price_of(st)
+    raw = [(True, it) for it in (st.get("support") or [])] + [(False, it) for it in (st.get("resistance") or [])]
+    if price is None:
+        sup = [it for from_sup, it in raw if from_sup and _num(it.get("level"))][:5]
+        res = [it for from_sup, it in raw if not from_sup and _num(it.get("level"))][:5]
+        return sup, res
+    pool = []  # [level, item, is_support]
+    for from_sup, it in raw:
+        lv = it.get("level")
+        if not _num(lv) or lv <= 0:
+            continue
+        item = dict(_anchor_item(it))
+        item["method"] = _strip_notes(item.get("method") or "")
+        delta = (lv - price) / price
+        if abs(delta) < 1e-9:
+            continue  # 点位恰好等于现价，无方向信息
+        if abs(delta) < PRICE_NEAR:
+            item = dict(item)
+            item["level_ev"] = "C"
+            item["method"] = item["method"] + " · 现价贴线，参考性弱"
+            side = delta < 0
+        elif lv < price:
+            side = True
+            if not from_sup:
+                item = dict(item)
+                item["method"] = _flip_note(item["method"], False)
+                item["level_ev"] = "C"
+        else:
+            side = False
+            if from_sup:
+                item = dict(item)
+                item["method"] = _flip_note(item["method"], True)
+                item["level_ev"] = "C"
+        pool.append([lv, item, side])
+    pool.sort(key=lambda x: x[0])
+    merged = []
+    for lv, item, side in pool:
+        hit = next((m for m in merged if m[2] == side and abs(m[0] - lv) <= MERGE_TOL * price), None)
+        if hit:
+            if EV_ORDER.get(item.get("level_ev"), 9) < EV_ORDER.get(hit[1].get("level_ev"), 9):
+                hit[0] = lv  # 采用高等级点位的价格
+                hit[1]["level_ev"] = item.get("level_ev")
+            elif EV_ORDER.get(item.get("level_ev"), 9) == EV_ORDER.get(hit[1].get("level_ev"), 9):
+                hit[0] = round((hit[0] + lv) / 2, 2)  # 同级取中点
+            hit[1]["level"] = hit[0]  # 同步输出字段
+            hit[1]["method"] = hit[1]["method"] + " / " + item["method"]
+        else:
+            merged.append([lv, item, side])
+    sup = sorted((m for m in merged if m[2]), key=lambda m: -m[0])[:5]
+    res = sorted((m for m in merged if not m[2]), key=lambda m: m[0])[:5]
+    return [m[1] for m in sup], [m[1] for m in res]
+
 
 def auto_sr(st: dict) -> tuple:
-    v_low, v_high = st.get("v_low"), st.get("v_high")
+    """候选点位生成（v8）：估值锚(C) + 60/250日高低点(B) + MA20/60(B) + 斐波那契回撤(B，带基期)。
+    方向校正、贴线降级、去重统一交给 sanitize_sr 完成。"""
     k = st.get("kline") or []
-    support, resistance = [], []
-    if v_low and k:
-        support.append({"level": v_low, "method": f"V_low 买入启动区（{v_low}）", "level_ev": "A"})
-    if v_high and k:
-        resistance.append({"level": v_high, "method": f"V_high 卖出启动区（{v_high}）", "level_ev": "A"})
+    cand_sup, cand_res = [], []
+    if not k:
+        return [], []
+    v_low, v_high = st.get("v_low"), st.get("v_high")
+    if _num(v_low) and v_low > 0:
+        cand_sup.append({"level": round(v_low, 2), "method": "估值锚 V_low（下沿）", "level_ev": "C"})
+    if _num(v_high) and v_high > 0:
+        cand_res.append({"level": round(v_high, 2), "method": "估值锚 V_high（上沿）", "level_ev": "C"})
     if len(k) >= 60:
-        lo60 = round(min(r["l"] for r in k[-60:]), 2)
-        hi60 = round(max(r["h"] for r in k[-60:]), 2)
-        support.append({"level": lo60, "method": "近60日低点", "level_ev": "B"})
-        resistance.append({"level": hi60, "method": "近60日高点", "level_ev": "B"})
+        seg = k[-60:]
+        cand_sup.append({"level": round(min(r["l"] for r in seg), 2), "method": "近60日低点", "level_ev": "B"})
+        cand_res.append({"level": round(max(r["h"] for r in seg), 2), "method": "近60日高点", "level_ev": "B"})
     if len(k) >= 250:
-        lo250 = round(min(r["l"] for r in k[-250:]), 2)
-        hi250 = round(max(r["h"] for r in k[-250:]), 2)
-        support.append({"level": lo250, "method": "250日低点", "level_ev": "B"})
-        resistance.append({"level": hi250, "method": "250日高点", "level_ev": "B"})
-    ma20s = [r["c"] for r in k[-20:]] if len(k) >= 20 else []
-    ma60s = [r["c"] for r in k[-60:]] if len(k) >= 60 else []
-    if ma60s:
-        ma60 = sum(ma60s) / 60
-        if ma60 < (v_low or 0) * 0.9:
-            support.append({"level": round(ma60, 2), "method": "MA60 均线支撑", "level_ev": "B"})
-        elif ma60 > (v_high or 1e9) * 1.1:
-            resistance.append({"level": round(ma60, 2), "method": "MA60 均线压力", "level_ev": "B"})
-    if ma20s:
-        ma20 = sum(ma20s) / 20
-        if ma20 < (v_low or 0) * 0.9:
-            support.append({"level": round(ma20, 2), "method": "MA20 均线支撑", "level_ev": "B"})
-        elif ma20 > (v_high or 1e9) * 1.1:
-            resistance.append({"level": round(ma20, 2), "method": "MA20 均线压力", "level_ev": "B"})
-    return support[:5], resistance[:5]
+        seg = k[-250:]
+        lo250 = round(min(r["l"] for r in seg), 2)
+        hi250 = round(max(r["h"] for r in seg), 2)
+        cand_sup.append({"level": lo250, "method": "250日低点", "level_ev": "B"})
+        cand_res.append({"level": hi250, "method": "250日高点", "level_ev": "B"})
+        rng = hi250 - lo250
+        if rng > 0:
+            for ratio in (0.382, 0.5, 0.618):
+                cand_res.append({"level": round(lo250 + rng * ratio, 2),
+                                 "method": f"斐波那契{ratio}回撤（250日 {lo250}→{hi250}）", "level_ev": "B"})
+    if len(k) >= 20:
+        cand_sup.append({"level": round(sum(r["c"] for r in k[-20:]) / 20, 2), "method": "MA20 均线", "level_ev": "B"})
+    if len(k) >= 60:
+        cand_sup.append({"level": round(sum(r["c"] for r in k[-60:]) / 60, 2), "method": "MA60 均线", "level_ev": "B"})
+    return sanitize_sr({"support": cand_sup, "resistance": cand_res, "price": _price_of(st)})
 
 
 def build() -> str:
@@ -70,6 +180,8 @@ def build() -> str:
     for st in stocks:
         if not st.get("support") and not st.get("resistance"):
             st["support"], st["resistance"] = auto_sr(st)
+        else:
+            st["support"], st["resistance"] = sanitize_sr(st)
         q = st.get("data_quality") or {}
         st["_blockers"] = [b.get("detail", "") for b in q.get("blockers", [])]
         st["_warnings"] = [w.get("detail", "") for w in q.get("warnings", [])]
@@ -274,6 +386,8 @@ b{font-weight:600}
 .sr-dot.rA{width:12px;height:12px;background:var(--red-d);border:2px solid #fff;box-shadow:0 0 0 1px rgba(215,0,21,.5)}
 .sr-dot.sB{width:11px;height:11px;background:#fff;border:2px dashed var(--green-d)}
 .sr-dot.rB{width:11px;height:11px;background:#fff;border:2px dashed var(--red-d)}
+.sr-dot.sC{width:9px;height:9px;background:#fff;border:2px solid rgba(31,157,77,.45)}
+.sr-dot.rC{width:9px;height:9px;background:#fff;border:2px solid rgba(215,0,21,.45)}
 .sr-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:13px;line-height:1.5}
 .sr-list .row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--hair);padding:3px 0;font-family:var(--font-mono)}
 .sr-list .row .m{font-family:var(--font-base);color:var(--sub2);font-size:12px}
@@ -765,8 +879,8 @@ function renderWall(st){
   if(tMin === tMax){ tMin -= 1; tMax += 1; }
   const pos = v => Math.max(2, Math.min(98, (v - tMin) / (tMax - tMin) * 100));
   const dots = [];
-  srs.forEach((x,i) => dots.push({cls:'s'+(x.level_ev==='A'?'A':'B'), v:+x.level, t:'S'+(i+1)}));
-  rrs.forEach((x,i) => dots.push({cls:'r'+(x.level_ev==='A'?'A':'B'), v:+x.level, t:'R'+(i+1)}));
+  srs.forEach((x,i) => dots.push({cls:'s'+(x.level_ev==='A'?'A':(x.level_ev==='C'?'C':'B')), v:+x.level, t:'S'+(i+1)}));
+  rrs.forEach((x,i) => dots.push({cls:'r'+(x.level_ev==='A'?'A':(x.level_ev==='C'?'C':'B')), v:+x.level, t:'R'+(i+1)}));
   dots.sort((a,b)=>a.v-b.v);
   let c0 = '<div class="sr-track">';
   [20,40,60,80].forEach(p => { c0 += '<span class="tick" style="left:'+p+'%"></span>'; });
@@ -778,7 +892,7 @@ function renderWall(st){
   rrs.forEach((x,i) => { c0 += '<div class="row r"><span class="m">R'+(i+1)+' · '+(x.method||'')+' <b class="g">'+x.level_ev+'级</b></span><span class="v">¥'+fmt2(x.level)+'</span></div>'; });
   c0 += '</div>';
   if(!srs.length && !rrs.length) c0 = '<div class="formula-mini">暂无支撑/压力数据（K线不足或未配置）。</div>';
-  c0 += '<div class="formula-mini">轨道区间：¥'+fmt2(tMin)+' ~ ¥'+fmt2(tMax)+'（250日高低点）；蓝点=现价，实心=A级，虚线= B级。</div>';
+  c0 += '<div class="formula-mini">轨道区间：¥'+fmt2(tMin)+' ~ ¥'+fmt2(tMax)+'（250日高低点）；蓝点=现价，实心=A级技术位，虚线=B级，细边=C级（估值锚/贴线/转换位）。</div>';
   document.getElementById('c0Body').innerHTML = c0;
 
   /* ---- Card 1：市场与模型 + 质检折叠 ---- */
