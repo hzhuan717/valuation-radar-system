@@ -146,6 +146,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bump", default="patch", choices=["patch", "minor", "major"],
                     help="版本递增级别（默认修订号）")
+    ap.add_argument("--note", default="", help="本次版本变更说明（写入提交信息；建议同步更新 CHANGELOG.md）")
     args = ap.parse_args()
 
     cfg = load_cfg()
@@ -164,9 +165,9 @@ def main():
                          f"https://github.com/{cfg['owner']}/{cfg['repo']}.git"])
 
     new_ver = bump_version(args.bump)
+    msg = f"v{new_ver} · {args.note or '门户/引擎/数据更新'} · {time.strftime('%Y-%m-%d %H:%M')}"
     git(cfg, token, ["add", "-A"])
-    proc = git(cfg, token, ["commit", "-q", "-m",
-                            f"v{new_ver} · 门户/引擎/数据更新 {time.strftime('%Y-%m-%d %H:%M')}"],
+    proc = git(cfg, token, ["commit", "-q", "-m", msg],
                allow_fail=True)
     if proc.returncode != 0 and "nothing to commit" not in (proc.stdout + proc.stderr):
         log(f"提交无变化或失败，跳过打标: {proc.stderr.strip()[-200:]}")
