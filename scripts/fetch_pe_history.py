@@ -27,13 +27,48 @@ _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from data_fetch import fetch_csindex_indicator  # noqa: E402
 
 # ETF → 底层跟踪指数（天天基金F10 跟踪标的核对）
+# legu：乐咕乐股指数估值代码（TTM PE 全历史，主源）；csindex：中证官网（近20交易日，回退）
 ETF_INDEX_MAP = {
-    "515220": {"code": "000820", "name": "中证申万煤炭指数"},
-    "159583": {"code": "931160", "name": "中证全指通信设备指数"},
-    "159141": {"code": None, "name": "中证科创创业人工智能指数"},
-    "510210": {"code": "000001", "name": "上证综合指数"},
-    "159330": {"code": "000300", "name": "沪深300指数"},
+    "515220": {"code": "000820", "name": "中证申万煤炭指数", "legu": "000820.CSI"},
+    "159583": {"code": "931160", "name": "中证全指通信设备指数", "legu": "931160.CSI"},
+    "159141": {"code": None, "name": "中证科创创业人工智能指数", "legu": None},
+    "510210": {"code": "000001", "name": "上证综合指数", "legu": "000001.SH"},
+    "159330": {"code": "000300", "name": "沪深300指数", "legu": "000300.SH"},
 }
+
+
+def fetch_legu_index_pe(legu_code: str) -> tuple:
+    """乐咕乐股指数 TTM PE 全历史（公开站点接口，token=MD5(今日日期)）。
+
+    字段口径：``addTtmPe`` = 滚动市盈率(TTM) 加权（与中证官网市盈率1 同口径），
+    ``ttmPe`` = 等权平均，``middleTtmPe`` = 中位数。
+    返回 [(date_str, addTtmPe), ...] 升序；失败抛异常。
+    """
+    import hashlib
+    import http.cookiejar
+    import urllib.request
+    UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    tok = hashlib.md5(datetime.date.today().strftime("%Y-%m-%d").encode()).hexdigest()
+    cj = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    page_url = f"https://legulegu.com/stockdata/index-ttm-lyr-pe?indexCode={legu_code}"
+    op.open(urllib.request.Request(page_url, headers=UA), timeout=20)
+    url = f"https://legulegu.com/api/stockdata/index-basic-pe?indexCode={legu_code}&token={tok}"
+    raw = op.open(urllib.request.Request(url, headers={**UA, "Referer": page_url}),
+                  timeout=25).read().decode("utf-8", errors="ignore")
+    data = json.loads(raw).get("data") or []
+    rows = []
+    for r in data:
+        try:
+            pe = float(r.get("addTtmPe"))
+        except (TypeError, ValueError):
+            continue
+        if pe and pe > 0:
+            rows.append((str(r.get("date"))[:10], pe))
+    rows.sort(key=lambda x: x[0])
+    if len(rows) < 60:
+        raise ValueError(f"乐咕乐股指数PE历史不足({len(rows)})")
+    return rows, {"source": "legulegu-index", "n": len(rows)}
 
 
 def fetch_baidu_hist(symbol: str, indicator: str, years: str = "近五年") -> tuple:
@@ -78,7 +113,9 @@ def main():
         if code in ETF_INDEX_MAP:
             idx_meta = ETF_INDEX_MAP[code]
             idx_code, idx_name = idx_meta["code"], idx_meta["name"]
-            if not idx_code:
+            idx_meta = ETF_INDEX_MAP[code]
+            idx_code, idx_name, legu_code = idx_meta["code"], idx_meta["name"], idx_meta.get("legu")
+            if not legu_code and not idx_code:
                 stats = {
                     "ok": True,
                     "metric": "指数PE",
@@ -92,36 +129,65 @@ def main():
                 pe_stats[code] = stats
                 print(f"{code} {name}: ETF观察 跟踪指数={idx_name}（官方PE序列暂缺）")
                 continue
-            try:
-                df, _meta = fetch_csindex_indicator(idx_code)
-                if df is None or df.empty:
-                    raise ValueError("指数PE序列为空")
-                df = df.dropna(subset=["市盈率1"]).sort_values("日期")
-                last_date = df["日期"].max()
-                cut = last_date - datetime.timedelta(days=365 * 5)
-                win = df[df["日期"] >= cut]
-                hist = win["市盈率1"].astype(float).tolist()
-                if len(hist) < 30:
-                    raise ValueError(f"指数PE 5年序列不足({len(hist)})")
-                pe_now = float(df["市盈率1"].iloc[-1])
-                pct = percentile(sorted(hist), pe_now)
-                zone, signal, color = verdict(pct)
-                stats = {
-                    "ok": True,
-                    "metric": "指数PE",
-                    "pe": round(pe_now, 2),
-                    "pe_min": round(min(hist), 2),
-                    "pe_max": round(max(hist), 2),
-                    "pe_median": round(sorted(hist)[len(hist) // 2], 2),
-                    "pctile": round(pct, 4) if pct is not None else None,
-                    "zone": zone, "signal": signal, "color": color,
-                    "hist_n": len(hist),
-                    "hist_last_date": str(last_date),
-                    "source": f"中证指数官方·{idx_name}({idx_code})",
-                    "collected_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "note": "ETF按底层指数PE 5年历史分位参考（D级工程化，非估值雷达公式）",
-                }
-            except Exception as e:
+            stats = None
+            # 1) 主源：乐咕乐股指数 TTM PE 全历史 → 5 年分位
+            if legu_code:
+                try:
+                    rows, _meta = fetch_legu_index_pe(legu_code)
+                    last_date = datetime.date.fromisoformat(rows[-1][0])
+                    cut = last_date - datetime.timedelta(days=365 * 5)
+                    win = [v for d, v in rows if datetime.date.fromisoformat(d) >= cut]
+                    if len(win) < 30:
+                        raise ValueError(f"指数PE 5年窗口不足({len(win)})")
+                    pe_now = float(rows[-1][1])
+                    hist = sorted(win)
+                    pct = percentile(hist, pe_now)
+                    zone, signal, color = verdict(pct)
+                    stats = {
+                        "ok": True,
+                        "metric": "指数PE",
+                        "pe": round(pe_now, 2),
+                        "pe_min": round(min(hist), 2),
+                        "pe_max": round(max(hist), 2),
+                        "pe_median": round(sorted(hist)[len(hist) // 2], 2),
+                        "pctile": round(pct, 4) if pct is not None else None,
+                        "zone": zone, "signal": signal, "color": color,
+                        "hist_n": len(hist),
+                        "hist_last_date": str(last_date),
+                        "source": f"乐咕乐股指数估值·{idx_name}",
+                        "collected_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）",
+                    }
+                except Exception as e:
+                    print(f"{code} {name}: 乐咕乐股指数PE失败({type(e).__name__}: {e})，回退中证官网")
+            # 2) 回退：中证官网近20交易日 PE（无5年分位，仅指数参考）
+            if stats is None and idx_code:
+                try:
+                    df, _meta = fetch_csindex_indicator(idx_code)
+                    if df is None or df.empty:
+                        raise ValueError("指数PE序列为空")
+                    df = df.dropna(subset=["市盈率1"]).sort_values("日期")
+                    pe_now = float(df["市盈率1"].iloc[-1])
+                    hist = df["市盈率1"].astype(float).tolist()
+                    stats = {
+                        "ok": True,
+                        "metric": "指数PE",
+                        "pe": round(pe_now, 2),
+                        "pe_min": round(min(hist), 2),
+                        "pe_max": round(max(hist), 2),
+                        "pe_median": round(sorted(hist)[len(hist) // 2], 2),
+                        "pctile": None,
+                        "zone": "参考", "signal": "指数参考", "color": "blue",
+                        "hist_n": len(hist),
+                        "hist_last_date": str(df["日期"].max()),
+                        "source": f"中证指数官方·{idx_name}({idx_code})",
+                        "collected_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考",
+                    }
+                except Exception as e:
+                    print(f"{code} {name}: 中证官网回退失败({type(e).__name__}: {e})")
+            # 3) 全部失败 → 观察
+            if stats is None:
                 stats = {
                     "ok": True,
                     "metric": "指数PE",
@@ -130,7 +196,7 @@ def main():
                     "zone": "参考", "signal": "观察", "color": "gold",
                     "hist_n": None, "hist_last_date": None,
                     "source": f"跟踪指数：{idx_name}",
-                    "note": f"中证官方PE序列暂时无法访问（{type(e).__name__}），观察；每日流水线自动重试",
+                    "note": "指数PE序列暂时无法访问，观察；每日流水线自动重试",
                 }
             pe_stats[code] = stats
             print(f"{code} {name}: ETF参考 指数PE={stats.get('pe')} 分位={None if stats.get('pctile') is None else round(stats['pctile']*100)}% -> {stats.get('signal')}")

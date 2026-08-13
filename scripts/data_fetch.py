@@ -166,9 +166,21 @@ def fetch_csindex_indicator(symbol: str) -> tuple:
                       "error": str(last_exc), "collected_at": now()}
     try:
         df = pd.read_excel(_io.BytesIO(raw))
-        df.columns = ["日期", "指数简称", "指数名称全称", "指数英文简称", "指数英文全称",
-                      "市盈率1", "市盈率2", "股息率1", "股息率2"]
-        df["日期"] = pd.to_datetime(df["日期"], format="%Y%m%d", errors="coerce").dt.date
+        df.columns = [str(c) for c in df.columns]
+
+        def _pick(sub):
+            for c in df.columns:
+                if sub in c:
+                    return c
+            return None
+
+        c_date = _pick("日期") or _pick("Date")
+        c_pe1 = _pick("市盈率1")
+        c_pe2 = _pick("市盈率2")
+        if not (c_date and c_pe1):
+            raise ValueError("xls 缺少 日期/市盈率1 列")
+        df = df[[c_date, c_pe1, c_pe2]].rename(columns={c_date: "日期", c_pe1: "市盈率1", c_pe2: "市盈率2"})
+        df["日期"] = pd.to_datetime(df["日期"], errors="coerce").dt.date
         df["市盈率1"] = pd.to_numeric(df["市盈率1"], errors="coerce")
         df["市盈率2"] = pd.to_numeric(df["市盈率2"], errors="coerce")
     except Exception as e:
