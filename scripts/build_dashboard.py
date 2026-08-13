@@ -412,6 +412,9 @@ b{font-weight:600}
 .wfall .step.sell.touched{background:rgba(255,59,48,.14);font-weight:700;color:var(--red-d)}
 .wfall .divider{display:flex;justify-content:space-between;padding:4px 10px;background:var(--blue-lt);
   border-radius:6px;font-weight:700;color:var(--blue);font-family:var(--font-mono)}
+.wfall .step .st{font-family:var(--font-base);font-size:12px;color:var(--meta);margin-left:8px}
+.kelly-line{margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--hair);
+  font-size:12px;color:var(--sub2);font-family:var(--font-mono)}
 /* 迷你走势 + 均线排列 */
 .spark-wrap{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .spark-wrap svg{flex:none;border:1px solid var(--hair);border-radius:6px;background:var(--bg2)}
@@ -956,25 +959,34 @@ function renderWall(st){
   document.getElementById('c2Src').textContent = c2src ? c2src.slice(0,26) : '';
   bindCalc();
 
-  /* ---- Card 3：买卖阶梯（瀑布） ---- */
+  /* ---- Card 3：买卖阶梯（瀑布，spec 5.2/5.3：Kelly + 档位仓位 + 止损） ---- */
   if(usable && st.v_low!=null && st.v_high!=null){
-    const b1=st.v_low*.7, b2=st.v_low*.85, s2=st.v_high+(st.v_high-st.v_mid)*.5, s3=st.v_high*1.3;
+    const mos = st.mos!=null ? st.mos : (st.v_mid!=null && st.v_mid>0 ? (st.v_mid-st.price)/st.v_mid : 0);
+    const kellyRaw = st.v_high>st.v_low ? mos/(st.v_high-st.v_low) : 0;
+    const kelly = Math.max(0, Math.min(kellyRaw*0.5, 0.25));
+    const k = st.kline||[];
+    const lo60 = k.length>=60 ? Math.min(...k.slice(-60).map(r=>r.l)) : null;
+    const stop1 = st.ma250!=null ? st.ma250*0.97 : null;
+    const b1=st.v_low*1.05, b2=st.v_low, b3=st.v_low*0.95;
     const sellRows = [
-      {lab:'3档 · 泡沫警戒 V×1.3', v:s3},
-      {lab:'2档 · 分批 V+0.5Δ', v:s2},
-      {lab:'1档 · 卖出启动 V_high', v:st.v_high},
+      {lab:'止盈2档 · ≥V_high 清仓50%', v:st.v_high, stop:''},
+      {lab:'止盈1档 · ≥V_mid 减仓30%', v:st.v_mid, stop:''},
     ];
     const buyRows = [
-      {lab:'3档 · 买入启动 V_low', v:st.v_low},
-      {lab:'2档 · 分批 V×0.85', v:b2},
-      {lab:'1档 · 深度低估 V×0.7', v:b1},
+      {lab:'试探仓 5% · ≤V_low×1.05', v:b1, stop: stop1!=null ? ('止损 MA250×0.97 ¥'+fmt2(stop1)) : '止损 待MA250'},
+      {lab:'主力仓 10% · ≤V_low', v:b2, stop:'止损 V_low×0.95 ¥'+fmt2(st.v_low*0.95)},
+      {lab:'加仓 5% · ≤V_low×0.95', v:b3, stop: lo60!=null ? ('止损 近60日低点 ¥'+fmt2(lo60)) : '止损 近期低点'},
     ];
     document.getElementById('c3Body').innerHTML = '<div class="wfall">'
       + sellRows.map(r=>'<div class="step sell'+(st.price>=r.v?' touched':'')+'"><span class="lab">'+r.lab+'</span><span>¥'+fmt2(r.v)+'</span></div>').join('')
       + '<div class="divider"><span>现价</span><span>¥'+fmt2(st.price)+'</span></div>'
-      + buyRows.map(r=>'<div class="step buy'+(st.price<=r.v?' touched':'')+'"><span class="lab">'+r.lab+'</span><span>¥'+fmt2(r.v)+'</span></div>').join('')
+      + buyRows.map(r=>'<div class="step buy'+(st.price<=r.v?' touched':'')+'"><span class="lab">'+r.lab+'</span><span>¥'+fmt2(r.v)+'</span><small class="st">'+r.stop+'</small></div>').join('')
       + '</div>'
-      + foldHTML('fold3','<div class="formula-mini">买入金字塔：每跌 20%~30% 补一档（A级）；卖出倒金字塔：V_high 启动、+0.5Δ 分批、×1.3 泡沫警戒（D级工程档位）。触达档位自动高亮。</div>');
+      + '<div class="kelly-line">Kelly 单票上限 '+(kelly*100).toFixed(1)+'%（cap 25%）｜ MOS '+(mos*100).toFixed(1)+'%｜ model_confidence '+(st.model_confidence!=null?st.model_confidence.toFixed(1):'—')+'</div>'
+      + foldHTML('fold3','<div class="formula-mini">'
+      + 'Kelly_fraction = MOS ÷ (V_high − V_low) × 0.5（保守系数），cap 25%（spec 5.2）；'
+      + '买入金字塔：试探 5% ≤V_low×1.05（止损 MA250×0.97）→ 主力 10% ≤V_low（止损 V_low×0.95）→ 加仓 5% ≤V_low×0.95（止损近60日低点）；'
+      + '止盈倒金字塔：≥V_mid 减仓30%、≥V_high 清仓50%（spec 5.3）。触达档位自动高亮。</div>');
   } else if(st.v_low!=null && st.v_high!=null){
     document.getElementById('c3Body').innerHTML =
       '<div class="warn-line">参考区间 ¥'+fmt2(st.v_low)+' ~ ¥'+fmt2(st.v_high)+'（不可执行）：质量门未通过，不生成买卖阶梯。</div>';

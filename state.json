@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated_at": "2026-08-13 15:13:14",
+    "updated_at": "2026-08-13 19:25:42 (spec-migration)",
     "last_data_date": "2026-08-12",
     "as_of": null,
     "pe_history_updated_at": "2026-08-13 17:13:13"
@@ -2230,15 +2230,16 @@
         "id": "baidu-pe-percentile-600085",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-600085",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（9家，min/mean/max=0.9852328767123288/1.105917808219178/1.3343287671232875），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（9家，min/mean/max=0.9852328767123288/1.105917808219178/1.3343287671232875），as_of=2026-08-13",
       "forecast_year": null,
@@ -2389,6 +2390,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -2468,10 +2470,22 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 9 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -2481,6 +2495,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 9 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -2543,12 +2569,13 @@
           "id": "baidu-pe-percentile-600085",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-600085",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -2641,10 +2668,22 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 9 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -2654,6 +2693,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 9 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -2745,12 +2796,13 @@
             "id": "baidu-pe-percentile-600085",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-600085",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -2821,14 +2873,16 @@
             "id": "baidu-pe-percentile-600085",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-600085",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
-        ]
+        ],
+        "model_confidence": 0.6
       },
       "growth_momentum": null,
       "review_date": null,
@@ -4985,15 +5039,16 @@
         "id": "baidu-pe-percentile-002384",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-002384",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（13家，min/mean/max=2.1620821917808217/6.131150684931507/9.810301369863012），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（13家，min/mean/max=2.1620821917808217/6.131150684931507/9.810301369863012），as_of=2026-08-13",
       "forecast_year": null,
@@ -5144,6 +5199,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -5223,10 +5279,16 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "GROWTH_MOMENTUM",
@@ -5235,13 +5297,41 @@
             "detail": "FY1 盈利增速 676%（2025 EPS 0.79 → 基准 6.131150684931507）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈676×（A级：合理倍数结合基本面修正）"
           },
           {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+          },
+          {
             "id": "VALUATION_ANCHORS_ORDERED",
             "passed": true,
             "severity": "block",
             "detail": "计算后必须满足 0 < V_low ≤ V_mid ≤ V_high"
+          },
+          {
+            "id": "VALUATION_BAND_TOO_WIDE",
+            "passed": false,
+            "severity": "warn",
+            "detail": "估值区间过宽 V_high/V_low=9.9>5，按 spec §8 追加 PEG 交叉验证，PEG≈1 参考 PE≈676×"
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+          },
+          {
+            "code": "VALUATION_BAND_TOO_WIDE",
+            "detail": "估值区间过宽 V_high/V_low=9.9>5，按 spec §8 追加 PEG 交叉验证，PEG≈1 参考 PE≈676×"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -5304,12 +5394,13 @@
           "id": "baidu-pe-percentile-002384",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-002384",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -5402,10 +5493,16 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "GROWTH_MOMENTUM",
@@ -5414,13 +5511,41 @@
               "detail": "FY1 盈利增速 676%（2025 EPS 0.79 → 基准 6.131150684931507）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈676×（A级：合理倍数结合基本面修正）"
             },
             {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+            },
+            {
               "id": "VALUATION_ANCHORS_ORDERED",
               "passed": true,
               "severity": "block",
               "detail": "计算后必须满足 0 < V_low ≤ V_mid ≤ V_high"
+            },
+            {
+              "id": "VALUATION_BAND_TOO_WIDE",
+              "passed": false,
+              "severity": "warn",
+              "detail": "估值区间过宽 V_high/V_low=9.9>5，按 spec §8 追加 PEG 交叉验证，PEG≈1 参考 PE≈676×"
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+            },
+            {
+              "code": "VALUATION_BAND_TOO_WIDE",
+              "detail": "估值区间过宽 V_high/V_low=9.9>5，按 spec §8 追加 PEG 交叉验证，PEG≈1 参考 PE≈676×"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -5512,12 +5637,13 @@
             "id": "baidu-pe-percentile-002384",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002384",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -5562,7 +5688,12 @@
                 "baidu-pe-percentile-002384"
               ]
             }
-          ]
+          ],
+          "peg_cross_check": {
+            "rule": "spec §8：V_high/V_low>5 时与 PEG 隐含倍数取交集",
+            "peg_implied_pe": 676.1,
+            "intersection_v_high": 376.32
+          }
         },
         "decision": {
           "zone": null,
@@ -5588,12 +5719,13 @@
             "id": "baidu-pe-percentile-002384",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002384",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ],
         "growth_momentum": {
@@ -5603,7 +5735,8 @@
           "growth": 6.761,
           "peg_pe": 676.1,
           "note": "历史TTM分位倍数可能低估成长溢价（PEG交叉检查）"
-        }
+        },
+        "model_confidence": 0.6
       },
       "growth_momentum": {
         "last_fy": 2025,
@@ -7767,15 +7900,16 @@
         "id": "baidu-pe-percentile-002472",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-002472",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（13家，min/mean/max=1.7320547945205478/1.9041095890410957/2.037068493150685），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（13家，min/mean/max=1.7320547945205478/1.9041095890410957/2.037068493150685），as_of=2026-08-13",
       "forecast_year": null,
@@ -7926,6 +8060,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -8005,10 +8140,22 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -8018,6 +8165,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -8080,12 +8239,13 @@
           "id": "baidu-pe-percentile-002472",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-002472",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -8178,10 +8338,22 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -8191,6 +8363,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 13 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -8282,12 +8466,13 @@
             "id": "baidu-pe-percentile-002472",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002472",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -8358,14 +8543,16 @@
             "id": "baidu-pe-percentile-002472",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002472",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
-        ]
+        ],
+        "model_confidence": 0.6
       },
       "growth_momentum": null,
       "review_date": null,
@@ -10522,15 +10709,16 @@
         "id": "baidu-pe-percentile-300760",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-300760",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（29家，min/mean/max=7.123232876712328/7.845287671232876/10.34213698630137），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（29家，min/mean/max=7.123232876712328/7.845287671232876/10.34213698630137），as_of=2026-08-13",
       "forecast_year": null,
@@ -10681,6 +10869,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -10760,10 +10949,22 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 29 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -10773,6 +10974,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 29 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -10835,12 +11048,13 @@
           "id": "baidu-pe-percentile-300760",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-300760",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -10933,10 +11147,22 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 29 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -10946,6 +11172,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 29 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -11037,12 +11275,13 @@
             "id": "baidu-pe-percentile-300760",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-300760",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -11113,14 +11352,16 @@
             "id": "baidu-pe-percentile-300760",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-300760",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
-        ]
+        ],
+        "model_confidence": 0.6
       },
       "growth_momentum": null,
       "review_date": null,
@@ -13489,6 +13730,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -15874,15 +16116,16 @@
         "id": "baidu-pe-percentile-605090",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-605090",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（15家，min/mean/max=2.0381917808219177/2.4850136986301368/2.939342465753424），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（15家，min/mean/max=2.0381917808219177/2.4850136986301368/2.939342465753424），as_of=2026-08-13",
       "forecast_year": null,
@@ -16033,6 +16276,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -16112,10 +16356,22 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 15 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -16125,6 +16381,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 15 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -16187,12 +16455,13 @@
           "id": "baidu-pe-percentile-605090",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-605090",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -16285,10 +16554,22 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 15 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -16298,6 +16579,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 15 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -16389,12 +16682,13 @@
             "id": "baidu-pe-percentile-605090",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-605090",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -16465,14 +16759,16 @@
             "id": "baidu-pe-percentile-605090",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-605090",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
-        ]
+        ],
+        "model_confidence": 0.6
       },
       "growth_momentum": null,
       "review_date": null,
@@ -18650,15 +18946,16 @@
         "id": "baidu-pe-percentile-601899",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-601899",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.7875/1.483/1.7501，as_of=2026-08-13",
       "forecast_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.7875/1.483/1.7501，as_of=2026-08-13",
       "forecast_year": null,
@@ -18679,6 +18976,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -18740,10 +19038,16 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "NORMALIZED_REFERENCE_ONLY",
@@ -18758,7 +19062,16 @@
             "detail": "正常化估值锚有序"
           }
         ],
-        "warnings": [],
+        "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          }
+        ],
         "blockers": []
       },
       "calc_steps": [
@@ -18813,12 +19126,13 @@
           "id": "baidu-pe-percentile-601899",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-601899",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -18893,10 +19207,16 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "NORMALIZED_REFERENCE_ONLY",
@@ -18911,7 +19231,16 @@
               "detail": "正常化估值锚有序"
             }
           ],
-          "warnings": [],
+          "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            }
+          ],
           "blockers": []
         },
         "forecast": {
@@ -18943,12 +19272,13 @@
             "id": "baidu-pe-percentile-601899",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-601899",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -19017,12 +19347,13 @@
             "id": "baidu-pe-percentile-601899",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-601899",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ]
       },
@@ -21204,6 +21535,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,
@@ -23465,15 +23797,16 @@
         "id": "baidu-pe-percentile-000725",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-000725",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.0862/0.1576/0.1957，as_of=2026-08-13",
       "forecast_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.0862/0.1576/0.1957，as_of=2026-08-13",
       "forecast_year": null,
@@ -23494,6 +23827,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -23555,10 +23889,16 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "NORMALIZED_REFERENCE_ONLY",
@@ -23573,7 +23913,16 @@
             "detail": "正常化估值锚有序"
           }
         ],
-        "warnings": [],
+        "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          }
+        ],
         "blockers": []
       },
       "calc_steps": [
@@ -23628,12 +23977,13 @@
           "id": "baidu-pe-percentile-000725",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-000725",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -23708,10 +24058,16 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "NORMALIZED_REFERENCE_ONLY",
@@ -23726,7 +24082,16 @@
               "detail": "正常化估值锚有序"
             }
           ],
-          "warnings": [],
+          "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            }
+          ],
           "blockers": []
         },
         "forecast": {
@@ -23758,12 +24123,13 @@
             "id": "baidu-pe-percentile-000725",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-000725",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -23832,12 +24198,13 @@
             "id": "baidu-pe-percentile-000725",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-000725",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ]
       },
@@ -26017,15 +26384,16 @@
         "id": "baidu-pe-percentile-000100",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-000100",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.126/0.2682/0.3534，as_of=2026-08-13",
       "forecast_source": "正常化盈利模型（周期ROE分位×最新每股净资产，窗口2016-2025，10个年报）：bear/base/bull=0.126/0.2682/0.3534，as_of=2026-08-13",
       "forecast_year": null,
@@ -26046,6 +26414,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -26107,10 +26476,16 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "NORMALIZED_REFERENCE_ONLY",
@@ -26125,7 +26500,16 @@
             "detail": "正常化估值锚有序"
           }
         ],
-        "warnings": [],
+        "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          }
+        ],
         "blockers": []
       },
       "calc_steps": [
@@ -26180,12 +26564,13 @@
           "id": "baidu-pe-percentile-000100",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-000100",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -26260,10 +26645,16 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "NORMALIZED_REFERENCE_ONLY",
@@ -26278,7 +26669,16 @@
               "detail": "正常化估值锚有序"
             }
           ],
-          "warnings": [],
+          "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            }
+          ],
           "blockers": []
         },
         "forecast": {
@@ -26310,12 +26710,13 @@
             "id": "baidu-pe-percentile-000100",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-000100",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -26384,12 +26785,13 @@
             "id": "baidu-pe-percentile-000100",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-000100",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ]
       },
@@ -28635,6 +29037,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -31142,15 +31545,16 @@
         "id": "baidu-pe-percentile-600350",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-600350",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（6家，min/mean/max=0.7106849315068493/0.7345479452054794/0.7622739726027397），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（6家，min/mean/max=0.7106849315068493/0.7345479452054794/0.7622739726027397），as_of=2026-08-13",
       "forecast_year": null,
@@ -31301,6 +31705,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -31380,10 +31785,22 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 6 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -31393,6 +31810,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 6 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -31455,12 +31884,13 @@
           "id": "baidu-pe-percentile-600350",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-600350",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -31553,10 +31983,22 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 6 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -31566,6 +32008,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 6 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -31657,12 +32111,13 @@
             "id": "baidu-pe-percentile-600350",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-600350",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -31733,14 +32188,16 @@
             "id": "baidu-pe-percentile-600350",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-600350",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
-        ]
+        ],
+        "model_confidence": 0.6
       },
       "growth_momentum": null,
       "review_date": null,
@@ -33989,6 +34446,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": null,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -36490,6 +36948,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,
@@ -36579,11 +37038,11 @@
       "v_low": 13.59,
       "v_mid": 16.72,
       "v_high": 22.54,
-      "zone": "深度低估",
-      "action": "进入研究清单；通过基本面复核后才可分批建仓",
-      "mos": 0.596,
-      "pctile": 0.0,
-      "band_pos_raw": -0.764,
+      "zone": "参考区间",
+      "action": null,
+      "mos": null,
+      "pctile": null,
+      "band_pos_raw": null,
       "stop_reasons": [],
       "_blockers": [],
       "reference_zone": "深度低估",
@@ -38690,7 +39149,7 @@
         "collected_at": "2026-08-13 15:06:25",
         "n": 21
       },
-      "needs_review": false,
+      "needs_review": true,
       "notes": "电池回收/前驱体材料：估值年度统一为FY1=2026E（引擎强制，last_actual_fy=2025）。同花顺一致预期（3家）2026E EPS 0.38~0.45（中值0.43）、2027E 0.52~0.69、2028E 0.73~0.88；禁止用2027E（T+2）作主锚（避免拟合式低估结论）。2025年报归母15.80亿(+54.9%)、2026Q1 5.22亿(+2.2%)。PE-TTM 21.93处近5年3.9%分位，PB 2.4。倍数来源为D级工程参数。",
       "support": [
         {
@@ -38780,15 +39239,16 @@
         "id": "baidu-pe-percentile-002340",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-002340",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（3家，min/mean/max=0.46591780821917805/0.5220547945205478/0.5972876712328766），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（3家，min/mean/max=0.46591780821917805/0.5220547945205478/0.5972876712328766），as_of=2026-08-13",
       "forecast_year": null,
@@ -38939,11 +39399,12 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
-      "decision_status": "ready",
-      "decision_usable": true,
+      "model_confidence": 0.6,
+      "decision_status": "reference_only",
+      "decision_usable": false,
       "reference_usable": true,
       "data_quality": {
-        "grade": "B",
+        "grade": "C",
         "checks": [
           {
             "id": "MODEL_IMPLEMENTED",
@@ -39018,10 +39479,16 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "GROWTH_MOMENTUM",
@@ -39030,13 +39497,32 @@
             "detail": "FY1 盈利增速 68%（2025 EPS 0.31 → 基准 0.5220547945205478）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈68×（A级：合理倍数结合基本面修正）"
           },
           {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 3 家）；<0.7 不生成买卖阶梯"
+          },
+          {
             "id": "VALUATION_ANCHORS_ORDERED",
             "passed": true,
             "severity": "block",
             "detail": "计算后必须满足 0 < V_low ≤ V_mid ≤ V_high"
           }
         ],
-        "warnings": [],
+        "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 3 家）；<0.7 不生成买卖阶梯"
+          }
+        ],
         "blockers": []
       },
       "calc_steps": [
@@ -39094,12 +39580,13 @@
           "id": "baidu-pe-percentile-002340",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-002340",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -39113,11 +39600,11 @@
           "rule_version": "2026.08-v2",
           "implemented": true
         },
-        "decision_status": "ready",
-        "decision_usable": true,
+        "decision_status": "reference_only",
+        "decision_usable": false,
         "reference_usable": true,
         "quality": {
-          "grade": "B",
+          "grade": "C",
           "checks": [
             {
               "id": "MODEL_IMPLEMENTED",
@@ -39192,10 +39679,16 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "GROWTH_MOMENTUM",
@@ -39204,13 +39697,32 @@
               "detail": "FY1 盈利增速 68%（2025 EPS 0.31 → 基准 0.5220547945205478）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈68×（A级：合理倍数结合基本面修正）"
             },
             {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 3 家）；<0.7 不生成买卖阶梯"
+            },
+            {
               "id": "VALUATION_ANCHORS_ORDERED",
               "passed": true,
               "severity": "block",
               "detail": "计算后必须满足 0 < V_low ≤ V_mid ≤ V_high"
             }
           ],
-          "warnings": [],
+          "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 3 家）；<0.7 不生成买卖阶梯"
+            }
+          ],
           "blockers": []
         },
         "forecast": {
@@ -39297,12 +39809,13 @@
             "id": "baidu-pe-percentile-002340",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002340",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -39350,12 +39863,11 @@
           ]
         },
         "decision": {
-          "zone": "深度低估",
-          "action": "进入研究清单；通过基本面复核后才可分批建仓",
+          "zone": null,
+          "action": null,
           "reference_zone": "深度低估",
           "margin_of_safety": 0.596,
-          "band_position": 0.0,
-          "band_position_raw": -0.764
+          "band_position": 0.0
         },
         "sources": [
           {
@@ -39374,12 +39886,13 @@
             "id": "baidu-pe-percentile-002340",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002340",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ],
         "growth_momentum": {
@@ -39389,7 +39902,8 @@
           "growth": 0.684,
           "peg_pe": 68.4,
           "note": "历史TTM分位倍数可能低估成长溢价（PEG交叉检查）"
-        }
+        },
+        "model_confidence": 0.6
       },
       "growth_momentum": {
         "last_fy": 2025,
@@ -41572,6 +42086,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "observe",
       "decision_usable": false,
       "reference_usable": false,
@@ -43790,15 +44305,16 @@
         "id": "baidu-pe-percentile-002837",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
-        "quality": "B",
+        "quality": "C",
         "as_of": "2026-08-13",
         "source_id": "baidu-002837",
         "type": "valuation_multiple",
         "metric": "forward_pe",
-        "unit": "x"
+        "unit": "x",
+        "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
       },
       "multiple_source_method": "history_percentile_calibration",
-      "multiple_source_quality": "B",
+      "multiple_source_quality": "C",
       "eps_source": "同花顺F10一致预期 NTM@2026-08-13（12家，min/mean/max=0.9070684931506849/1.3250410958904109/1.8864383561643834），as_of=2026-08-13",
       "forecast_source": "同花顺F10一致预期 NTM@2026-08-13（12家，min/mean/max=0.9070684931506849/1.3250410958904109/1.8864383561643834），as_of=2026-08-13",
       "forecast_year": null,
@@ -43949,6 +44465,7 @@
         "rule_version": "2026.08-v2",
         "implemented": true
       },
+      "model_confidence": 0.6,
       "decision_status": "reference_only",
       "decision_usable": false,
       "reference_usable": true,
@@ -44028,16 +44545,28 @@
             "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
           },
           {
-            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-            "passed": true,
+            "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "passed": false,
             "severity": "warn",
-            "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "passed": false,
+            "severity": "warn",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
           },
           {
             "id": "GROWTH_MOMENTUM",
             "passed": true,
             "severity": "info",
             "detail": "FY1 盈利增速 145%（2025 EPS 0.54 → 基准 1.3250410958904109）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈145×（A级：合理倍数结合基本面修正）"
+          },
+          {
+            "id": "MODEL_CONFIDENCE_SUFFICIENT",
+            "passed": false,
+            "severity": "warn",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 12 家）；<0.7 不生成买卖阶梯"
           },
           {
             "id": "VALUATION_ANCHORS_ORDERED",
@@ -44047,6 +44576,18 @@
           }
         ],
         "warnings": [
+          {
+            "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+            "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+          },
+          {
+            "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+            "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+          },
+          {
+            "code": "MODEL_CONFIDENCE_SUFFICIENT",
+            "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 12 家）；<0.7 不生成买卖阶梯"
+          },
           {
             "code": "CONFIG_NEEDS_REVIEW",
             "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -44109,12 +44650,13 @@
           "id": "baidu-pe-percentile-002837",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
-          "quality": "B",
+          "quality": "C",
           "as_of": "2026-08-13",
           "source_id": "baidu-002837",
           "type": "valuation_multiple",
           "metric": "forward_pe",
-          "unit": "x"
+          "unit": "x",
+          "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
         }
       ],
       "decision_data": {
@@ -44207,16 +44749,28 @@
               "detail": "倍数来源必须是含 method/title、as_of/published_at、url/source_id 的对象；自由文本不通过"
             },
             {
-              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
-              "passed": true,
+              "id": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "passed": false,
               "severity": "warn",
-              "detail": "倍数 method=history_percentile_calibration、quality=B；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "id": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "passed": false,
+              "severity": "warn",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
             },
             {
               "id": "GROWTH_MOMENTUM",
               "passed": true,
               "severity": "info",
               "detail": "FY1 盈利增速 145%（2025 EPS 0.54 → 基准 1.3250410958904109）；历史TTM分位倍数可能保守，PEG≈1 参考合理PE≈145×（A级：合理倍数结合基本面修正）"
+            },
+            {
+              "id": "MODEL_CONFIDENCE_SUFFICIENT",
+              "passed": false,
+              "severity": "warn",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 12 家）；<0.7 不生成买卖阶梯"
             },
             {
               "id": "VALUATION_ANCHORS_ORDERED",
@@ -44226,6 +44780,18 @@
             }
           ],
           "warnings": [
+            {
+              "code": "MULTIPLE_TTM_BASIS_MISMATCH",
+              "detail": "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，且必须 reference_only、不得生成买卖动作）"
+            },
+            {
+              "code": "MULTIPLE_NOT_MANUAL_LOW_QUALITY",
+              "detail": "倍数 method=history_percentile_calibration、quality=C；人工政策假设或 C/D 级倍数只能 reference_only，永远不得升级为动作"
+            },
+            {
+              "code": "MODEL_CONFIDENCE_SUFFICIENT",
+              "detail": "model_confidence=0.6（倍数 C 级 × 覆盖 12 家）；<0.7 不生成买卖阶梯"
+            },
             {
               "code": "CONFIG_NEEDS_REVIEW",
               "detail": "配置仍标记 needs_review，仅允许参考估值"
@@ -44317,12 +44883,13 @@
             "id": "baidu-pe-percentile-002837",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002837",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         },
         "valuation": {
@@ -44393,12 +44960,13 @@
             "id": "baidu-pe-percentile-002837",
             "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": "2026-08-13",
             "source_id": "baidu-002837",
             "type": "valuation_multiple",
             "metric": "forward_pe",
-            "unit": "x"
+            "unit": "x",
+            "note": "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
           }
         ],
         "growth_momentum": {
@@ -44408,7 +44976,8 @@
           "growth": 1.4538,
           "peg_pe": 145.4,
           "note": "历史TTM分位倍数可能低估成长溢价（PEG交叉检查）"
-        }
+        },
+        "model_confidence": 0.6
       },
       "growth_momentum": {
         "last_fy": 2025,
@@ -46595,6 +47164,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,
@@ -48070,6 +48640,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,
@@ -50321,6 +50892,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,
@@ -52572,6 +53144,7 @@
         "rule_version": "2026.08-v2",
         "implemented": false
       },
+      "model_confidence": null,
       "decision_status": "blocked",
       "decision_usable": false,
       "reference_usable": false,

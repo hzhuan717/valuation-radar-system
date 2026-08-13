@@ -284,6 +284,16 @@ def _multiple_inputs(config: dict, result: dict) -> dict | None:
         return None
     source_quality = str(source.get("quality") or source.get("grade") or "").upper()
     source_method = str(source.get("method") or "").lower()
+    source_title = str(source.get("title") or "").upper()
+    # spec 3.1/3.2：历史 TTM PE 分位 × 前瞻 NTM EPS = 基数错配，强制 C 级（仅参考）
+    ttm_mismatch = (source_method == "history_percentile_calibration" and "TTM" in source_title)
+    if ttm_mismatch:
+        source_quality = "C"
+        source["quality"] = "C"
+        source["note"] = "历史 TTM PE 分位向 Forward/NTM 转换存在基数错配风险（spec 3.1/3.2）"
+        _add_check(result, "MULTIPLE_TTM_BASIS_MISMATCH", False, "warn",
+                   "历史 TTM PE 分位 × 前瞻 NTM EPS 基数错配（spec 3.1/3.2：TTM 分位仅限低增速成熟企业，"
+                   "且必须 reference_only、不得生成买卖动作）")
     manual_assumption = source_method == "manual_policy_assumption" or source_quality[:1] in {"C", "D"}
     _add_check(result, "MULTIPLE_NOT_MANUAL_LOW_QUALITY", not manual_assumption, "warn",
                f"倍数 method={source_method or '—'}、quality={source_quality or '—'}；"
@@ -335,7 +345,8 @@ def _evaluate_insurance_pev(config: dict, market: dict, result: dict) -> dict:
     ev = config.get("ev_per_share")
     if not _finite_number(ev) or ev <= 0:
         _add_check(result, "EV_PRESENT", False, "block",
-                   "缺少每股内含价值 EV，禁止用 PE 替代")
+                   "缺少每股内含价值 EV；按 spec §8 应切换 PB-ROE 模型（需 bank 数据块：bps/roe_hist/ke/g），"
+                   "当前 fail-closed 阻断，禁止用 PE 替代")
         return result
     _add_check(result, "EV_PRESENT", True, "info",
                f"每股内含价值 EV={ev:.2f} 元（{config.get('ev_as_of') or '—'}）")
@@ -827,6 +838,20 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
                     )
     result["multiple"] = multiple
 
+    # spec 5.1：model_confidence（模型置信度）——由倍数等级与机构覆盖共同决定；
+    # 生成买卖阶梯需 grade ≥ B 且 confidence ≥ 0.7。
+    mq = str((multiple.get("source") or {}).get("quality") or "").upper() if multiple else "D"
+    cov = selected.get("count", 0) if selected else 0
+    if mq in {"A", "B"}:
+        confidence = 1.0 if (mq == "A" and cov >= 5) else 0.8
+    elif cov >= 3:
+        confidence = 0.6
+    else:
+        confidence = 0.5
+    result["model_confidence"] = confidence
+    _add_check(result, "MODEL_CONFIDENCE_SUFFICIENT", confidence >= 0.7, "info" if confidence >= 0.7 else "warn",
+               f"model_confidence={confidence:.1f}（倍数 {mq} 级 × 覆盖 {cov} 家）；<0.7 不生成买卖阶梯")
+
     if source_ok:
         result["sources"].append({
             "id": f"ths-worth-{config.get('ticker')}-{forecast_data.get('as_of')}",
@@ -876,9 +901,23 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
         "formula": "V = structured forward EPS × sourced target PE",
         "calc_steps": steps,
     }
+    # spec §8：成长股区间过宽（V_high/V_low > 5）必须追加 PEG 交叉验证并取交集
+    if code == "growth_pe" and low > 0 and high / low > 5:
+        peg = None
+        if result.get("growth_momentum"):
+            peg = result["growth_momentum"].get("peg_pe")
+        _add_check(result, "VALUATION_BAND_TOO_WIDE", False, "warn",
+                   f"估值区间过宽 V_high/V_low={high/low:.1f}>5，按 spec §8 追加 PEG 交叉验证"
+                   + (f"，PEG≈1 参考 PE≈{peg:.0f}×" if peg else "（缺少 PEG 交叉数据）"))
+        result["valuation"]["peg_cross_check"] = {
+            "rule": "spec §8：V_high/V_low>5 时与 PEG 隐含倍数取交集",
+            "peg_implied_pe": peg,
+            "intersection_v_high": round(min(high, peg * selected["base"]), 2) if peg else None,
+        }
     result["reference_usable"] = True
 
-    caution = stale or bool(result["quality"]["warnings"]) or bool(config.get("needs_review"))
+    caution = stale or bool(result["quality"]["warnings"]) or bool(config.get("needs_review")) \
+        or confidence < 0.7  # spec 5.1：grade ≥ B 且 model_confidence ≥ 0.7 才可输出动作
     if config.get("needs_review"):
         result["quality"]["warnings"].append({
             "code": "CONFIG_NEEDS_REVIEW",

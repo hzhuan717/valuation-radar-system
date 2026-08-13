@@ -2,6 +2,24 @@
 
 仅研究/教学/回测用途。每次发布版本对应一次功能或数据修复，注释见下。
 
+## v1.3.1（2026-08-13）—— Spec 审计修正：倍数基数错配/模型置信度/阶梯透明化
+对照系统指令 Prompt（行业路由·倍数匹配·质量门·阶梯）逐项审计并修正：
+- **东山精密等 TTM 分位错配**：百度股市通 5 年 PE(TTM) 历史分位 × 前瞻 NTM EPS 属基数错配，
+  引擎强制降为 C 级（spec 3.1/3.2），新增质检 MULTIPLE_TTM_BASIS_MISMATCH，
+  forward_pe/growth_pe 全部转 reference_only，不再生成买卖动作（此前 002340 误为 ready）
+- **PB 分位保留 B 级**：银行 PB-ROE / 基建 PB 路由基数匹配（净资产×PB），无错配，维持 B 级
+- **中国平安模型路由核验**：insurance_pev 已合规（P/EV，禁用 PE）；EV 缺失时 fail-closed 阻断，
+  质检文案补充 spec §8 PB-ROE 回退说明
+- **买卖阶梯透明化**（spec 5.2/5.3）：Kelly_fraction = MOS/(V_high−V_low)×0.5、单票上限 25%；
+  买入三档 试探5%≤V_low×1.05（止损MA250×0.97）/ 主力10%≤V_low（止损V_low×0.95）/
+  加仓5%≤V_low×0.95（止损近60日低点）；止盈 ≥V_mid减30%、≥V_high清50%；
+  阶梯只在 ready（grade≥B 且 model_confidence≥0.7）时输出，并在界面公示公式
+- **model_confidence 新增**：由倍数等级×机构覆盖共同决定，写入引擎与状态
+- **成长股区间过宽**（spec §8）：growth_pe 且 V_high/V_low>5 自动触发 VALUATION_BAND_TOO_WIDE
+  警告并输出 PEG 交叉交集诊断（peg_cross_check）
+- 迁移脚本 migrate_spec_compliance.py：无网络重算全部股票决策数据
+- 单页决策台计算器同步 Spec 阶梯公式（1.05V/1.0V/0.95V 三档买入 + Kelly 上限显示）
+
 ## v1.3.0（2026-08-13）—— 支撑/压力位引擎 v8：方向铁律与统一校验层
 - 修复方向性错误：支撑/压力不再以估值价（v_low×0.9 / v_high×1.1）为参照，统一与现价比对
   - 铁律：支撑必须低于现价、压力必须高于现价；±1.5% 贴线归边并降 C 级标注「现价贴线，参考性弱」

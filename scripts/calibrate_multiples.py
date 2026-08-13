@@ -9,11 +9,12 @@
 护栏：
   · 历史序列少于 500 个交易日 → 不校准，保留原值并标注
   · 当前 PE 超出 [P10, P90] 区间 → 倍数有效但加注"当前处于历史极端分位"
-  · 校准后 source 升级为 quality=B、method=history_percentile_calibration，
-    质量门 MULTIPLE_NOT_MANUAL_LOW_QUALITY 不再触发（可升级为 ready）
-  · 保险 P/EV、银行 PB-ROE、周期、ETF、亏损路由不在此校准（各自专用口径）
+  · PE(TTM) 分位按 spec 3.1/3.2 定级 C：历史 TTM 分位 × 前瞻 NTM EPS 存在基数错配，
+    引擎强制 reference_only、不得生成买卖动作（MULTIPLE_TTM_BASIS_MISMATCH）
+  · PB 分位（银行 PB-ROE / 基建 PB 路由）基数匹配（净资产×PB），保持 B 级
+  · 保险 P/EV、周期、ETF、亏损路由不在此校准（各自专用口径）
 
-用法：python calibrate_multiples.py   # 校准 forward_pe / growth_pe 路由
+用法：python calibrate_multiples.py   # 校准 forward_pe / growth_pe / normalized_pe
 """
 import io
 import json
@@ -146,12 +147,13 @@ def main():
             f"百度股市通 5 年 PE(TTM) 历史分位自动校准（{today}）："
             f"P25={p25}/P50={p50}/P75={p75}，样本 {len(hist)} 日"
             + extreme
+            + "；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）"
         )
         s["multiple_source"] = {
             "id": f"baidu-pe-percentile-{ticker}",
             "title": f"百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
             "method": "history_percentile_calibration",
-            "quality": "B",
+            "quality": "C",
             "as_of": today,
             "source_id": f"baidu-{ticker}",
             "type": "valuation_multiple",
@@ -164,8 +166,8 @@ def main():
             "source": dict(s["multiple_source"]),
         }
         s["multiple_source_method"] = "history_percentile_calibration"
-        s["multiple_source_quality"] = "B"
-        print(f"{ticker} {s.get('name')}: {old} → {p25}/{p50}/{p75}（B级·历史分位校准）")
+        s["multiple_source_quality"] = "C"
+        print(f"{ticker} {s.get('name')}: {old} → {p25}/{p50}/{p75}（C级·历史TTM分位校准，仅参考）")
         changed += 1
 
     with open(WATCHLIST, "w", encoding="utf-8") as f:
