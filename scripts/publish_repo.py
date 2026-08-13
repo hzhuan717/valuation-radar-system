@@ -158,7 +158,7 @@ def main():
     if not os.path.exists(os.path.join(BASE, ".git")):
         git(cfg, token, ["init", "-q", "-b", cfg["branch"]])
         git(cfg, token, ["config", "user.email", "portal@local"])
-        git(cfg, token, ["config", "user.name", "valuation-radar-project"])
+        git(cfg, token, ["config", "user.name", "valuation-radar"])
         git(cfg, token, ["remote", "add", "origin",
                          f"https://github.com/{cfg['owner']}/{cfg['repo']}.git"], allow_fail=True)
         git(cfg, token, ["remote", "set-url", "origin",

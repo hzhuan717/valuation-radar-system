@@ -2,6 +2,11 @@
 
 仅研究/教学/回测用途。每次发布版本对应一次功能或数据修复，注释见下。
 
+## v1.2.5（2026-08-13）—— About/品牌清理与历史重写
+- GitHub 两个仓库 About 描述与 topics 更新为「估值雷达 ValuationRadar」（已核对不含旧品牌字样）
+- 清除工作区残留旧品牌字符串（localStorage key、git 提交者名、CHANGELOG 措辞）
+- 用 git-filter-repo 重写两个仓库全部提交历史，确保历史中也不含旧品牌字样
+
 ## v1.2.4（2026-08-13）—— 修改后自动上传 GitHub
 - 用户约定"每次修改后自动更新 GitHub"，机制化：
   - `update_daily.py` 流水线末尾新增自动发布步骤（每日数据刷新 → 自动 patch 版本并推送）
@@ -36,7 +41,7 @@
 - 动效：数字滚动 300ms、S/R 线绘制动画、卡片错峰入场
 
 ## v1.1.1 / v1.1.0（2026-08-13）—— 品牌更名「估值雷达 ValuationRadar」
-- 替换全部 估值雷达/valuation-radar 字样（skill 名、脚本、仓库、门户文件名）；GitHub 仓库改名
+- 更换产品品牌（skill 名、脚本、仓库名、门户文件名同步更新）；GitHub 仓库改名
 - valuation-radar-system（项目）与 valuation-radar-portal（公开网页）
 
 ## v1.0.x（2026-08-13）—— 初始版本

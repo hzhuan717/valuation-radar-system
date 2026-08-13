@@ -568,7 +568,7 @@ function switchStock(ticker){
   if(!st) return;
   const prevPrice = PREV.price, prevPct = PREV.pct;
   CUR = st; VIEW = 'stock'; PIN = null;
-  localStorage.setItem('valuation-radar_last', ticker);
+  localStorage.setItem('radar_last', ticker);
   document.getElementById('chartZone').style.display = '';
   document.getElementById('ovWrap').style.display = 'none';
   document.getElementById('trigName').textContent = st.name + ' ' + st.ticker;
@@ -1238,7 +1238,7 @@ function init(){
   });
   let resizeT = null;
   window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(renderKline, 150); });
-  const last = localStorage.getItem('valuation-radar_last');
+  const last = localStorage.getItem('radar_last');
   if(last && DATA.stocks.some(s=>s.ticker===last)) switchStock(last);
   else switchStock(DATA.stocks[0].ticker);
 }
