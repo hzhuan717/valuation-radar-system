@@ -3,7 +3,7 @@
     "updated_at": "2026-08-13 20:42:50",
     "last_data_date": "2026-08-13",
     "as_of": null,
-    "pe_history_updated_at": "2026-08-13 20:43:38"
+    "pe_history_updated_at": "2026-08-13 20:48:54"
   },
   "market": {
     "cs985": {
@@ -57762,18 +57762,19 @@
     "000001": {
       "ok": true,
       "metric": "指数PE",
-      "pe": null,
-      "pe_min": null,
-      "pe_max": null,
-      "pe_median": null,
+      "pe": 15.64,
+      "pe_min": 15.04,
+      "pe_max": 15.81,
+      "pe_median": 15.46,
       "pctile": null,
       "zone": "参考",
-      "signal": "观察",
-      "color": "gold",
-      "hist_n": null,
-      "hist_last_date": null,
-      "source": "跟踪指数：上证综合指数",
-      "note": "指数PE序列暂时无法访问，观察；每日流水线自动重试"
+      "signal": "指数参考",
+      "color": "blue",
+      "hist_n": 20,
+      "hist_last_date": "2026-08-13",
+      "source": "中证指数官方·上证综合指数(000001)",
+      "collected_at": "2026-08-13 20:48:21",
+      "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "600085": {
       "ok": true,
@@ -57789,7 +57790,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:42:58"
+      "collected_at": "2026-08-13 20:48:23"
     },
     "002384": {
       "ok": true,
@@ -57805,7 +57806,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:42:59"
+      "collected_at": "2026-08-13 20:48:23"
     },
     "002472": {
       "ok": true,
@@ -57821,7 +57822,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:42:59"
+      "collected_at": "2026-08-13 20:48:24"
     },
     "300760": {
       "ok": true,
@@ -57837,7 +57838,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:00"
+      "collected_at": "2026-08-13 20:48:25"
     },
     "601318": {
       "ok": true,
@@ -57853,7 +57854,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:01"
+      "collected_at": "2026-08-13 20:48:26"
     },
     "605090": {
       "ok": true,
@@ -57869,7 +57870,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:02"
+      "collected_at": "2026-08-13 20:48:26"
     },
     "601899": {
       "ok": true,
@@ -57885,7 +57886,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:03"
+      "collected_at": "2026-08-13 20:48:27"
     },
     "002428": {
       "ok": true,
@@ -57901,7 +57902,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:03"
+      "collected_at": "2026-08-13 20:48:28"
     },
     "000725": {
       "ok": true,
@@ -57917,7 +57918,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:04"
+      "collected_at": "2026-08-13 20:48:29"
     },
     "000100": {
       "ok": true,
@@ -57933,7 +57934,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:05"
+      "collected_at": "2026-08-13 20:48:30"
     },
     "601818": {
       "ok": true,
@@ -57949,7 +57950,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:06"
+      "collected_at": "2026-08-13 20:48:30"
     },
     "600350": {
       "ok": true,
@@ -57965,7 +57966,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:07"
+      "collected_at": "2026-08-13 20:48:31"
     },
     "601186": {
       "ok": true,
@@ -57981,7 +57982,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:08"
+      "collected_at": "2026-08-13 20:48:32"
     },
     "515220": {
       "ok": true,
@@ -57997,7 +57998,7 @@
       "hist_n": 1210,
       "hist_last_date": "2026-08-13",
       "source": "乐咕乐股指数估值·中证申万煤炭指数",
-      "collected_at": "2026-08-13 20:43:16",
+      "collected_at": "2026-08-13 20:48:34",
       "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"
     },
     "002340": {
@@ -58014,7 +58015,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:17"
+      "collected_at": "2026-08-13 20:48:35"
     },
     "600844": {
       "ok": true,
@@ -58030,7 +58031,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PB",
-      "collected_at": "2026-08-13 20:43:18",
+      "collected_at": "2026-08-13 20:48:36",
       "note": "亏损股以 PB 替代 PE 分位"
     },
     "002837": {
@@ -58047,23 +58048,24 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-08-13 20:43:19"
+      "collected_at": "2026-08-13 20:48:37"
     },
     "159583": {
       "ok": true,
       "metric": "指数PE",
-      "pe": null,
-      "pe_min": null,
-      "pe_max": null,
-      "pe_median": null,
+      "pe": 56.11,
+      "pe_min": 47.09,
+      "pe_max": 58.9,
+      "pe_median": 54.79,
       "pctile": null,
       "zone": "参考",
-      "signal": "观察",
-      "color": "gold",
-      "hist_n": null,
-      "hist_last_date": null,
-      "source": "跟踪指数：中证全指通信设备指数",
-      "note": "指数PE序列暂时无法访问，观察；每日流水线自动重试"
+      "signal": "指数参考",
+      "color": "blue",
+      "hist_n": 20,
+      "hist_last_date": "2026-08-13",
+      "source": "中证指数官方·中证全指通信设备指数(931160)",
+      "collected_at": "2026-08-13 20:48:44",
+      "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "159141": {
       "ok": true,
@@ -58084,18 +58086,19 @@
     "510210": {
       "ok": true,
       "metric": "指数PE",
-      "pe": null,
-      "pe_min": null,
-      "pe_max": null,
-      "pe_median": null,
+      "pe": 15.64,
+      "pe_min": 15.04,
+      "pe_max": 15.81,
+      "pe_median": 15.46,
       "pctile": null,
       "zone": "参考",
-      "signal": "观察",
-      "color": "gold",
-      "hist_n": null,
-      "hist_last_date": null,
-      "source": "跟踪指数：上证综合指数",
-      "note": "指数PE序列暂时无法访问，观察；每日流水线自动重试"
+      "signal": "指数参考",
+      "color": "blue",
+      "hist_n": 20,
+      "hist_last_date": "2026-08-13",
+      "source": "中证指数官方·上证综合指数(000001)",
+      "collected_at": "2026-08-13 20:48:51",
+      "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "159330": {
       "ok": true,
@@ -58111,7 +58114,7 @@
       "hist_n": 1210,
       "hist_last_date": "2026-08-13",
       "source": "乐咕乐股指数估值·沪深300指数",
-      "collected_at": "2026-08-13 20:43:36",
+      "collected_at": "2026-08-13 20:48:54",
       "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"
     },
     "000759": {
@@ -58128,7 +58131,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-08-13",
       "source": "百度股市通历史PB",
-      "collected_at": "2026-08-13 20:43:38",
+      "collected_at": "2026-08-13 20:48:54",
       "note": "亏损股以 PB 替代 PE 分位"
     }
   }

@@ -1312,8 +1312,10 @@ class ValuationChartEngine {
     this.W = w; this.H = h;
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.AX = w < 560 ? 62 : 72;
+    this.GUT = w < 560 ? 58 : 96;   /* 右缘标签槽：锚/MA/斐波标签专用，K线不进入 */
     this.TL = 12; this.BX = 26;
-    this.px0 = 8; this.px1 = w - this.AX;
+    this.px0 = 8; this.px1 = w - this.AX - this.GUT;
+    this.axX = w - this.AX;
     this.priceH = (h - this.TL - this.BX) * 0.75;
     this.volTop = this.TL + this.priceH + 6;
     this.volBot = h - this.BX;
@@ -1559,7 +1561,7 @@ class ValuationChartEngine {
           const yy = y(p);
           if(isFinite(yy) && yy >= this.TL && yy <= priceB){
             s.push('<line x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="#a0742f" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>');
-            rightItems.push({y: yy, lab: rt + ' ¥' + fmt2(p), col: '#a0742f', bg: 'rgba(255,255,255,.9)'});
+            if(this.W >= 560) rightItems.push({y: yy, lab: rt + ' ¥' + fmt2(p), col: '#a0742f', bg: 'rgba(255,255,255,.9)'});
           }
         });
       }
@@ -1573,19 +1575,24 @@ class ValuationChartEngine {
       const yy = y(v);
       if(!isFinite(yy) || yy < this.TL - 4 || yy > priceB + 4) return;
       s.push('<circle cx="' + (this.px1 - 2).toFixed(1) + '" cy="' + yy.toFixed(1) + '" r="2.4" fill="' + MACOL[w] + '"/>');
-      rightItems.push({y: yy, lab: 'MA' + w + ' ' + fmt2(v), col: MACOL[w], bg: 'rgba(255,255,255,.92)'});
+      if(this.W >= 560) rightItems.push({y: yy, lab: 'MA' + w + ' ' + fmt2(v), col: MACOL[w], bg: 'rgba(255,255,255,.92)'});
     });
 
-    /* 右缘标签（锚/斐波/MA 联合防重叠） */
+    /* 右缘标签槽（锚/斐波/MA 联合防重叠；标签在 K 线区右侧专用槽内，不遮挡蜡烛） */
+    const chW = this.W < 560 ? 5.2 : 6.3;
+    const maxChars = Math.max(4, Math.floor((this.GUT - 14) / chW));
     packLbl(rightItems, 17).forEach(it => {
       if(it.yy < this.TL + 9 || it.yy > priceB - 9) return;
-      const wdt = 14 + it.lab.length * 6.3;
-      const xR = this.px1 - 4;
-      s.push('<rect x="' + (xR - wdt).toFixed(0) + '" y="' + (it.yy - 8).toFixed(1) + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="' + it.bg + '"/>'
-           + '<text x="' + (xR - wdt + 5).toFixed(0) + '" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="11" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">' + it.lab + '</text>');
+      let lab = it.lab;
+      if(lab.length > maxChars) lab = lab.slice(0, maxChars);
+      const wdt = Math.min(this.GUT - 10, 12 + lab.length * chW);
+      const xR = this.px1 + this.GUT - 6;
+      s.push('<line x1="' + this.px1.toFixed(0) + '" y1="' + it.y.toFixed(1) + '" x2="' + (this.px1 + 4).toFixed(0) + '" y2="' + it.y.toFixed(1) + '" stroke="' + it.col + '" stroke-width="1" opacity=".45"/>');
       if(Math.abs(it.yy - it.y) > 3){
-        s.push('<line x1="' + (xR - wdt - 4).toFixed(0) + '" y1="' + it.y.toFixed(1) + '" x2="' + (xR - wdt - 4).toFixed(0) + '" y2="' + it.yy.toFixed(1) + '" stroke="' + it.col + '" stroke-width="1" opacity=".5"/>');
+        s.push('<line x1="' + (this.px1 + 4).toFixed(0) + '" y1="' + it.y.toFixed(1) + '" x2="' + (this.px1 + 4).toFixed(0) + '" y2="' + it.yy.toFixed(1) + '" stroke="' + it.col + '" stroke-width="1" opacity=".45"/>');
       }
+      s.push('<rect x="' + (xR - wdt).toFixed(0) + '" y="' + (it.yy - 8).toFixed(1) + '" width="' + wdt.toFixed(0) + '" height="16" rx="4" fill="' + it.bg + '"/>'
+           + '<text x="' + (xR - wdt + 5).toFixed(0) + '" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="' + (this.W < 560 ? 10 : 11) + '" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">' + lab + '</text>');
     });
 
     /* 金叉/死叉标注 */
@@ -1646,20 +1653,20 @@ class ValuationChartEngine {
       s.push('<text x="' + k.x.toFixed(1) + '" y="' + k.yy.toFixed(1) + '" text-anchor="middle" font-size="9" fill="#a0742f" font-weight="700">突破</text>');
     });
 
-    /* 当前价线 + 三角标记 + 估值带滑轨 */
+    /* 当前价线 + 三角标记（gutter 左缘，指向 K 线区）+ 估值带滑轨 */
     const yc = y(lastClose);
     if(isFinite(yc) && yc >= this.TL && yc <= priceB){
       s.push('<line x1="0" y1="' + yc.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yc.toFixed(1) + '" stroke="#0071e3" stroke-width="1" opacity=".35"/>'
-           + '<polygon points="' + this.px1 + ',' + (yc - 4).toFixed(1) + ' ' + this.px1 + ',' + (yc + 4).toFixed(1) + ' ' + (this.px1 + 7) + ',' + yc.toFixed(1) + '" fill="#0071e3"/>');
+           + '<polygon points="' + (this.px1 + 7) + ',' + (yc - 3.5).toFixed(1) + ' ' + (this.px1 + 7) + ',' + (yc + 3.5).toFixed(1) + ' ' + (this.px1 + 2) + ',' + yc.toFixed(1) + '" fill="#0071e3"/>');
     }
     if(pr.hasV){
       const yLow = y(pr.vlow), yHigh = y(pr.vhigh);
       s.push('<defs><linearGradient id="vGauge" x1="0" y1="0" x2="0" y2="1">'
            + '<stop offset="0" stop-color="#ff3b30"/><stop offset=".5" stop-color="#0071e3"/><stop offset="1" stop-color="#34c759"/>'
            + '</linearGradient></defs>'
-           + '<rect x="' + (this.px1 + this.AX - 8) + '" y="' + yHigh.toFixed(1) + '" width="5" height="' + Math.max(1, yLow - yHigh).toFixed(1) + '" rx="2.5" fill="url(#vGauge)" opacity=".55"/>');
+           + '<rect x="' + (this.axX - 8) + '" y="' + yHigh.toFixed(1) + '" width="5" height="' + Math.max(1, yLow - yHigh).toFixed(1) + '" rx="2.5" fill="url(#vGauge)" opacity=".55"/>');
       if(isFinite(yc) && yc >= yHigh - 1 && yc <= yLow + 1){
-        s.push('<circle cx="' + (this.px1 + this.AX - 5.5).toFixed(1) + '" cy="' + yc.toFixed(1) + '" r="3" fill="#0071e3" stroke="#ffffff" stroke-width="1.5"/>');
+        s.push('<circle cx="' + (this.axX - 5.5).toFixed(1) + '" cy="' + yc.toFixed(1) + '" r="3" fill="#0071e3" stroke="#ffffff" stroke-width="1.5"/>');
       }
     }
 
@@ -1668,7 +1675,7 @@ class ValuationChartEngine {
     for(let p = Math.ceil(pr.pmin / step) * step; p <= pr.pmax + 1e-9; p += step){
       const yy = y(p);
       if(!isFinite(yy) || yy < this.TL - 2 || yy > priceB + 2) continue;
-      s.push('<text x="' + (this.px1 + 7) + '" y="' + (yy + 3.5).toFixed(1) + '" font-size="11" fill="#48484a" font-family="SF Mono,monospace">' + fmt2(p) + '</text>');
+      s.push('<text x="' + (this.axX + 7) + '" y="' + (yy + 3.5).toFixed(1) + '" font-size="11" fill="#48484a" font-family="SF Mono,monospace">' + fmt2(p) + '</text>');
     }
 
     /* 时间轴（密度抽稀） */
@@ -1767,9 +1774,9 @@ class ValuationChartEngine {
       ch.h.setAttribute('y1', cy.toFixed(1)); ch.h.setAttribute('y2', cy.toFixed(1));
       ch.h.setAttribute('opacity', '1');
       const ly = Math.max(this.TL, Math.min(this.TL + this.priceH - 16, cy - 8));
-      ch.ypill.setAttribute('x', this.px1 + 1); ch.ypill.setAttribute('y', ly.toFixed(1));
+      ch.ypill.setAttribute('x', this.axX + 1); ch.ypill.setAttribute('y', ly.toFixed(1));
       ch.ypill.setAttribute('opacity', '1');
-      ch.ytxt.setAttribute('x', this.px1 + 5); ch.ytxt.setAttribute('y', (ly + 11.5).toFixed(1));
+      ch.ytxt.setAttribute('x', this.axX + 5); ch.ytxt.setAttribute('y', (ly + 11.5).toFixed(1));
       ch.ytxt.textContent = fmt2(p);
     } else {
       ch.h.setAttribute('opacity', '0');

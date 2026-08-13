@@ -66,6 +66,9 @@ def fetch_spot(codes: list) -> tuple:
             pe = float(pe_raw) if pe_raw not in ("", "-", "--") else None
             pb_raw = parts[46]
             pb = float(pb_raw) if pb_raw not in ("", "-", "--") else None
+            # 指数无 PE/PB 概念，腾讯返回 0；归一为 None 避免页面显示伪 0 值
+            pe = pe if pe else None
+            pb = pb if pb else None
             out[sym] = {
                 "name": parts[1],
                 "price": price,
@@ -203,9 +206,27 @@ def fetch_csindex_indicator(symbol: str) -> tuple:
                 return v
             if isinstance(v, (int, float)):
                 fv = float(v)
-                if fv > 20000:  # Excel 1900 日期系统序列号
+                if 19000101 <= fv <= 21001231 and abs(fv - round(fv)) < 1e-9:
+                    # 中证官网 xls 日期列常为 int 格式 yyyymmdd（如 20260721），
+                    # 必须优先于 Excel 序列号/epoch 分支，否则会被当序列号溢出
+                    s = str(int(fv))
+                    return _dt.date(int(s[0:4]), int(s[4:6]), int(s[6:8]))
+                # 数字日期按量级分档：纳秒/微秒/毫秒/秒级 epoch（1970 基准），
+                # 20000~3e7 之间才视为 Excel 1900 序列号；防止秒级时间戳
+                # 被误判为序列号导致 timedelta(days) 溢出（date value out of range）。
+                if fv >= 1e16:
+                    sec = fv / 1e9
+                elif fv >= 1e13:
+                    sec = fv / 1e6
+                elif fv >= 1e10:
+                    sec = fv / 1e3
+                elif fv > 3e7:
+                    sec = fv
+                elif fv > 20000:
                     return _dt.date(1899, 12, 30) + _dt.timedelta(days=int(fv))
-                return None
+                else:
+                    return None
+                return _dt.date(1970, 1, 1) + _dt.timedelta(seconds=sec)
             s = str(v).strip()
             for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"):
                 try:
