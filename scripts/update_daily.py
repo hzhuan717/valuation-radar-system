@@ -476,6 +476,20 @@ def main():
     except Exception as e:
         log(f"公开网址发布异常: {e}")
 
+    # ---- 自动发布项目版本到 GitHub（每次修改自动上传，无实质改动时自动跳过）----
+    try:
+        publish = os.path.join(os.path.dirname(os.path.abspath(__file__)), "publish_repo.py")
+        r = subprocess.run([sys.executable, publish, "--note", "每日自动数据刷新"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           timeout=420)
+        tail = ((r.stdout or r.stderr or "").strip().splitlines() or [""])[-1]
+        if r.returncode == 0:
+            log("GitHub 版本发布: " + (tail or "完成"))
+        else:
+            log("GitHub 版本发布失败: " + tail[-300:])
+    except Exception as e:
+        log(f"GitHub 版本发布异常: {e}")
+
     # ---- 摘要 ----
     zones = {}
     for s in out_stocks.values():

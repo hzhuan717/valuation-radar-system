@@ -164,6 +164,13 @@ def main():
         git(cfg, token, ["remote", "set-url", "origin",
                          f"https://github.com/{cfg['owner']}/{cfg['repo']}.git"])
 
+    # 无实质改动（除 VERSION 外）时跳过，避免产生纯版本号噪音提交
+    status = git(cfg, token, ["status", "--porcelain"]).stdout
+    real_changes = [l for l in status.splitlines() if l.strip() and not l.strip().endswith("VERSION")]
+    if not real_changes:
+        log("无实质改动，跳过发布（版本号不变）")
+        return
+
     new_ver = bump_version(args.bump)
     msg = f"v{new_ver} · {args.note or '门户/引擎/数据更新'} · {time.strftime('%Y-%m-%d %H:%M')}"
     git(cfg, token, ["add", "-A"])
