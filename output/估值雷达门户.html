@@ -1196,19 +1196,21 @@ class ValuationChartEngine {
     ctx.beginPath();
     ctx.rect(this.px0, this.TL, w, Math.max(1, this.priceH * p));
     ctx.clip();
-    /* 基础色带 */
-    ctx.fillStyle = 'rgba(48,209,88,.10)';
+    /* 基础色带（当前所在区间更浓，增强区间感知） */
+    const lastClose = this.N >= 2 ? this.rows[this.N-1].c : null;
+    const curZone = lastClose == null ? null : (lastClose < pr.vlow ? 'low' : (lastClose <= pr.vhigh ? 'mid' : 'high'));
+    ctx.fillStyle = curZone === 'low' ? 'rgba(48,209,88,.20)' : 'rgba(48,209,88,.11)';
     ctx.fillRect(this.px0, yLow, w, this.TL + this.priceH - yLow);
-    ctx.fillStyle = 'rgba(0,113,227,.08)';
+    ctx.fillStyle = curZone === 'mid' ? 'rgba(0,113,227,.18)' : 'rgba(0,113,227,.10)';
     ctx.fillRect(this.px0, yHigh, w, yLow - yHigh);
-    ctx.fillStyle = 'rgba(255,59,48,.10)';
+    ctx.fillStyle = curZone === 'high' ? 'rgba(255,59,48,.20)' : 'rgba(255,59,48,.11)';
     ctx.fillRect(this.px0, this.TL, w, yHigh - this.TL);
     /* 横向纹理虚线（20px 步长 · 极度缩小时跳过） */
     if(this.slot >= 2){
       const bands = [
-        {y0: yLow, y1: this.TL + this.priceH, col: 'rgba(48,209,88,.06)', dash: [2, 6]},
-        {y0: yHigh, y1: yLow, col: 'rgba(0,113,227,.05)', dash: [2, 8]},
-        {y0: this.TL, y1: yHigh, col: 'rgba(255,59,48,.06)', dash: [2, 6]},
+        {y0: yLow, y1: this.TL + this.priceH, col: 'rgba(48,209,88,.08)', dash: [2, 6]},
+        {y0: yHigh, y1: yLow, col: 'rgba(0,113,227,.07)', dash: [2, 8]},
+        {y0: this.TL, y1: yHigh, col: 'rgba(255,59,48,.08)', dash: [2, 6]},
       ];
       bands.forEach(bd => {
         if(bd.y1 - bd.y0 < 4) return;
@@ -1224,17 +1226,17 @@ class ValuationChartEngine {
         ctx.setLineDash([]);
       });
     }
-    /* 边界发光带（3px/2px 渐变过渡） */
+    /* 边界发光带（4px/3px 渐变过渡 · 当前区间边界更亮） */
     const glow = (y0, y1, c0, c1) => {
       const g = ctx.createLinearGradient(0, y0, 0, y1);
       g.addColorStop(0, c0); g.addColorStop(1, c1);
       ctx.fillStyle = g;
       ctx.fillRect(this.px0, Math.min(y0, y1), w, Math.abs(y1 - y0));
     };
-    if(yLow < this.TL + this.priceH) glow(yLow + 2, yLow + 5, 'rgba(48,209,88,.18)', 'rgba(48,209,88,0)');
-    if(yLow > this.TL) glow(yLow - 2, yLow, 'rgba(0,113,227,0)', 'rgba(0,113,227,.14)');
-    if(yHigh < this.TL + this.priceH) glow(yHigh, yHigh + 2, 'rgba(0,113,227,.14)', 'rgba(0,113,227,0)');
-    if(yHigh > this.TL) glow(yHigh - 3, yHigh, 'rgba(255,59,48,0)', 'rgba(255,59,48,.18)');
+    if(yLow < this.TL + this.priceH) glow(yLow + 2, yLow + 6, 'rgba(48,209,88,.30)', 'rgba(48,209,88,0)');
+    if(yLow > this.TL) glow(yLow - 3, yLow, 'rgba(0,113,227,0)', 'rgba(0,113,227,.22)');
+    if(yHigh < this.TL + this.priceH) glow(yHigh, yHigh + 3, 'rgba(0,113,227,.22)', 'rgba(0,113,227,0)');
+    if(yHigh > this.TL) glow(yHigh - 4, yHigh, 'rgba(255,59,48,0)', 'rgba(255,59,48,.30)');
     ctx.restore();
   }
 
@@ -1516,7 +1518,7 @@ class ValuationChartEngine {
         if(isFinite(yy) && yy >= this.TL && yy <= priceB){
           const cls = this._animateSR ? ' class="srl"' : '';
           const dashAttr = a[6] ? ' stroke-dasharray="' + a[6] + '"' : '';
-          s.push('<line' + cls + ' id="anchor-' + a[0] + '" x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + a[2] + '" stroke-width="1.6" stroke-linecap="round"' + dashAttr + ' opacity=".7"/>'
+          s.push('<line' + cls + ' id="anchor-' + a[0] + '" x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + a[2] + '" stroke-width="1.6" stroke-linecap="round"' + dashAttr + ' opacity=".8"/>'
                + '<circle cx="8" cy="' + yy.toFixed(1) + '" r="2.5" fill="' + a[2] + '"/>');
           rightItems.push({y: yy, lab: a[4] + ' ¥' + fmt2(a[1]), col: a[2], bg: a[3], bar: a[5]});
           hl.push({id: 'anchor-' + a[0], yy, price: a[1], name: '估值锚 V_' + a[0] + '（' + a[4] + '）', ev: 'A', isSup: a[0] !== 'high', sw: 1.6, op: .7, kind: 'anchor'});
@@ -1533,6 +1535,19 @@ class ValuationChartEngine {
       if(zoneCard && zoneY + zoneCard.h <= priceB - 4){
         s.push(zoneCard.svg(zoneY));
       }
+      /* 三区间中文水印（区顶部右对齐 · 当前区间更亮） */
+      const zCur = lastClose < pr.vlow ? 'low' : (lastClose <= pr.vhigh ? 'mid' : 'high');
+      const zLabels = [
+        {key: 'high', t: '高估区', col: '#d70015', y0: this.TL, y1: y(pr.vhigh)},
+        {key: 'mid', t: '合理区', col: '#0071e3', y0: y(pr.vhigh), y1: y(pr.vlow)},
+        {key: 'low', t: '低估区', col: '#1f9d4d', y0: y(pr.vlow), y1: priceB},
+      ];
+      const zFs = this.W < 560 ? 10 : 12;
+      zLabels.forEach(z => {
+        if(z.y1 - z.y0 < 26) return;
+        const yy = z.y0 + 15;
+        s.push('<text x="' + (this.px1 - 8) + '" y="' + yy.toFixed(1) + '" text-anchor="end" font-size="' + zFs + '" font-weight="700" fill="' + z.col + '" opacity="' + (z.key === zCur ? '.9' : '.55') + '" font-family="PingFang SC,Microsoft YaHei,sans-serif">' + z.t + '</text>');
+      });
       if(!st.decision_usable && W >= 560 && (zoneY > this.TL + 80 || !zoneCard)){
         s.push('<rect x="6" y="' + this.TL + '" width="150" height="22" rx="4" fill="#ffffff" fill-opacity=".94" stroke="rgba(0,0,0,.12)"/>'
              + '<text x="14" y="' + (this.TL + 15) + '" font-size="12" fill="#48484a" font-weight="600">参考区间 · 不可执行</text>');
