@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+logs/
+deploy/
+snapshots/
+repo.json
+*.zip
