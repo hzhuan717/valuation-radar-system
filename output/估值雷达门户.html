@@ -228,21 +228,48 @@ b{font-weight:600}
 .ov-wrap{flex:1;overflow-y:auto;min-height:0;padding:16px;background:var(--bg);height:calc(100vh - 44px);box-sizing:border-box}
 .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 /* 板块水位行 */
-.sector-item{display:grid;grid-template-columns:minmax(0,1.4fr) auto minmax(90px,1fr) auto auto;gap:10px;align-items:center;
+.sector-item{display:grid;grid-template-columns:minmax(0,1.2fr) auto minmax(80px,1fr) auto auto minmax(0,1fr);gap:10px;align-items:center;
   padding:9px 4px;border-bottom:1px solid var(--hair);font-size:13px;line-height:1.5;cursor:pointer;
   border-radius:6px;transition:background .15s,transform .15s}
 .sector-item:hover{background:var(--blue-lt);transform:translateX(2px)}
 .sector-item .s-name{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sector-item .s-pe{font-family:var(--font-mono);color:var(--sub2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sector-item .s-pe{font-family:var(--font-mono);color:var(--sub2);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+.sector-item .s-pe b{font-weight:600}
 .sector-item .s-bar{height:6px;border-radius:3px;background:var(--hair);overflow:hidden;min-width:60px}
 .sector-item .s-bar i{display:block;height:100%;border-radius:3px}
-.sector-item .s-pct{font-family:var(--font-mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.sector-item .s-sig{font-size:12px;color:var(--sub2);white-space:nowrap}
+.sector-item .s-pct{font-family:var(--font-mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+.sector-item .s-sig{font-size:12px;font-weight:600;white-space:nowrap}
+.sector-item .s-why{font-size:12px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:1099px){
   .ov-cards{grid-template-columns:1fr}
-  .sector-item{grid-template-columns:1fr auto 1fr;grid-template-areas:"n pe" "bar bar" "pct sig"}
-  .sector-item .s-name{grid-area:n}.sector-item .s-pe{grid-area:pe;text-align:right}
-  .sector-item .s-bar{grid-area:bar}.sector-item .s-pct{grid-area:pct}.sector-item .s-sig{grid-area:sig}
+  .sector-item{grid-template-columns:1fr auto 1fr;grid-template-areas:"n sig" "pe pe" "bar bar" "pct why";row-gap:3px}
+  .sector-item .s-name{grid-area:n}.sector-item .s-sig{grid-area:sig;text-align:right}
+  .sector-item .s-pe{grid-area:pe}.sector-item .s-bar{grid-area:bar}
+  .sector-item .s-pct{grid-area:pct}.sector-item .s-why{grid-area:why;text-align:right}
+}
+/* 第一层：大盘环境横幅 */
+.env-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.env-badge{font-size:15px;font-weight:700;border:1px solid;border-radius:999px;padding:6px 16px;line-height:1.5;white-space:nowrap}
+.env-ev{font-family:var(--font-mono);font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 第三层：五类状态分组 */
+.ts-group{margin-bottom:14px}
+.ts-head{display:flex;align-items:center;gap:10px;margin:10px 0 6px}
+.ts-badge{font-size:13px;font-weight:700;border:1px solid;border-radius:999px;padding:3px 12px;line-height:1.5;white-space:nowrap}
+.ts-mean{font-size:12px;color:var(--meta);line-height:1.5}
+.ts-row{display:grid;grid-template-columns:minmax(90px,auto) auto 1fr minmax(140px,auto);gap:12px;align-items:center;
+  padding:8px 6px;border-bottom:1px solid var(--hair);font-size:13px;cursor:pointer;border-radius:6px;
+  transition:background .15s,transform .15s}
+.ts-row:hover{background:var(--blue-lt);transform:translateX(2px)}
+.ts-row .t-nm{font-weight:600;color:var(--ink);white-space:nowrap}
+.ts-row .t-nm i{display:block;font-style:normal;font-size:11px;color:var(--meta);font-family:var(--font-mono)}
+.ts-row .t-r{display:flex;gap:10px;white-space:nowrap;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.ts-row .t-r b{font-weight:600;font-size:12px}
+.ts-row .t-m{font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
+.ts-row .t-why{font-size:12px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:1099px){
+  .ts-row{grid-template-columns:1fr auto;grid-template-areas:"nm r" "m m" "w w";gap:4px 10px}
+  .ts-row .t-nm{grid-area:nm}.ts-row .t-r{grid-area:r}
+  .ts-row .t-m{grid-area:m}.ts-row .t-why{grid-area:w}
 }
 .ov-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2);
   border:1px solid var(--hair);border-radius:var(--r-card)}
@@ -602,9 +629,10 @@ body.wall-hidden .wall-grip{display:none}
 
 <div class="ov-wrap" id="ovWrap" style="display:none">
   <div class="ov-cards">
-    <div class="w-card"><div class="w-title"><span>市场估值环境</span><span class="sp">格雷厄姆指数 · ERP · 仅背景</span></div><div class="w-body" id="ovMarket">—</div></div>
-    <div class="w-card"><div class="w-title"><span>板块估值水位</span><span class="sp">ETF 底层指数 PE 5年分位</span></div><div class="w-body" id="ovSectors">—</div></div>
+    <div class="w-card"><div class="w-title"><span>第一层 · 大盘环境</span><span class="sp">趋势判定 + 估值背景</span></div><div class="w-body" id="ovMarket">—</div></div>
+    <div class="w-card"><div class="w-title"><span>第二层 · 板块强弱</span><span class="sp">涨幅 / 量能 / 水位，点击进入</span></div><div class="w-body" id="ovSectors">—</div></div>
   </div>
+  <div class="w-card"><div class="w-title"><span>第三层 · 个股趋势筛选</span><span class="sp">第四层：五类状态 + 触发原因（不构成推荐）</span></div><div class="w-body" id="ovScreen">—</div></div>
   <div class="w-card"><div class="w-title"><span>全池总览</span><span class="sp">点击行进入个股估值</span></div><div class="w-body"><table class="ov-table" id="ovTable"></table></div></div>
 </div>
 
@@ -769,6 +797,7 @@ function showTab(name){
     if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 44px)'; }
     renderOvMarket();
     renderOvSectors();
+    renderOvScreen();
     renderOvTable();
     renderList();
   } else {
@@ -784,43 +813,180 @@ function showTab(name){
   try{ localStorage.setItem('radar_view', name); }catch(e){}
 }
 
-/* 大盘：市场估值环境（多口径：PE/格雷厄姆/ERP/分档） */
+/* ============ 趋势筛选工作台（四层漏斗，不荐股只分类+原因） ============ */
+function tsMa(closes, w, end){
+  if(end == null) end = closes.length;
+  if(end < w) return null;
+  let s = 0;
+  for(let i = end - w; i < end; i++) s += closes[i];
+  return s / w;
+}
+function tsRet(closes, n){
+  if(closes.length <= n || !(closes[closes.length-1-n] > 0)) return null;
+  return (closes[closes.length-1] / closes[closes.length-1-n] - 1) * 100;
+}
+function tsAtr(rows){
+  if(rows.length < 15) return null;
+  let s = 0;
+  for(let i = 1; i < 15; i++){
+    const r = rows[rows.length - i], p = rows[rows.length - i - 1];
+    s += Math.max(r.h - r.l, Math.abs(r.h - p.c), Math.abs(r.l - p.c));
+  }
+  return s / 14;
+}
+function tsScreen(st){
+  const k = (st.kline||[]).filter(r => r && isFinite(+r.c));
+  if(k.length < 40) return null;
+  const closes = k.map(r => +r.c);
+  const vols = k.map(r => +r.v);
+  const price = closes[closes.length-1];
+  const m20 = tsMa(closes, 20), m60 = tsMa(closes, 60);
+  const m20Prev = tsMa(closes, 20, closes.length - 5);
+  const r5 = tsRet(closes, 5), r10 = tsRet(closes, 10), r20 = tsRet(closes, 20);
+  const v5 = vols.slice(-5).reduce((a,b)=>a+b,0) / 5;
+  const v20 = vols.slice(-20).reduce((a,b)=>a+b,0) / 20;
+  const vr = v20 > 0 ? v5 / v20 : null;
+  const atr = tsAtr(k);
+  const atrPct = atr && price > 0 ? atr / price * 100 : null;
+  const hi250 = Math.max(...k.slice(-250).map(r => +r.h));
+  const lo250 = Math.min(...k.slice(-250).map(r => +r.l));
+  const pos250 = hi250 > lo250 ? (price - lo250) / (hi250 - lo250) * 100 : null;
+  const dist20 = m20 ? (price / m20 - 1) * 100 : null;
+  const m20Up = m20 != null && m20Prev != null && m20 > m20Prev;
+  const dayChg = closes.length > 1 ? (closes[closes.length-1] / closes[closes.length-2] - 1) * 100 : null;
+  let atrFlag = '';
+  if(atrPct){
+    if(dayChg != null && Math.abs(dayChg) > 2 * atrPct) atrFlag = '单日异动 ' + dayChg.toFixed(1) + '% > 2×ATR';
+    else if(r5 != null && r5 > 2.5 * atrPct) atrFlag = '5日涨幅 ' + r5.toFixed(1) + '% > 2.5×ATR';
+  }
+  return {price, m20, m60, m20Up, r5, r10, r20, vr, atrPct, pos250, dist20, dayChg, atrFlag,
+          above20: m20 != null && price > m20, m20g60: m20 != null && m60 != null && m20 > m60};
+}
+
+/* 第一层：大盘环境（上证指数趋势 + 市场估值背景） */
 function renderOvMarket(){
   const el = document.getElementById('ovMarket');
   if(!el) return;
   const m = DATA.market;
+  const idx = DATA.stocks.find(s => s.ticker === '000001');
+  let head = '', evidence = [], envGrade = null;
+  if(idx){
+    const d = tsScreen(idx);
+    if(d){
+      envGrade = (d.above20 && d.m20g60 && d.r20 != null && d.r20 > 2) ? '强'
+        : ((!d.above20 || !d.m20g60) && d.r20 != null && d.r20 < 0) ? '偏弱' : '正常';
+      evidence = ['上证 20日 ' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—'),
+                  '价 vs MA20 ' + (d.dist20!=null?(d.dist20>=0?'+':'')+d.dist20.toFixed(1)+'%':'—'),
+                  'MA20 ' + (d.m20g60 ? '>' : '≤') + ' MA60',
+                  '5日 ' + (d.r5!=null?(d.r5>=0?'+':'')+d.r5.toFixed(1)+'%':'—')];
+    }
+  }
+  const g = (m.graham_metrics||[]).find(x => x.key === 'cs985') || (m.graham_metrics||[])[0] || {};
   const rows = (m.graham_metrics||[]).map(x =>
     '<tr><td>' + x.label + '</td><td>' + fmt2(x.pe) + '</td><td style="color:'
     + (x.graham>=2.3?'var(--green-d)':(x.graham>=1.8?'var(--gold)':'var(--red-d)')) + '">' + x.graham
     + '</td><td>' + (x.erp_pct!=null ? x.erp_pct + '%' : '—') + '</td><td>' + x.band + '</td></tr>').join('');
-  el.innerHTML =
-    '<table class="ov-table">'
+  const gCol = envGrade === '强' ? 'var(--green-d)' : (envGrade === '偏弱' ? 'var(--red-d)' : 'var(--blue)');
+  head = '<div class="env-banner"><span class="env-badge" style="color:' + gCol + ';border-color:' + gCol + '">大盘环境：' + (envGrade || '—') + '</span>'
+    + '<span class="env-ev">' + (evidence.join(' · ') || '指数K线不足') + '</span></div>'
+    + '<div class="formula-mini">判定规则（D级工程化）：价>MA20 且 MA20>MA60 且 20日涨幅>2% = 强；价<MA20 或 MA20≤MA60 且 20日涨幅<0 = 偏弱；其余 = 正常。</div>';
+  el.innerHTML = head
+    + '<table class="ov-table">'
     + '<tr><th>口径</th><th>PE(TTM)</th><th>格雷厄姆</th><th>ERP</th><th>分档</th></tr>' + rows
     + '</table>'
-    + '<div class="formula-mini">10Y 国债 '
-    + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '，' + ((m.bond_10y||{}).source||'—') + '）｜ 格雷厄姆 = (1/PE)÷10Y；ERP = 1/PE − 10Y（D级减法模型防低利率乘数失真）。'
-    + 'v2 定位：仅市场背景参考，不构成仓位硬闸门、不生成个股动作。</div>';
+    + '<div class="formula-mini">10Y 国债 ' + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '）｜ 估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅背景标注，不构成仓位闸门；大盘强弱由趋势判定。</div>';
 }
 
-/* 大盘：板块估值水位（ETF 底层指数 PE 5年分位） */
+/* 第二层：板块强弱（ETF/指数：涨幅/量能/水位/状态） */
 function renderOvSectors(){
   const el = document.getElementById('ovSectors');
   if(!el) return;
-  const etfs = DATA.stocks.filter(s => s.route === 'etf' || s.ticker === '000001');
+  const etfs = DATA.stocks.filter(s => s.route === 'etf');
   if(!etfs.length){ el.innerHTML = '<div class="formula-mini">暂无板块指数数据</div>'; return; }
   el.innerHTML = etfs.map(s => {
     const ph = (DATA.pe_history||{})[s.ticker] || {};
     const pct = ph.ok && ph.pctile != null ? ph.pctile : null;
-    const col = pct == null ? 'var(--sub2)' : (pct < 0.3 ? 'var(--green-d)' : (pct > 0.7 ? 'var(--red-d)' : 'var(--gold)'));
+    const wcol = pct == null ? 'var(--sub2)' : (pct < 0.3 ? 'var(--green-d)' : (pct > 0.7 ? 'var(--red-d)' : 'var(--gold)'));
+    const d = tsScreen(s);
+    if(!d) return '';
+    let st = '', stCol = '', why = [];
+    if(d.above20 && d.r20 != null && d.r20 > 0 && d.r5 != null && d.r5 > 0){
+      st = '持续强势'; stCol = 'var(--green-d)';
+      why.push('价>MA20', '20日+' + d.r20.toFixed(1) + '%', '5日续涨+' + d.r5.toFixed(1) + '%');
+    } else if(d.r20 != null && d.r20 > 0 && ((d.r5 != null && d.r5 > d.r20) || (d.vr != null && d.vr > 1.2))){
+      st = '正在加强'; stCol = 'var(--blue)';
+      why.push((d.r5 != null && d.r5 > d.r20 ? '5日加速' : '量比' + d.vr.toFixed(2)), '20日+' + d.r20.toFixed(1) + '%');
+    } else {
+      st = '走弱/观望'; stCol = 'var(--sub2)';
+      why.push(!d.above20 ? '跌破MA20' : '动能不足', '20日' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—'));
+    }
     return '<div class="sector-item" onclick="switchStock(\'' + s.ticker + '\')" title="点击进入：' + s.name + ' 估值">'
       + '<span class="s-name" title="' + s.name + '">' + s.name + '</span>'
-      + '<span class="s-pe">PE ' + (ph.pe!=null ? fmt2(ph.pe) : (s.pe_ttm!=null ? fmt2(s.pe_ttm) : '—')) + '</span>'
-      + '<span class="s-bar"><i style="width:' + (pct!=null ? (pct*100).toFixed(0) + '%' : '0%') + ';background:' + col + '"></i></span>'
-      + '<span class="s-pct" style="color:' + col + '">' + (pct!=null ? Math.round(pct*100) + '% 分位' : '无历史') + '</span>'
-      + '<span class="s-sig">' + (ph.signal || '观察') + '</span>'
+      + '<span class="s-pe">5日 <b class="' + (d.r5>=0?'up-c':'dn-c') + '">' + (d.r5!=null?(d.r5>=0?'+':'')+d.r5.toFixed(1)+'%':'—') + '</b>｜20日 <b class="' + (d.r20>=0?'up-c':'dn-c') + '">' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—') + '</b>｜量比 ' + (d.vr!=null?d.vr.toFixed(2):'—') + '</span>'
+      + '<span class="s-bar"><i style="width:' + (pct!=null ? (pct*100).toFixed(0) + '%' : '0%') + ';background:' + wcol + '"></i></span>'
+      + '<span class="s-pct" style="color:' + wcol + '">' + (pct!=null ? Math.round(pct*100) + '% 分位' : '无历史') + '</span>'
+      + '<span class="s-sig" style="color:' + stCol + '">' + st + '</span>'
+      + '<span class="s-why">' + why.join('；') + '</span>'
       + '</div>';
   }).join('')
-  + '<div class="formula-mini">分位 = 当前指数 PE 在 5 年历史中的位置（乐咕乐股/中证官网，D级参考）；点击板块行进入对应指数/ETF 估值视图。</div>';
+  + '<div class="formula-mini">板块强弱 = 20日涨幅 + 5日动能（加速或量比>1.2）+ 价格 vs MA20 + 指数 PE 5年分位水位（D级工程化，仅筛选观察，不构成买卖建议）。</div>';
+}
+
+/* 第三/四层：个股五类状态分类（启动/趋势/高位/回调/排除，附触发原因） */
+const TS_ORDER = ['启动观察', '趋势观察', '高位观察', '回调观察', '排除'];
+const TS_MEAN = {
+  '启动观察': '刚站上 MA20、短期动能转正、20日涨幅尚小——观察放量确认',
+  '趋势观察': '站上 MA20 且 MA20 上行/多头结构——趋势延续观察',
+  '高位观察': '接近 250 日高位或短期涨幅过大——警惕追高',
+  '回调观察': '跌破 MA20 但未深跌——等待止跌企稳',
+  '排除': '破位或数据不足——排除出观察池',
+};
+function renderOvScreen(){
+  const el = document.getElementById('ovScreen');
+  if(!el) return;
+  const groups = {};
+  TS_ORDER.forEach(g => groups[g] = []);
+  DATA.stocks.forEach(s => {
+    if(s.route === 'etf') return;
+    const d = tsScreen(s);
+    if(!d){ groups['排除'].push({s, d, rs: ['K线不足40根']}); return; }
+    const rs = [];
+    let g = null;
+    if(!d.above20){
+      if(d.r20 != null && d.r20 <= -5){ g = '排除'; rs.push('跌破MA20且20日跌' + d.r20.toFixed(1) + '%'); }
+      else { g = '回调观察'; rs.push('跌破MA20' + (d.dist20!=null?(d.dist20>=0?'+':'')+d.dist20.toFixed(1)+'%':'') + '，20日' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—')); }
+    } else {
+      if(d.pos250 != null && d.pos250 > 80){ g = '高位观察'; rs.push('250日位置' + d.pos250.toFixed(0) + '%（近高位）'); }
+      else if(d.r20 != null && d.r20 > 25){ g = '高位观察'; rs.push('20日涨幅' + d.r20.toFixed(1) + '% > 25%'); }
+      else if(d.m20Up){ g = '趋势观察'; rs.push('站上MA20且MA20上行'); }
+      else if(d.r5 != null && d.r5 > 0 && d.r20 != null && d.r20 < 10){
+        if(d.r10 != null && d.r10 < 15){ g = '启动观察'; rs.push('刚站上MA20、5日' + (d.r5>=0?'+':'') + d.r5.toFixed(1) + '%转正、20日' + (d.r20>=0?'+':'') + d.r20.toFixed(1) + '%'); }
+        else { g = '趋势观察'; rs.push('站上MA20，10日' + (d.r10>=0?'+':'') + d.r10.toFixed(1) + '%反弹'); }
+      } else { g = '趋势观察'; rs.push('站上MA20'); }
+    }
+    if(d.atrFlag){ rs.push(d.atrFlag); if(g === '趋势观察' && d.r20 != null && d.r20 > 15){ g = '高位观察'; } }
+    groups[g || '排除'].push({s, d, rs});
+  });
+  el.innerHTML = '<div class="formula-mini" style="border:none;padding:0;margin-bottom:6px">筛选口径：5/10/20日涨跌幅 + 价格 vs MA20 + MA20 方向 + 250日位置 + ATR 波动检查（D级工程化）。以下仅为状态分类与触发原因，<b>不构成任何买入建议</b>，请结合估值与基本面自行判断。点击行进入个股估值。</div>'
+    + TS_ORDER.map(g => {
+      const items = groups[g];
+      if(!items.length) return '';
+      const gCol = {'启动观察':'var(--blue)','趋势观察':'var(--green-d)','高位观察':'var(--red-d)','回调观察':'var(--gold)','排除':'var(--sub2)'}[g];
+      return '<div class="ts-group"><div class="ts-head"><span class="ts-badge" style="color:' + gCol + ';border-color:' + gCol + '">' + g + ' ' + items.length + '只</span><span class="ts-mean">' + TS_MEAN[g] + '</span></div>'
+        + items.map(it => {
+          const d = it.d;
+          const c5 = d.r5!=null ? (d.r5>=0?'up-c':'dn-c') : '';
+          const c10 = d.r10!=null ? (d.r10>=0?'up-c':'dn-c') : '';
+          const c20 = d.r20!=null ? (d.r20>=0?'up-c':'dn-c') : '';
+          return '<div class="ts-row" onclick="switchStock(\'' + it.s.ticker + '\')" title="点击进入 ' + it.s.name + ' 估值">'
+            + '<span class="t-nm">' + it.s.name + '<i>' + it.s.ticker + '</i></span>'
+            + '<span class="t-r"><b class="' + c5 + '">5日 ' + (d.r5!=null?(d.r5>=0?'+':'')+d.r5.toFixed(1)+'%':'—') + '</b><b class="' + c10 + '">10日 ' + (d.r10!=null?(d.r10>=0?'+':'')+d.r10.toFixed(1)+'%':'—') + '</b><b class="' + c20 + '">20日 ' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—') + '</b></span>'
+            + '<span class="t-m">距MA20 ' + (d.dist20!=null?(d.dist20>=0?'+':'')+d.dist20.toFixed(1)+'%':'—') + (d.atrPct!=null?'｜ATR '+d.atrPct.toFixed(1)+'%':'') + (d.vr!=null?'｜量比 '+d.vr.toFixed(2):'') + (d.pos250!=null?'｜位置 '+d.pos250.toFixed(0)+'%':'') + '</span>'
+            + '<span class="t-why">' + it.rs.join('；') + '</span>'
+            + '</div>';
+        }).join('') + '</div>';
+    }).join('')
+    + '<div class="formula-mini">分类规则：排除（跌破MA20且20日跌幅>5% / K线不足）；回调观察（跌破MA20但20日跌幅≤5%）；高位观察（250日位置>80% 或 20日涨幅>25%）；启动观察（刚站上MA20、5日转正、20日<10%、10日<15%）；趋势观察（站上MA20且MA20上行）。ATR 检查：单日异动>2×ATR 或 5日涨幅>2.5×ATR 时标注。</div>';
 }
 
 /* 大盘：全池总览表 */
