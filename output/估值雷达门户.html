@@ -261,6 +261,10 @@ b{font-weight:600}
 .b-bar i{position:absolute;top:0;bottom:0;left:0}
 .b-bar i:last-child{right:0;left:auto}
 .b-note{font-size:12px;line-height:1.5}
+/* 量能趋势柱状图 */
+.vol-bars{display:flex;align-items:flex-end;gap:3px;height:44px;margin:8px 0 4px}
+.vol-bars .vb{flex:1;min-width:3px;border-radius:2px 2px 0 0;cursor:default}
+.vol-meta{font-size:12px;color:var(--sub2);font-family:var(--font-mono);line-height:1.6}
 /* 第三层：五类状态分组 */
 .filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
 .filter-row .f-tabs{display:flex;gap:4px;margin-left:auto}
@@ -964,6 +968,35 @@ function renderOvMarket(){
         + '<div class="micro-row" style="border-top:1px solid var(--hair);padding-top:8px">' + maV.map(maCell).join('') + '</div>';
     }
   }
+  /* 量能趋势对比：上证近 20 日成交额柱状图 + 5/20日均量 + 放缩量判定 */
+  let volTrend = '';
+  if(idx){
+    const k = (idx.kline||[]).filter(r => r && isFinite(+r.c) && isFinite(+r.v));
+    if(k.length >= 20){
+      const win = k.slice(-20);
+      const vs = win.map(r => +r.v);
+      const vmax = Math.max(...vs);
+      const v5 = vs.slice(-5).reduce((a,b)=>a+b,0) / 5;
+      const v20 = vs.reduce((a,b)=>a+b,0) / 20;
+      const vr = v20 > 0 ? v5 / v20 : null;
+      const todayV = vs[vs.length-1];
+      const verdict = vr == null ? '—' : (vr >= 1.2 ? '放量' : (vr <= 0.8 ? '缩量' : '平量'));
+      const vCol = verdict === '放量' ? 'var(--red-d)' : (verdict === '缩量' ? 'var(--green-d)' : 'var(--gold)');
+      const fmtV = x => x >= 1e8 ? (x/1e8).toFixed(1)+'亿' : (x/1e4).toFixed(0)+'万';
+      const bars = win.map((r, i) => {
+        const h = Math.max(3, vs[i] / vmax * 42);
+        const up = +r.c >= +r.o;
+        const col = up ? 'var(--candle-up)' : 'var(--candle-dn)';
+        const isLast = i === win.length - 1;
+        return '<div class="vb" title="' + r.d + ' 量 ' + fmtV(vs[i]) + '" style="height:' + h.toFixed(1) + 'px;background:' + col + ';' + (isLast?'opacity:1;':'opacity:.55') + '"></div>';
+      }).join('');
+      volTrend = '<div class="micro-row" style="border-top:1px solid var(--hair);padding-top:8px">'
+        + '<div class="micro" style="grid-column:1/-1"><div class="k">量能趋势（上证近20日成交）· <b style="color:' + vCol + '">' + verdict + ' ' + (vr!=null?vr.toFixed(2)+'×':'—') + '</b></div>'
+        + '<div class="vol-bars">' + bars + '</div>'
+        + '<div class="vol-meta">今日 ' + fmtV(todayV) + '｜5日均 ' + fmtV(v5) + '｜20日均 ' + fmtV(v20) + '｜量比 ' + (vr!=null?vr.toFixed(2):'—') + '（5日均/20日均，≥1.2 放量、≤0.8 缩量，D级）</div></div>'
+        + '</div>';
+    }
+  }
   /* 今日强势/弱势板块方向（Top5） */
   const ss = DATA.sector_strength || {};
   const scls = ss.classes || {};
@@ -995,6 +1028,7 @@ function renderOvMarket(){
     + breadthHTML
     + tech
     + depth
+    + volTrend
     + dirHTML
     + '<div class="formula-mini">大盘强弱 = 上证价 vs MA20 + MA20 vs MA60 + 20日涨幅（D级工程化）；市场宽度 = 全市场涨跌家数/涨停跌停/中位涨幅/两市成交额（新浪快照，当日）；强势/弱势方向 = 同花顺 90 板块 20日涨幅前/后 5。估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅标注，不构成仓位闸门。</div>';
   el.innerHTML = head
