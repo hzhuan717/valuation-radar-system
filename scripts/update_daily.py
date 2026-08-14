@@ -472,6 +472,15 @@ def main():
     except Exception as e:
         log(f"PE/PB 历史分位更新失败: {e}")
 
+    # ---- 全市场趋势筛选（大盘页第四层·全A前10，东财快照）----
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fetch_market_screener import main as market_screen_main
+        market_screen_main()
+        log("全市场趋势筛选更新完成（东财快照）")
+    except Exception as e:
+        log(f"全市场趋势筛选更新失败: {e}")
+
     # ---- 重建门户 ----
     try:
         env = dict(os.environ, PYTHONIOENCODING="utf-8")

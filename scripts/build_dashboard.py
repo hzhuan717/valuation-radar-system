@@ -232,7 +232,8 @@ def build() -> str:
     data = {"updated_at": state.get("meta", {}).get("updated_at", ""),
             "data_date": market.get("data_date", ""),
             "market": market, "stocks": stocks,
-            "pe_history": state.get("pe_history", {})}
+            "pe_history": state.get("pe_history", {}),
+            "market_screen": state.get("market_screen", {})}
     data_json = json.dumps(data, ensure_ascii=False)
 
     html = TEMPLATE
@@ -496,6 +497,12 @@ b{font-weight:600}
 .env-badge{font-size:15px;font-weight:700;border:1px solid;border-radius:999px;padding:6px 16px;line-height:1.5;white-space:nowrap}
 .env-ev{font-family:var(--font-mono);font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* 第三层：五类状态分组 */
+.filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.filter-row .f-tabs{display:flex;gap:4px;margin-left:auto}
+.filter-row .f-tab{border:1px solid var(--hair);background:none;color:var(--sub2);font-size:12px;font-weight:600;
+  border-radius:6px;padding:4px 10px;transition:all .15s;line-height:1.5;white-space:nowrap}
+.filter-row .f-tab:hover{border-color:var(--blue);color:var(--blue)}
+.filter-row .f-tab.on{background:var(--blue-lt);color:var(--blue);border-color:rgba(0,113,227,.35)}
 .ts-group{margin-bottom:14px}
 .ts-head{display:flex;align-items:center;gap:10px;margin:10px 0 6px}
 .ts-badge{font-size:13px;font-weight:700;border:1px solid;border-radius:999px;padding:3px 12px;line-height:1.5;white-space:nowrap}
@@ -876,7 +883,8 @@ body.wall-hidden .wall-grip{display:none}
     <div class="w-card"><div class="w-title"><span>第一层 · 大盘环境</span><span class="sp">趋势判定 + 估值背景</span></div><div class="w-body" id="ovMarket">—</div></div>
     <div class="w-card"><div class="w-title"><span>第二层 · 板块强弱</span><span class="sp">涨幅 / 量能 / 水位，点击进入</span></div><div class="w-body" id="ovSectors">—</div></div>
   </div>
-  <div class="w-card"><div class="w-title"><span>第三层 · 个股趋势筛选</span><span class="sp">第四层：五类状态 + 触发原因（不构成推荐）</span></div><div class="w-body" id="ovScreen">—</div></div>
+  <div class="w-card"><div class="w-title"><span>第三层 · 全市场趋势筛选</span><span class="sp">全A 5000+ 只 · 每类前10 · 可分自选/非自选</span></div><div class="w-body" id="ovScreenAll">—</div></div>
+  <div class="w-card"><div class="w-title"><span>自选池趋势筛选</span><span class="sp">精确 5/10/20日分类（19 只）</span></div><div class="w-body" id="ovScreen">—</div></div>
   <div class="w-card"><div class="w-title"><span>全池总览</span><span class="sp">点击行进入个股估值</span></div><div class="w-body"><table class="ov-table" id="ovTable"></table></div></div>
 </div>
 
@@ -1041,6 +1049,7 @@ function showTab(name){
     if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 44px)'; }
     renderOvMarket();
     renderOvSectors();
+    renderOvScreenAll();
     renderOvScreen();
     renderOvTable();
     renderList();
@@ -1174,6 +1183,47 @@ function renderOvSectors(){
       + '</div>';
   }).join('')
   + '<div class="formula-mini">板块强弱 = 20日涨幅 + 5日动能（加速或量比>1.2）+ 价格 vs MA20 + 指数 PE 5年分位水位（D级工程化，仅筛选观察，不构成买卖建议）。</div>';
+}
+
+/* 第三层·全市场趋势筛选：全A 5000+ 只，每类前 10，可按自选/非自选过滤 */
+let OV_SCREEN_FILTER = 'all';
+function renderOvScreenAll(){
+  const el = document.getElementById('ovScreenAll');
+  if(!el) return;
+  const ms = DATA.market_screen || {};
+  const classes = ms.classes || {};
+  const stats = ms.stats || {};
+  const f = OV_SCREEN_FILTER;
+  const tot = Object.values(classes).reduce((a, c) => a + (c||[]).length, 0);
+  el.innerHTML =
+    '<div class="filter-row"><span class="ts-mean">筛选口径：当日涨跌幅/量比 + 5/10/20/60日真实涨幅（新浪日K逐只计算）+ MA20/ATR/250日位置，粗筛成交额>8亿、剔除 ST/退市/北交所。仅状态分类与前10展示，<b>不构成买入建议</b>。</span>'
+    + '<span class="f-tabs">'
+    + '<button class="f-tab ' + (f==='all'?'on':'') + '" onclick="setScreenFilter(\'all\')">全部</button>'
+    + '<button class="f-tab ' + (f==='watch'?'on':'') + '" onclick="setScreenFilter(\'watch\')">仅自选</button>'
+    + '<button class="f-tab ' + (f==='other'?'on':'') + '" onclick="setScreenFilter(\'other\')">仅非自选</button>'
+    + '</span></div>'
+    + '<div class="formula-mini" style="border:none;padding:0;margin-bottom:4px">更新 ' + (ms.updated_at||'—') + '｜ 覆盖 ' + (stats.total||0) + ' 只活跃股（成交额>8亿）</div>'
+    + (tot ? TS_ORDER.map(g => {
+        const items = (classes[g]||[]).filter(it => f==='all' || (f==='watch' ? it.watch : !it.watch));
+        if(!items.length) return '';
+        const gCol = {'启动观察':'var(--blue)','趋势观察':'var(--green-d)','高位观察':'var(--red-d)','回调观察':'var(--gold)','排除':'var(--sub2)'}[g];
+        return '<div class="ts-group"><div class="ts-head"><span class="ts-badge" style="color:' + gCol + ';border-color:' + gCol + '">' + g + ' ' + (stats.counts||{})[g] + '只 → 前' + items.length + '</span><span class="ts-mean">' + TS_MEAN[g] + '</span></div>'
+          + items.map(it => {
+            const c1 = (it.chg||0) >= 0 ? 'up-c' : 'dn-c';
+            const c5 = (it.r5||0) >= 0 ? 'up-c' : 'dn-c';
+            const c20 = (it.r20||0) >= 0 ? 'up-c' : 'dn-c';
+            return '<div class="ts-row" onclick="switchStock(\'' + it.code + '\')" title="点击进入 ' + it.name + ' 估值">'
+              + '<span class="t-nm">' + (it.watch?'★':'') + it.name + '<i>' + it.code + (it.watch?' · 自选':'') + '</i></span>'
+              + '<span class="t-r"><b class="' + c1 + '">当日 ' + (it.chg!=null?(it.chg>=0?'+':'')+it.chg.toFixed(2)+'%':'—') + '</b><b class="' + c5 + '">5日 ' + (it.r5!=null?(it.r5>=0?'+':'')+it.r5.toFixed(1)+'%':'—') + '</b><b class="' + c20 + '">20日 ' + (it.r20!=null?(it.r20>=0?'+':'')+it.r20.toFixed(1)+'%':'—') + '</b></span>'
+              + '<span class="t-m">量比 ' + (it.vr!=null?it.vr.toFixed(2):'—') + (it.atr_pct!=null?'｜ATR '+it.atr_pct.toFixed(1)+'%':'') + (it.pos250!=null?'｜位置 '+it.pos250.toFixed(0)+'%':'') + (it.r60!=null?'｜60日 '+(it.r60>=0?'+':'')+it.r60.toFixed(1)+'%':'') + '</span>'
+              + '<span class="t-why">' + (it.why||'—') + '</span>'
+              + '</div>';
+          }).join('') + '</div>';
+      }).join('') : '<div class="formula-mini">暂无全市场筛选数据（每日收盘后自动生成；自选池内个股请查看下方精确分类）。</div>');
+}
+function setScreenFilter(f){
+  OV_SCREEN_FILTER = f;
+  renderOvScreenAll();
 }
 
 /* 第三/四层：个股五类状态分类（启动/趋势/高位/回调/排除，附触发原因） */
