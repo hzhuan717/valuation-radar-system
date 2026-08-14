@@ -319,6 +319,11 @@ b{font-weight:600}
 .micro .m{font-size:12px;color:var(--meta);margin-top:2px;line-height:1.5}
 .formula-mini{font-size:12px;color:var(--sub2);margin-top:8px;border-top:1px solid var(--hair);padding-top:8px;line-height:1.7}
 .calc-body .row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.sens-btn-row{margin:10px 0 4px}
+.sens-btn{width:100%;padding:7px 12px;border-radius:8px;border:1px solid rgba(0,113,227,.35);background:rgba(0,113,227,.08);
+  color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.sens-btn:hover{background:rgba(0,113,227,.16)}
+.sens-v{font-size:12px;color:var(--sub2);margin-top:2px;font-family:var(--font-mono)}
 .calc-body label{font-size:12px;color:var(--sub2);display:block;margin-bottom:3px;line-height:1.5}
 .calc-body input{width:100%;border:1px solid var(--hair);border-radius:5px;padding:5px 7px;font-size:13px;
   font-family:var(--font-mono)}
@@ -348,6 +353,8 @@ b{font-weight:600}
   font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono)}
 .eq{font-family:var(--font-mono);color:var(--blue);display:block;margin-top:4px}
 .src{font-size:12px;color:var(--meta);display:block;margin-top:3px;line-height:1.5}
+.src-link{color:var(--blue);text-decoration:none;border-bottom:1px dashed rgba(0,113,227,.4);margin-right:8px}
+.src-link:hover{color:#005bb8;border-bottom-style:solid}
 .src-badge{display:inline-block;font-size:12px;border:1px solid var(--hair);border-radius:999px;
   padding:2px 10px;color:var(--sub2);margin:4px 4px 0 0;line-height:1.5}
 
@@ -709,21 +716,33 @@ function renderHero(st, prevPrice, prevPct){
   pctEl.style.color = pcol;
   const dot = document.getElementById('mosDot');
   const raw = bandPosRaw(st.price, st.v_low, st.v_mid, st.v_high);
-  if(raw != null){
+  if(raw != null && (st.decision_usable || st.reference_zone)){
     dot.style.left = Math.max(0,Math.min(100,raw*100)) + '%';
     dot.style.display = '';
     let concl;
     if(st.decision_usable){
       concl = '当前处于' + st.zone + '区，安全边际 ' + (st.mos>=0?'+':'') + (st.mos*100).toFixed(1) + '%';
-    } else if(st.reference_zone){
-      concl = '参考区间：' + st.reference_zone + '（质量门未通过，不可执行）';
     } else {
-      concl = '估值带 V_low ¥'+fmt2(st.v_low)+' / V_mid ¥'+fmt2(st.v_mid)+' / V_high ¥'+fmt2(st.v_high)+'（参考级）';
+      concl = '参考区间：' + st.reference_zone + '（质量门未通过，不可执行）';
     }
     document.getElementById('mosTxt').textContent = concl;
   } else {
+    /* blocked / observe：质量门硬拦截，不显示任何 V 带数值，只给原因与分位信号 */
     dot.style.display = 'none';
-    document.getElementById('mosTxt').textContent = '无估值区间（路由拦截/观察）';
+    const ph = (DATA.pe_history||{})[st.ticker];
+    let concl;
+    if(st.decision_status === 'blocked'){
+      concl = '数据不可用 / 无法估值：' + ((st._blockers||[])[0] || '路由拦截');
+    } else if(st.decision_status === 'observe' && ph && ph.ok && ph.pctile!=null){
+      concl = (ph.metric||'PE') + ' 历史分位 ' + Math.round(ph.pctile*100) + '%（' + (ph.signal||'观察') + '）';
+    } else if(ph && ph.ok && ph.pctile!=null){
+      concl = '当前 ' + (ph.metric||'PE') + ' 处于历史 ' + Math.round(ph.pctile*100) + '% 分位（' + (ph.signal||'—') + '）';
+    } else if(st.decision_status === 'observe'){
+      concl = '观察路由：无估值锚，等待盈利/指数数据补齐';
+    } else {
+      concl = '数据不可用 / 无法估值（路由拦截）';
+    }
+    document.getElementById('mosTxt').textContent = concl;
   }
 }
 
@@ -742,11 +761,88 @@ function toggleFold(id){
 function calcStepsHTML(st){
   const steps = ((st.decision_data||{}).valuation||{}).calc_steps || [];
   if(!steps.length) return '<div class="formula-mini">引擎未输出计算步骤。</div>';
-  return steps.map(s =>
-    '<div class="step-item"><div class="step-no">' + (s.id==='v_low'?'低':(s.id==='v_mid'?'中':'高')) + '</div><div>'
-    + '<b>' + (s.label||s.id) + '</b>：' + (s.formula||'') 
-    + '<span class="eq">' + (s.substitution||'') + ' = ' + fmt2(s.result) + ' 元</span></div></div>'
-  ).join('');
+  const srcMap = {};
+  ((st.decision_data||{}).sources||[]).forEach(x => { srcMap[x.id] = x; });
+  let html = steps.map(s => {
+    const links = (s.source_ids||[]).map(id => {
+      const so = srcMap[id];
+      return so ? '<a class="src-link" href="' + (so.url||'#') + '" target="_blank" rel="noreferrer" title="' + (so.title||so.provider||id) + '">' + (so.provider||'来源') + '</a>' : '';
+    }).join(' ');
+    return '<div class="step-item"><div class="step-no">' + (s.id==='v_low'?'低':(s.id==='v_mid'?'中':'高')) + '</div><div>'
+      + '<b>' + (s.label||s.id) + '</b>：' + (s.formula||'')
+      + '<span class="eq">' + (s.substitution||'') + ' = ' + fmt2(s.result) + ' 元</span>'
+      + (links ? '<span class="src">' + links + '</span>' : '')
+      + '</div></div>';
+  }).join('');
+  const gm = st.growth_momentum;
+  if(gm && gm.growth > 0.30){
+    html += '<div class="step-item"><div class="step-no">P</div><div><b>成长修正（PEG 交叉检查）</b>：FY1 增速 ' + (gm.growth*100).toFixed(0) + '% → PEG≈1 参考 PE ' + gm.peg_pe + '×；'
+      + '<span class="eq">原历史分位 PE ' + fmt2(st.pe_mid) + '× → 修正参考 ' + gm.peg_pe + '×（不自动替换倍数，仅供认知补偿）</span></div></div>';
+  }
+  return html;
+}
+
+/* ============ Card2 渲染器（按路由分派，逻辑隔离） ============ */
+function renderC2(st){
+  if(st.decision_status === 'blocked' || st.decision_status === 'observe') return renderC2Blocked(st);
+  return renderC2V3(st);
+}
+
+/* 被拦截/观察标的：仅 blocker 原因 + 分位信号（ETF 水位计），无价格锚 */
+function renderC2Blocked(st){
+  const ph = (DATA.pe_history||{})[st.ticker];
+  const isETF = st.route==='etf' || st.ticker==='000001';
+  const html = '<div class="blocker-line">' + ((st._blockers||[])[0]||'路由拦截：模型输入不完整') + '</div>'
+    + (isETF && ph && ph.ok && ph.pctile!=null ?
+        '<div class="band-track" style="margin-top:8px"><div class="dot" style="left:'+Math.max(0,Math.min(100,ph.pctile*100))+'%"></div></div>'
+        + '<div class="band-labels" style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub2);margin-top:4px"><span>低估 &lt;30%</span><span>合理 30~70%</span><span>高估 &gt;70%</span></div>'
+        + '<div class="formula-mini" style="color:'+(ph.pctile<0.3?'var(--green-d)':(ph.pctile>0.7?'var(--red-d)':'var(--sub2)'))+'">指数估值水位计：当前 '+(ph.metric||'PE')+' 处于历史 '+Math.round(ph.pctile*100)+'% 分位（'+(ph.signal||'—')+'）。该模型无需盈利预测，仅参考指数历史水位（D级）。</div>'
+        : '')
+    + (ph && ph.ok ? '<div class="micro-row">'
+      + '<div class="micro"><div class="k">PE/PB 历史分位</div><div class="v">'+(ph.pctile!=null?Math.round(ph.pctile*100)+'%':'—')+'</div><div class="m">'+phDetail(ph)+'</div></div>'
+      + '<div class="micro"><div class="k">分位判断</div><div class="v" style="font-size:14px">'+(ph.signal||'—')+'</div><div class="m">'+(ph.note||'')+'</div></div>'
+      + '<div class="micro"><div class="k">TTM PE/PB</div><div class="v">'+fmt2(st.pe_ttm)+'/'+fmt2(st.pb)+'</div><div class="m">行情源</div></div>'
+      + '</div>' : '');
+  return {html, src: ''};
+}
+
+/* 有估值带的路由：三档 V 块 + 位置条 + 计算过程 + 敏感性按钮（equity 加计算器） */
+function renderC2V3(st){
+  const model = st.valuation_model || {};
+  const isBank = model.code==='bank_pb_roe', isInfra = model.code==='infrastructure_cashflow';
+  const isIns = model.code==='insurance_pev', isNorm = st.forecast_basis==='NORMALIZED';
+  const usable = st.decision_usable;
+  let fB='EPS', fM='PE档';
+  if(isIns){ fB='每股EV'; fM='P/EV'; }
+  else if(isBank||isInfra){ fB='BVPS'; fM='PB'; }
+  else if(isNorm){ fB='正常化EPS'; fM='PE'; }
+  const b1 = isIns?fmt2(st.ev_per_share):(isBank||isInfra?fmt2(st.bvps):fmt2(st.eps_base));
+  const m1 = isIns?st.pev_low:(isBank||isInfra?st.pb_low:st.pe_low);
+  const m2 = isIns?st.pev_mid:(isBank||isInfra?st.pb_mid:st.pe_mid);
+  const m3 = isIns?st.pev_high:(isBank||isInfra?st.pb_high:st.pe_high);
+  const e1 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_bear));
+  const e2 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_base));
+  const e3 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_bull));
+  let html =
+    '<div class="v3-blocks">'
+    + '<div class="v3b low"><div class="k">保守 V_low'+(usable?' · 买入启动':'')+'</div><div class="v">¥'+fmt2(st.v_low)+'</div><div class="f">'+e1+' × '+m1+'×</div></div>'
+    + '<div class="v3b mid"><div class="k">基准 V_mid · 价值中枢</div><div class="v">¥'+fmt2(st.v_mid)+'</div><div class="f">'+e2+' × '+m2+'×</div></div>'
+    + '<div class="v3b high"><div class="k">乐观 V_high'+(usable?' · 卖出启动':'')+'</div><div class="v">¥'+fmt2(st.v_high)+'</div><div class="f">'+e3+' × '+m3+'×</div></div>'
+    + '</div>'
+    + '<div class="band-track"><div class="dot" style="left:'+bandPosPct(st.price, st.v_low, st.v_mid, st.v_high)+'%"></div></div>'
+    + '<div class="band-labels" style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub2);margin-top:4px"><span>低估 ¥'+fmt2(st.v_low)+'</span><span>现价 ¥'+fmt2(st.price)+'</span><span>高估 ¥'+fmt2(st.v_high)+'</span></div>'
+    + (!usable?'<div class="warn-line">质量门未通过：参考级区间，不构成买卖动作。</div>':'');
+  let foldInner = calcStepsHTML(st);
+  if(usable && !isIns && !isBank && !isInfra && !isNorm){
+    foldInner += '<div class="calc-body" style="display:block;padding-top:10px"><div class="row">'
+      + '<div><label>现价 P</label><input id="i-price" type="number" step="0.01" value="'+st.price+'"></div>'
+      + '<div><label>PE低/中/高</label><div style="display:flex;gap:4px"><input id="i-peL" type="number" step="0.5" value="'+st.pe_low+'"><input id="i-peM" type="number" step="0.5" value="'+st.pe_mid+'"><input id="i-peH" type="number" step="0.5" value="'+st.pe_high+'"></div></div>'
+      + '<div><label>EPS保守/基准/乐观</label><div style="display:flex;gap:4px"><input id="i-epsB" type="number" step="0.01" value="'+st.eps_bear+'"><input id="i-epsM" type="number" step="0.01" value="'+st.eps_base+'"><input id="i-epsU" type="number" step="0.01" value="'+st.eps_bull+'"></div></div>'
+      + '</div><div class="calc-out" id="calcOut">—</div></div>';
+  }
+  html += '<div class="sens-btn-row"><button class="sens-btn" onclick="openSensitivity(\'' + st.ticker + '\')">⚡ 敏感性测试（压力测试，不保存）</button></div>'
+    + foldHTML('fold2', foldInner);
+  return {html, src: st.forecast_source || st.pb_source || st.pe_source || ''};
 }
 
 /* ============ 数据墙 ============ */
@@ -811,57 +907,23 @@ function renderWall(st){
     + '</div>'
     + foldChecks('fold1');
 
-  /* ---- Card 2：三档估值（三色块 + 折叠计算过程/计算器） ---- */
-  let c2 = '', c2src = '';
-  if(st.decision_status==='blocked'){
-    const ph = (DATA.pe_history||{})[st.ticker];
-    c2 = '<div class="blocker-line">' + ((st._blockers||[])[0]||'路由拦截：模型输入不完整') + '</div>'
-      + (ph && ph.ok ? '<div class="micro-row">'
-        + '<div class="micro"><div class="k">PE/PB 历史分位</div><div class="v">'+(ph.pctile!=null?Math.round(ph.pctile*100)+'%':'—')+'</div><div class="m">'+phDetail(ph)+'</div></div>'
-        + '<div class="micro"><div class="k">分位判断</div><div class="v" style="font-size:14px">'+(ph.signal||'—')+'</div><div class="m">'+(ph.note||'')+'</div></div>'
-        + '<div class="micro"><div class="k">TTM PE/PB</div><div class="v">'+fmt2(st.pe_ttm)+'/'+fmt2(st.pb)+'</div><div class="m">行情源</div></div>'
-        + '</div>' : '');
-  } else {
-    let fB='EPS', fM='PE档';
-    if(isIns){ fB='每股EV'; fM='P/EV'; }
-    else if(isBank||isInfra){ fB='BVPS'; fM='PB'; }
-    else if(isNorm){ fB='正常化EPS'; fM='PE'; }
-    const b1 = isIns?fmt2(st.ev_per_share):(isBank||isInfra?fmt2(st.bvps):fmt2(st.eps_base));
-    const m1 = isIns?st.pev_low:(isBank||isInfra?st.pb_low:st.pe_low);
-    const m2 = isIns?st.pev_mid:(isBank||isInfra?st.pb_mid:st.pe_mid);
-    const m3 = isIns?st.pev_high:(isBank||isInfra?st.pb_high:st.pe_high);
-    const e1 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_bear));
-    const e2 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_base));
-    const e3 = isIns?'EV':(isBank||isInfra?'BVPS':fmt2(st.eps_bull));
-    c2 =
-      '<div class="v3-blocks">'
-      + '<div class="v3b low"><div class="k">保守 V_low'+(usable?' · 买入启动':'')+'</div><div class="v">¥'+fmt2(st.v_low)+'</div><div class="f">'+e1+' × '+m1+'×</div></div>'
-      + '<div class="v3b mid"><div class="k">基准 V_mid · 价值中枢</div><div class="v">¥'+fmt2(st.v_mid)+'</div><div class="f">'+e2+' × '+m2+'×</div></div>'
-      + '<div class="v3b high"><div class="k">乐观 V_high'+(usable?' · 卖出启动':'')+'</div><div class="v">¥'+fmt2(st.v_high)+'</div><div class="f">'+e3+' × '+m3+'×</div></div>'
-      + '</div>'
-      + '<div class="band-track"><div class="dot" style="left:'+bandPosPct(st.price, st.v_low, st.v_mid, st.v_high)+'%"></div></div>'
-      + '<div class="band-labels" style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub2);margin-top:4px"><span>低估 ¥'+fmt2(st.v_low)+'</span><span>现价 ¥'+fmt2(st.price)+'</span><span>高估 ¥'+fmt2(st.v_high)+'</span></div>'
-      + (!usable?'<div class="warn-line">质量门未通过：参考级区间，不构成买卖动作。</div>':'');
-    let foldInner = calcStepsHTML(st);
-    if(usable && !isIns && !isBank && !isInfra && !isNorm){
-      foldInner += '<div class="calc-body" style="display:block;padding-top:10px"><div class="row">'
-        + '<div><label>现价 P</label><input id="i-price" type="number" step="0.01" value="'+st.price+'"></div>'
-        + '<div><label>PE低/中/高</label><div style="display:flex;gap:4px"><input id="i-peL" type="number" step="0.5" value="'+st.pe_low+'"><input id="i-peM" type="number" step="0.5" value="'+st.pe_mid+'"><input id="i-peH" type="number" step="0.5" value="'+st.pe_high+'"></div></div>'
-        + '<div><label>EPS保守/基准/乐观</label><div style="display:flex;gap:4px"><input id="i-epsB" type="number" step="0.01" value="'+st.eps_bear+'"><input id="i-epsM" type="number" step="0.01" value="'+st.eps_base+'"><input id="i-epsU" type="number" step="0.01" value="'+st.eps_bull+'"></div></div>'
-        + '</div><div class="calc-out" id="calcOut">—</div></div>';
-    }
-    c2 += foldHTML('fold2', foldInner);
-    c2src = st.forecast_source || st.pb_source || st.pe_source || '';
-  }
-  document.getElementById('c2Body').innerHTML = c2 || '<div class="formula-box">无数据</div>';
-  document.getElementById('c2Src').textContent = c2src ? c2src.slice(0,26) : '';
+  /* ---- Card 2：三档估值（按路由分派独立渲染器） ---- */
+  const c2 = renderC2(st);
+  document.getElementById('c2Body').innerHTML = c2.html || '<div class="formula-box">无数据</div>';
+  document.getElementById('c2Src').textContent = c2.src ? c2.src.slice(0,26) : '';
   bindCalc();
 
   /* ---- Card 3：买卖阶梯（瀑布，spec 5.2/5.3：Kelly + 档位仓位 + 止损） ---- */
   if(usable && st.v_low!=null && st.v_high!=null){
     const mos = st.mos!=null ? st.mos : (st.v_mid!=null && st.v_mid>0 ? (st.v_mid-st.price)/st.v_mid : 0);
     const kellyRaw = st.v_high>st.v_low ? mos/(st.v_high-st.v_low) : 0;
-    const kelly = Math.max(0, Math.min(kellyRaw*0.5, 0.20));
+    let kelly = Math.max(0, Math.min(kellyRaw*0.5, 0.20));
+    const mc = st.model_confidence!=null && isFinite(+st.model_confidence) ? +st.model_confidence : null;
+    let kellyNote = '';
+    if(mc != null){
+      kelly = kelly * mc;
+      if(mc < 0.6){ kelly = kelly * 0.5; kellyNote = '｜ 低置信度（'+mc.toFixed(2)+'），仓位减半'; }
+    }
     const k = st.kline||[];
     const lo60 = k.length>=60 ? Math.min(...k.slice(-60).map(r=>r.l)) : null;
     const stop1 = st.ma250!=null ? st.ma250*0.97 : null;
@@ -880,10 +942,10 @@ function renderWall(st){
       + '<div class="divider"><span>现价</span><span>¥'+fmt2(st.price)+'</span></div>'
       + buyRows.map(r=>'<div class="step buy'+(st.price<=r.v?' touched':'')+'"><span class="lab">'+r.lab+'</span><span>¥'+fmt2(r.v)+'</span><small class="st">'+r.stop+'</small></div>').join('')
       + '</div>'
-      + '<div class="kelly-line">Kelly 单票上限 '+(kelly*100).toFixed(1)+'%（cap 20%）｜ MOS '+(mos*100).toFixed(1)+'%｜ model_confidence '+(st.model_confidence!=null?st.model_confidence.toFixed(1):'—')+'</div>'
+      + '<div class="kelly-line">Kelly 单票上限 '+(kelly*100).toFixed(1)+'%（cap 20% × conf '+(mc!=null?mc.toFixed(2):'—')+'）'+kellyNote+'｜ MOS '+(mos*100).toFixed(1)+'%</div>'
       + '<div class="kelly-line">触发确认：估值定方向（档位+上限），技术定时机——试探仓须待止跌确认/站上MA5 再执行，估值触档不单独满仓（防左侧接飞刀）。</div>'
       + foldHTML('fold3','<div class="formula-mini">'
-      + 'Kelly_fraction = MOS ÷ (V_high − V_low) × 0.5（保守系数，分数凯利），cap 20%（D级可配置，spec 5.2）；'
+      + 'Kelly_fraction = MOS ÷ (V_high − V_low) × 0.5（保守系数，分数凯利）× model_confidence，cap 20%（D级可配置，spec 5.2；置信度<0.6 再减半）；'
       + '买入金字塔：试探 5% ≤V_low×1.05（止损 MA250×0.97）→ 主力 10% ≤V_low（止损 V_low×0.95）→ 加仓 5% ≤V_low×0.95（止损近60日低点）；'
       + '止盈倒金字塔：≥V_mid 减仓30%、≥V_high 清仓50%（spec 5.3）。触达档位自动高亮。</div>');
   } else if(st.v_low!=null && st.v_high!=null){
@@ -990,6 +1052,53 @@ function openModal(title, body){
   document.getElementById('mask').classList.add('on');
 }
 function closeModal(){ document.getElementById('mask').classList.remove('on'); }
+
+/* ============ 敏感性分析（压力测试，不保存、不改写冻结参数） ============ */
+function openSensitivity(ticker){
+  const st = DATA.stocks.find(s => s.ticker === ticker);
+  if(!st || st.v_low==null || st.eps_base==null) return;
+  const P = +st.price;
+  const body = '<div class="formula-box">模拟压力测试：仅用于理解参数敏感度，<b>不保存、不影响正式决策与质量门</b>。'
+    + '基准：EPS bear/base/bull = ' + fmt2(st.eps_bear) + '/' + fmt2(st.eps_base) + '/' + fmt2(st.eps_bull)
+    + '，PE 档 = ' + st.pe_low + '/' + st.pe_mid + '/' + st.pe_high + '×</div>'
+    + '<div class="row"><div><label>PE 倍数调整</label><input type="range" id="s-pe" min="80" max="120" step="5" value="100"><div class="sens-v" id="s-pe-v">×1.00</div></div></div>'
+    + '<div class="row"><div><label>EPS 增速调整</label><input type="range" id="s-eps" min="-30" max="30" step="5" value="0"><div class="sens-v" id="s-eps-v">+0%</div></div></div>'
+    + '<div id="sensOut" class="formula-box">—</div>'
+    + '<span class="src-badge">D级：仅模拟，不改写冻结参数/来源账本/质量门</span>';
+  openModal('⚡ 敏感性测试 · ' + st.name, body);
+  const re = () => {
+    const m = +document.getElementById('s-pe').value / 100;
+    const g = +document.getElementById('s-eps').value / 100;
+    document.getElementById('s-pe-v').textContent = '×' + m.toFixed(2);
+    document.getElementById('s-eps-v').textContent = (g>=0?'+':'') + (g*100).toFixed(0) + '%';
+    const e = b => (b==null ? null : +b * (1 + g));
+    const vLow = e(st.eps_bear) * +st.pe_low * m;
+    const vMid = e(st.eps_base) * +st.pe_mid * m;
+    const vHigh = e(st.eps_bull) * +st.pe_high * m;
+    if(![vLow, vMid, vHigh].every(v => isFinite(+v) && +v > 0)) return;
+    const mos = 1 - P / vMid;
+    const kellyRaw = vHigh > vLow ? mos / (vHigh - vLow) : 0;
+    let kelly = Math.max(0, Math.min(kellyRaw * 0.5, 0.20));
+    const mc = st.model_confidence!=null && isFinite(+st.model_confidence) ? +st.model_confidence : null;
+    if(mc != null){ kelly = kelly * mc; if(mc < 0.6) kelly = kelly * 0.5; }
+    const zone = P <= vLow ? (P <= 0.9*vLow ? '深度低估' : '低估')
+      : (P <= vMid ? '合理下沿' : (P <= vHigh ? '合理上沿' : (P <= 1.3*vHigh ? '高估' : '泡沫')));
+    document.getElementById('sensOut').innerHTML =
+      '<div class="v3-blocks">'
+      + '<div class="v3b low"><div class="k">V_low（模拟）</div><div class="v">¥' + fmt2(vLow) + '</div></div>'
+      + '<div class="v3b mid"><div class="k">V_mid（模拟）</div><div class="v">¥' + fmt2(vMid) + '</div></div>'
+      + '<div class="v3b high"><div class="k">V_high（模拟）</div><div class="v">¥' + fmt2(vHigh) + '</div></div>'
+      + '</div>'
+      + '<div>模拟区间：<b>' + zone + '</b>｜ MOS ' + (mos>=0?'+':'') + (mos*100).toFixed(1) + '%｜ Kelly 单票上限 ' + (kelly*100).toFixed(1) + '%</div>'
+      + '<div class="formula-mini">V = EPS×(' + (g>=0?'+':'') + (g*100).toFixed(0) + '%) × PE×' + m.toFixed(2) + '（EPS 三档按同比例缩放）；现价 ' + fmt2(P) + '</div>';
+  };
+  setTimeout(() => {
+    const e1 = document.getElementById('s-pe'), e2 = document.getElementById('s-eps');
+    if(e1) e1.addEventListener('input', re);
+    if(e2) e2.addEventListener('input', re);
+    re();
+  }, 0);
+}
 function copyFormula(){
   const txt = document.getElementById('m-body').innerText || '';
   const done = () => { const b = document.querySelector('.modal-hd .copy'); if(b){ b.textContent='已复制 ✓'; setTimeout(()=>{ b.textContent='复制公式'; }, 1500); } };
@@ -1146,6 +1255,23 @@ function packLbl(items, gap){
   return items;
 }
 
+/* 双列防重叠：右列（MA/斐波/锚标签）与左列（S/R 徽章）互检，
+   冲突时右标签向下让位 6px，6 次仍冲突则隐藏（_hidden） */
+function packLblMutual(left, right, gapL, gapR, crossGap){
+  packLbl(left, gapL);
+  packLbl(right, gapR);
+  for(const it of right){
+    let guard = 0;
+    while(guard++ < 6){
+      const clash = left.filter(l => Math.abs(l.yy - it.yy) < crossGap);
+      if(!clash.length) break;
+      it.yy = Math.max(it.y, clash[0].yy + crossGap + 2);
+    }
+    if(guard >= 6 && left.some(l => Math.abs(l.yy - it.yy) < crossGap)) it._hidden = true;
+  }
+  return right;
+}
+
 class ValuationChartEngine {
   constructor(containerId, stockData){
     this.wrap = document.getElementById(containerId);
@@ -1204,9 +1330,10 @@ class ValuationChartEngine {
     this.TL = 12; this.BX = 26;
     this.px0 = 8; this.px1 = w - this.AX - this.GUT;
     this.axX = w - this.AX;
-    this.priceH = (h - this.TL - this.BX) * 0.75;
+    this.hideVol = w < 600;   /* 窄屏隐藏成交量副图，释放垂直空间 */
+    this.priceH = (h - this.TL - this.BX) * (this.hideVol ? 0.9 : 0.75);
     this.volTop = this.TL + this.priceH + 6;
-    this.volBot = h - this.BX;
+    this.volBot = this.hideVol ? this.volTop : h - this.BX;
     this.volH = this.volBot - this.volTop;
     const wpx = Math.round(w * this.dpr), hpx = Math.round(h * this.dpr);
     if(this.cv.width !== wpx || this.cv.height !== hpx){ this.cv.width = wpx; this.cv.height = hpx; }
@@ -1427,6 +1554,7 @@ class ValuationChartEngine {
   }
 
   _drawVolume(ctx){
+    if(this.hideVol) return;   /* <600px 窄屏不画成交量副图 */
     const vmax = this._volMax();
     const bodyW = Math.max(1.5, Math.min(12, this.slot * 0.7));
     for(let i = this._pr.i0; i <= this._pr.i1; i++){
@@ -1685,7 +1813,8 @@ class ValuationChartEngine {
     /* 右缘标签槽（锚/斐波/MA 联合防重叠；标签在 K 线区右侧专用槽内，不遮挡蜡烛） */
     const chW = this.W < 560 ? 5.2 : 6.3;
     const maxChars = Math.max(4, Math.floor((this.GUT - 14) / chW));
-    packLbl(rightItems, 17).forEach(it => {
+    packLblMutual(srLbls, rightItems, 22, 17, 18).forEach(it => {
+      if(it._hidden) return;
       if(it.yy < this.TL + 9 || it.yy > priceB - 9) return;
       let lab = it.lab;
       if(lab.length > maxChars) lab = lab.slice(0, maxChars);
@@ -2184,6 +2313,11 @@ class ValuationChartEngine {
 
   setData(st){
     if(!st){ return; }
+    if(this._anim){ cancelAnimationFrame(this._anim); this._anim = null; }
+    if(this._yAnim){ cancelAnimationFrame(this._yAnim); this._yAnim = null; }
+    this._loopOn = false;   /* 停掉旧数据残留渲染循环，setData 尾部重新启动 */
+    if(this._hoverT){ clearTimeout(this._hoverT); this._hoverT = null; }
+    if(this._flashT){ clearTimeout(this._flashT); this._flashT = null; }
     const tok = ++this._dataTok;
     this.st = st;
     const all = (st.kline||[]).filter(r => r && [r.o, r.c, r.h, r.l, r.v].every(v => Number.isFinite(+v)));
