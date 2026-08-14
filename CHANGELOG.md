@@ -2,6 +2,24 @@
 
 仅研究/教学/回测用途。每次发布版本对应一次功能或数据修复，注释见下。
 
+## v1.14.0（2026-08-14）—— 右数据墙重构：可折叠 + 防溢出 + 响应式卡片带
+Wall UI 优化评审逐项落实（仅 CSS/少量 DOM+UI JS，未改数据与计算逻辑）：
+- **折叠系统**：.wall 顶部 sticky 控制条（全部展开/折叠 + 展开卡片计数 7/7）；每卡标题栏
+  独立折叠按钮（▾/▶）；grid-template-rows 1fr→0fr 0.25s 收起动画；折叠状态 localStorage
+  （wall_fold_state）持久化；折叠后标题降色（.w-card.collapsed）。
+- **防溢出治理**：.wall 限 min-width:280 / max-width:480 / width:var(--wall-w,340)，
+  container-type:inline-size；等宽数据（sr-list .v、wfall .step、micro .v、badge、kelly-line）
+  统一 nowrap+ellipsis；kelly-line 改横向滚动；checks 改 20px+1fr grid、warn/block 左边框高亮；
+  c2 来源说明移出标题栏改为底部 .src-foot。
+- **窄墙容器查询**（@container ≤360px）：sr-list/v3-blocks/micro-row/calc-body 降单列、
+  gauge 纵向、badge 纵堆叠；≥401px 恢复多列（拖宽 grip 即时响应，不依赖视口）。
+- **v3b 进度条**：每个估值块内新增 pbar，显示现价在 0.9low~low / low~mid / mid~high 段内位置。
+- **响应式**：平板（768-1099）wall 变横向滚动卡片带（min-width 300px、高 420px 内部滚动）；
+  移动（<768）垂直堆叠 + 手风琴（标题点击展开本卡收起其余，默认全折叠）；jumbo/v3b 降至 20px。
+- 字号：.jumbo/.v3b .v 24→22px 减少溢出风险。
+- 验收：node --check 通过；Edge headless DOM 实测 12/12 PASS（控制条/计数 7/7/折叠按钮×7/
+  w-body×7/pbar/src-foot/容器查询/checks grid/手风琴/平板卡片带）；门户已同步公开网址。
+
 ## v1.13.0（2026-08-14）—— 数据验证优先重构：质量门硬拦截 + 渲染器拆分 + 敏感性弹窗
 V2 重构评审 20 项逐条核对，修复/实现 10 项，其余已由既有架构覆盖：
 - **Hero 质量门硬拦截**：blocked/observe 时不再显示 V_low/V_mid/V_high 数值（原"参考级"文案泄漏
