@@ -1181,6 +1181,48 @@ function renderOvMarket(){
     + '</td><td>' + (x.erp_pct!=null ? x.erp_pct + '%' : '—') + '</td><td>' + x.band + '</td></tr>').join('');
   const gCol = envGrade === '强' ? 'var(--green-d)' : (envGrade === '偏弱' ? 'var(--red-d)' : 'var(--blue)');
   const upCol = bd.up_ratio != null ? (bd.up_ratio >= 55 ? 'var(--green-d)' : (bd.up_ratio >= 40 ? 'var(--gold)' : 'var(--red-d)')) : 'var(--sub2)';
+  /* 指数深度技术：全均线 + 250日高低 + 最新量能 */
+  let depth = '';
+  if(idx){
+    const d = tsScreen(idx);
+    const k = (idx.kline||[]).filter(r => r && isFinite(+r.c));
+    const closes = k.map(r => +r.c);
+    if(d && closes.length){
+      const maV = [5,10,20,60,120,250].map(w => {
+        const v = tsMa(closes, w);
+        return {w, v, above: v != null && d.price >= v};
+      }).filter(x => x.v != null);
+      const maCell = x => '<div class="micro"><div class="k">MA' + x.w + '</div><div class="v" style="font-size:13px;color:' + (x.above?'var(--green-d)':'var(--red-d)') + '">' + fmt2(x.v) + '</div></div>';
+      const hi250 = Math.max(...k.slice(-250).map(r => +r.h));
+      const lo250 = Math.min(...k.slice(-250).map(r => +r.l));
+      const last = k[k.length-1];
+      const amtTxt = last && last.v != null ? (last.v >= 1e8 ? (last.v/1e8).toFixed(0)+'亿' : (last.v/1e4).toFixed(0)+'万') : '—';
+      depth = '<div class="micro-row" style="border-top:1px solid var(--hair);padding-top:8px">'
+        + '<div class="micro"><div class="k">最新点位</div><div class="v" style="font-size:15px">' + fmt2(d.price) + '</div></div>'
+        + '<div class="micro"><div class="k">当日涨跌</div><div class="v" style="font-size:15px;color:' + (d.chg>=0?'var(--green-d)':'var(--red-d)') + '">' + (d.chg!=null?(d.chg>=0?'+':'')+d.chg.toFixed(2)+'%':'—') + '</div></div>'
+        + '<div class="micro"><div class="k">当日成交</div><div class="v" style="font-size:15px">' + amtTxt + '</div></div>'
+        + '<div class="micro"><div class="k">250日高</div><div class="v" style="font-size:15px;color:var(--red-d)">' + fmt2(hi250) + '</div></div>'
+        + '<div class="micro"><div class="k">250日低</div><div class="v" style="font-size:15px;color:var(--green-d)">' + fmt2(lo250) + '</div></div>'
+        + '<div class="micro"><div class="k">距高点</div><div class="v" style="font-size:15px;color:var(--red-d)">' + (hi250>0?((d.price/hi250-1)*100).toFixed(1)+'%':'—') + '</div></div>'
+        + '<div class="micro"><div class="k">距低点</div><div class="v" style="font-size:15px;color:var(--green-d)">' + (lo250>0?((d.price/lo250-1)*100).toFixed(1)+'%':'—') + '</div></div>'
+        + '<div class="micro"><div class="k">5日量比</div><div class="v" style="font-size:15px">' + (d.vr!=null?d.vr.toFixed(2):'—') + '</div></div>'
+        + '</div>'
+        + '<div class="micro-row" style="border-top:1px solid var(--hair);padding-top:8px">' + maV.map(maCell).join('') + '</div>';
+    }
+  }
+  /* 今日强势/弱势板块方向（Top5） */
+  const ss = DATA.sector_strength || {};
+  const scls = ss.classes || {};
+  const strong = (scls['持续强势']||[]).slice(0,5);
+  const weak = ((scls['走弱/观望']||[]).slice()).sort((a,b) => (a.r20==null?0:a.r20) - (b.r20==null?0:b.r20)).slice(0,5);
+  const dirHTML = (strong.length || weak.length ?
+    '<div class="micro-row" style="border-top:1px solid var(--hair);padding-top:8px">'
+    + '<div class="micro" style="grid-column:1/-1"><div class="k" style="color:var(--green-d)">今日强势方向（20日涨幅前5板块）</div><div class="v" style="font-size:13px;font-family:var(--font-base);line-height:1.8">'
+    + (strong.map(x => x.name + ' <b class="up-c">' + (x.r20!=null?('+' + x.r20.toFixed(1) + '%'):'—') + '</b>').join('　') || '—') + '</div></div>'
+    + '<div class="micro" style="grid-column:1/-1"><div class="k" style="color:var(--red-d)">今日弱势方向（20日涨幅后5板块）</div><div class="v" style="font-size:13px;font-family:var(--font-base);line-height:1.8">'
+    + (weak.map(x => x.name + ' <b class="dn-c">' + (x.r20!=null?('' + x.r20.toFixed(1) + '%'):'—') + '</b>').join('　') || '—') + '</div></div>'
+    + '</div>'
+    : '');
   const breadthHTML = (bd.total ? 
     '<div class="breadth-box">'
     + '<div class="b-line"><span class="b-lab">市场宽度</span>'
@@ -1188,7 +1230,8 @@ function renderOvMarket(){
     + '<span class="b-num" style="color:var(--red-d)">跌 ' + bd.down + '</span>'
     + '<span class="b-num" style="color:var(--sub2)">平 ' + (bd.flat||0) + '</span>'
     + '<span class="b-num">涨停 ' + (bd.limit_up||0) + ' / 跌停 ' + (bd.limit_dn||0) + '</span>'
-    + '<span class="b-num">中位涨幅 <b style="color:' + (bd.median_chg!=null && bd.median_chg>=0?'var(--green-d)':'var(--red-d)') + '">' + (bd.median_chg!=null?(bd.median_chg>=0?'+':'')+bd.median_chg.toFixed(2)+'%':'—') + '</b></span></div>'
+    + '<span class="b-num">中位涨幅 <b style="color:' + (bd.median_chg!=null && bd.median_chg>=0?'var(--green-d)':'var(--red-d)') + '">' + (bd.median_chg!=null?(bd.median_chg>=0?'+':'')+bd.median_chg.toFixed(2)+'%':'—') + '</b></span>'
+    + '<span class="b-num">两市成交 <b style="color:var(--ink)">' + (bd.total_amount!=null?(bd.total_amount/1e4).toFixed(2)+'万亿':'—') + '</b></span></div>'
     + '<div class="b-bar"><i style="width:' + bd.up_ratio + '%;background:var(--green-d)"></i><i style="left:' + bd.up_ratio + '%;background:var(--red-d)"></i></div>'
     + '<div class="b-note" style="color:' + upCol + '">上涨占比 ' + bd.up_ratio + '%（' + (bd.up_ratio>=55?'普涨·环境偏强':bd.up_ratio>=40?'分化·中性':'普跌·环境偏弱') + '，全市场 ' + bd.total + ' 只）</div>'
     + '</div>'
@@ -1197,7 +1240,9 @@ function renderOvMarket(){
     + '<span class="env-ev">' + (evidence.join(' · ') || '指数K线不足') + '</span></div>'
     + breadthHTML
     + tech
-    + '<div class="formula-mini">大盘强弱 = 上证价 vs MA20 + MA20 vs MA60 + 20日涨幅（D级工程化）；市场宽度 = 全市场涨跌家数/涨停跌停/中位涨幅（新浪快照，当日）。估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅标注，不构成仓位闸门。</div>';
+    + depth
+    + dirHTML
+    + '<div class="formula-mini">大盘强弱 = 上证价 vs MA20 + MA20 vs MA60 + 20日涨幅（D级工程化）；市场宽度 = 全市场涨跌家数/涨停跌停/中位涨幅/两市成交额（新浪快照，当日）；强势/弱势方向 = 同花顺 90 板块 20日涨幅前/后 5。估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅标注，不构成仓位闸门。</div>';
   el.innerHTML = head
     + '<table class="ov-table">'
     + '<tr><th>口径</th><th>PE(TTM)</th><th>格雷厄姆</th><th>ERP</th><th>分档</th></tr>' + rows

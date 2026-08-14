@@ -207,10 +207,11 @@ def main():
         return
     log(f"全市场快照: {len(df)} 行")
 
-    # 1.5) 市场宽度（全市场涨跌家数/涨停跌停/中位涨幅）
+    # 1.5) 市场宽度（全市场涨跌家数/涨停跌停/中位涨幅/总成交额）
     breadth = {"up": 0, "down": 0, "flat": 0, "limit_up": 0, "limit_dn": 0,
-               "median_chg": None, "total": 0}
+               "median_chg": None, "total": 0, "total_amount": None}
     chgs = []
+    amt_sum = 0.0
     for _, row in df.iterrows():
         name = str(row.get("名称", "")).strip()
         code = str(row.get("代码", "")).strip()
@@ -225,6 +226,9 @@ def main():
             continue
         breadth["total"] += 1
         chgs.append(c)
+        a = num(row.get("成交额"))
+        if a is not None:
+            amt_sum += a
         if c > 0:
             breadth["up"] += 1
             if c >= 9.8:
@@ -238,9 +242,11 @@ def main():
     if chgs:
         chgs.sort()
         breadth["median_chg"] = chgs[len(chgs) // 2]
+    breadth["total_amount"] = round(amt_sum / 1e8, 0) if amt_sum else None   # 亿元
     breadth["up_ratio"] = round(breadth["up"] / breadth["total"] * 100, 1) if breadth["total"] else None
     log(f"市场宽度: 涨 {breadth['up']} / 跌 {breadth['down']} / 平 {breadth['flat']}，"
-        f"涨停 {breadth['limit_up']} / 跌停 {breadth['limit_dn']}，中位涨幅 {breadth['median_chg']}%")
+        f"涨停 {breadth['limit_up']} / 跌停 {breadth['limit_dn']}，中位涨幅 {breadth['median_chg']}%，"
+        f"总成交额 {breadth['total_amount']:.0f} 亿")
 
     # 2) 粗筛活跃股
     cands = []
