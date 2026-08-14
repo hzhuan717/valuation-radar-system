@@ -229,7 +229,9 @@ b{font-weight:600}
 .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 /* 板块水位行 */
 .sector-item{display:grid;grid-template-columns:minmax(0,1.4fr) auto minmax(90px,1fr) auto auto;gap:10px;align-items:center;
-  padding:9px 4px;border-bottom:1px solid var(--hair);font-size:13px;line-height:1.5}
+  padding:9px 4px;border-bottom:1px solid var(--hair);font-size:13px;line-height:1.5;cursor:pointer;
+  border-radius:6px;transition:background .15s,transform .15s}
+.sector-item:hover{background:var(--blue-lt);transform:translateX(2px)}
 .sector-item .s-name{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sector-item .s-pe{font-family:var(--font-mono);color:var(--sub2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .sector-item .s-bar{height:6px;border-radius:3px;background:var(--hair);overflow:hidden;min-width:60px}
@@ -810,7 +812,7 @@ function renderOvSectors(){
     const ph = (DATA.pe_history||{})[s.ticker] || {};
     const pct = ph.ok && ph.pctile != null ? ph.pctile : null;
     const col = pct == null ? 'var(--sub2)' : (pct < 0.3 ? 'var(--green-d)' : (pct > 0.7 ? 'var(--red-d)' : 'var(--gold)'));
-    return '<div class="sector-item">'
+    return '<div class="sector-item" onclick="switchStock(\'' + s.ticker + '\')" title="点击进入：' + s.name + ' 估值">'
       + '<span class="s-name" title="' + s.name + '">' + s.name + '</span>'
       + '<span class="s-pe">PE ' + (ph.pe!=null ? fmt2(ph.pe) : (s.pe_ttm!=null ? fmt2(s.pe_ttm) : '—')) + '</span>'
       + '<span class="s-bar"><i style="width:' + (pct!=null ? (pct*100).toFixed(0) + '%' : '0%') + ';background:' + col + '"></i></span>'
@@ -818,7 +820,7 @@ function renderOvSectors(){
       + '<span class="s-sig">' + (ph.signal || '观察') + '</span>'
       + '</div>';
   }).join('')
-  + '<div class="formula-mini">分位 = 当前指数 PE 在 5 年历史中的位置（乐咕乐股/中证官网，D级参考）；点击上方「个股估值」可查看板块内个股。</div>';
+  + '<div class="formula-mini">分位 = 当前指数 PE 在 5 年历史中的位置（乐咕乐股/中证官网，D级参考）；点击板块行进入对应指数/ETF 估值视图。</div>';
 }
 
 /* 大盘：全池总览表 */
