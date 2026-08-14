@@ -176,6 +176,29 @@ def push_via_git(token: str, cfg: dict):
     raise RuntimeError(f"push 失败（代理+直连均重试）: {last_exc}")
 
 
+def confirm_deploy(cfg: dict, local_sha: str, timeout_s: int = 300) -> tuple:
+    """部署确认：轮询线上 index.html 直到 sha256 与本地一致（GitHub Pages 构建需 1-2 分钟）。
+    换行差异（GitHub 部署时 CRLF→LF）先规范化再比对。返回 (是否生效, 耗时秒)。"""
+    import hashlib
+    norm = lambda b: b.replace(b"\r\n", b"\n")
+    url = f"https://{cfg['owner']}.github.io/{cfg['repo']}/index.html"
+    t0 = time.time()
+    while time.time() - t0 < timeout_s:
+        try:
+            req = urllib.request.Request(url, headers={
+                "Cache-Control": "no-cache", "Pragma": "no-cache",
+                "User-Agent": "radar-deploy-check",
+            })
+            with urllib.request.urlopen(req, timeout=20) as r:
+                raw = r.read()
+                if hashlib.sha256(norm(raw)).hexdigest() == local_sha:
+                    return True, time.time() - t0
+        except Exception:
+            pass
+        time.sleep(15)
+    return False, time.time() - t0
+
+
 def main():
     if not os.path.exists(PORTAL):
         log(f"门户文件不存在: {PORTAL}")
@@ -188,6 +211,15 @@ def main():
     push_via_git(token, cfg)
     log(f"已推送 {cfg['owner']}/{cfg['repo']}（{os.path.getsize(PORTAL):,} 字节）")
     ensure_pages(token, cfg)
+    # 部署确认：轮询线上直到 sha256 与本地一致（Pages 构建窗口 1-2 分钟；换行差异已规范化）
+    import hashlib
+    norm = lambda b: b.replace(b"\r\n", b"\n")
+    local_sha = hashlib.sha256(norm(open(PORTAL, "rb").read())).hexdigest()
+    ok, elapsed = confirm_deploy(cfg, local_sha)
+    if ok:
+        log(f"部署已确认生效（{elapsed:.0f}s）")
+    else:
+        log("警告：5 分钟内线上未匹配本地版本（构建延迟或异常），请稍后手动验证")
     url = f"https://{cfg['owner']}.github.io/{cfg['repo']}/"
     log(f"公开网址: {url}")
     print(url)
