@@ -107,9 +107,9 @@
         "seasonality_assumption": "年度利润按日均匀分布，仅作透明近似"
       },
       "multiple": {
-        "low": 17.53,
-        "mid": 22.3,
-        "high": 38.36,
+        "low": 17.67,
+        "mid": 22.31,
+        "high": 38.39,
         "source": {
           "id": "baidu-pe-percentile-002384",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
@@ -129,12 +129,12 @@
       "eps_bear": 1.002,
       "eps_base": 1.1138554560492842,
       "eps_bull": 1.225,
-      "pe_low": 17.53,
-      "pe_mid": 22.3,
-      "pe_high": 38.36,
+      "pe_low": 17.67,
+      "pe_mid": 22.31,
+      "pe_high": 38.39,
       "net_profit_fc": null,
       "shares": 18.3161,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=17.53/P50=22.3/P75=38.36，样本 913 日；当前 PE 181.45 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=17.67/P50=22.31/P75=38.39，样本 914 日；当前 PE 184.22 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 195.27,
@@ -175,9 +175,9 @@
         "seasonality_assumption": "年度利润按日均匀分布，仅作透明近似"
       },
       "multiple": {
-        "low": 26.53,
-        "mid": 31.28,
-        "high": 46.77,
+        "low": 26.48,
+        "mid": 31.31,
+        "high": 46.97,
         "source": {
           "id": "baidu-pe-percentile-002472",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
@@ -197,12 +197,12 @@
       "eps_bear": 1.344,
       "eps_base": 1.4935361216730039,
       "eps_bull": 1.643,
-      "pe_low": 26.53,
-      "pe_mid": 31.28,
-      "pe_high": 46.77,
+      "pe_low": 26.48,
+      "pe_mid": 31.31,
+      "pe_high": 46.97,
       "net_profit_fc": null,
       "shares": 8.5,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=26.53/P50=31.28/P75=46.77，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=26.48/P50=31.31/P75=46.97，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 39.28,
@@ -270,7 +270,7 @@
       "pe_high": 40.9,
       "net_profit_fc": null,
       "shares": 12.1244,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=25.73/P50=30.56/P75=40.9，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=25.73/P50=30.56/P75=40.9，样本 914 日；当前 PE 23.27 处于历史 10% 以下极端低位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 151.41,
@@ -381,7 +381,7 @@
         "title": "中国平安2025-12-31年报内含价值",
         "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
         "as_of": "2025-12-31",
-        "retrieved_at": "2026-08-14 16:53:00"
+        "retrieved_at": "2026-08-14 17:28:02"
       },
       "pev_low": 0.6,
       "pev_mid": 0.9,
@@ -409,7 +409,7 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-08-14 16:53:00"
+        "ok_at": "2026-08-14 17:28:02"
       }
     },
     {
@@ -514,7 +514,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-14 16:53:02"
+        "ok_at": "2026-08-14 17:28:02"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -535,7 +535,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-08-14",
-          "retrieved_at": "2026-08-14 16:53:02"
+          "retrieved_at": "2026-08-14 17:28:02"
         }
       },
       "multiple_source": {
@@ -602,7 +602,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-08-14 16:53:07",
+        "failed_at": "2026-08-14 17:28:03",
         "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
       }
     },
@@ -640,7 +640,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-14 16:53:12"
+        "ok_at": "2026-08-14 17:28:04"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -661,7 +661,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-08-14",
-          "retrieved_at": "2026-08-14 16:53:12"
+          "retrieved_at": "2026-08-14 17:28:04"
         }
       },
       "multiple_source": {
@@ -711,12 +711,12 @@
       "eps_bear": 0.219,
       "eps_base": 0.24324324324324326,
       "eps_bull": 0.268,
-      "pe_low": 7.73,
-      "pe_mid": 28.11,
-      "pe_high": 42.96,
+      "pe_low": 7.71,
+      "pe_mid": 27.94,
+      "pe_high": 42.87,
       "net_profit_fc": null,
       "shares": 208.0082,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=7.73/P50=28.11/P75=42.96，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=7.71/P50=27.94/P75=42.87，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 4.86,
@@ -728,7 +728,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-14 16:53:16"
+        "ok_at": "2026-08-14 17:28:05"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -749,7 +749,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-08-14",
-          "retrieved_at": "2026-08-14 16:53:16"
+          "retrieved_at": "2026-08-14 17:28:05"
         }
       },
       "multiple_source": {
@@ -764,9 +764,9 @@
         "unit": "x"
       },
       "multiple": {
-        "low": 7.73,
-        "mid": 28.11,
-        "high": 42.96,
+        "low": 7.71,
+        "mid": 27.94,
+        "high": 42.87,
         "source": {
           "id": "baidu-pe-percentile-000100",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
@@ -865,7 +865,7 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-08-14 16:53:19"
+        "ok_at": "2026-08-14 17:28:05"
       },
       "bank": {
         "bps": 8.46,
@@ -904,19 +904,19 @@
           "title": "光大银行 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601818/finance.html",
           "as_of": "2026-08-14",
-          "retrieved_at": "2026-08-14 16:53:19"
+          "retrieved_at": "2026-08-14 17:28:05"
         },
         "f10_source": {
           "provider": "东方财富F10主要指标",
           "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH601818",
           "as_of": "2026-03-31",
-          "retrieved_at": "2026-08-14 16:53:19"
+          "retrieved_at": "2026-08-14 17:28:05"
         }
       },
       "pb_low": 0.4,
       "pb_mid": 0.42,
       "pb_high": 0.47,
-      "pb_source": "百度股市通 5 年 PB 历史分位自动校准（2026-08-14）：P25=0.4/P50=0.42/P75=0.47，样本 913 日",
+      "pb_source": "百度股市通 5 年 PB 历史分位自动校准（2026-08-14）：P25=0.4/P50=0.42/P75=0.47，样本 914 日",
       "multiple_source": {
         "id": "baidu-pb-percentile-601818",
         "title": "百度股市通 5 年 PB 分位校准（P25/P50/P75）",
@@ -990,7 +990,7 @@
       "pe_high": 14.34,
       "net_profit_fc": null,
       "shares": 48.3453,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=9.03/P50=12.34/P75=14.34，样本 913 日；当前 PE 16.46 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=9.03/P50=12.34/P75=14.34，样本 913 日；当前 PE 16.21 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 10.86,
@@ -1220,11 +1220,11 @@
           "title": "中国铁建 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601186/finance.html",
           "as_of": "2026-08-14",
-          "retrieved_at": "2026-08-14 16:53:23"
+          "retrieved_at": "2026-08-14 17:28:06"
         }
       },
       "special_refresh": {
-        "ok_at": "2026-08-14 16:53:23"
+        "ok_at": "2026-08-14 17:28:06"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,
@@ -1331,7 +1331,7 @@
       "pe_high": 37.74,
       "net_profit_fc": null,
       "shares": 51.0,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=29.17/P50=32.02/P75=37.74，样本 914 日；当前 PE 21.26 处于历史 10% 以下极端低位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-14）：P25=29.17/P50=32.02/P75=37.74，样本 914 日；当前 PE 21.29 处于历史 10% 以下极端低位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "同花顺一致预期 2027E EPS中值0.58（3家0.52~0.69）",
       "support": [
         {

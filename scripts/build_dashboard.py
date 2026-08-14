@@ -868,7 +868,8 @@ function grahamPill(){
   const dot = document.getElementById('gateDot');
   dot.className = 'dot ' + (g.graham>=2.3?'dot-ok':(g.graham>=1.8?'dot-warn':'dot-bad'));
   const stale = ((m.cs985||{}).stale || (m.bond_10y||{}).stale) ? ' · 滞后' : '';
-  document.getElementById('gateTxt').textContent = '市场温度 ' + g.graham + ' · ' + g.band + stale;
+  document.getElementById('gateTxt').textContent = '市场温度 ' + g.graham + ' · ' + g.band
+    + (g.erp_pct!=null ? ' · ERP ' + g.erp_pct + '%' : '') + stale;
   document.getElementById('updAt').textContent = (DATA.updated_at||'').slice(5,16);
   document.getElementById('dataDate').textContent = DATA.data_date || '—';
 }
@@ -893,9 +894,10 @@ function showOverview(){
     + (DATA.market.graham_metrics||[]).map(x=>'<div class="micro-row" style="border-top:none;padding-top:0;margin-bottom:8px">'
       + '<div class="micro"><div class="k">'+x.label+'</div><div class="v">'+x.pe+'</div><div class="m">PE</div></div>'
       + '<div class="micro"><div class="k">格雷厄姆</div><div class="v">'+x.graham+'</div><div class="m">'+x.band+'</div></div>'
+      + '<div class="micro"><div class="k">ERP</div><div class="v">'+(x.erp_pct!=null?x.erp_pct+'%':'—')+'</div><div class="m">1/PE−10Y国债（D级）</div></div>'
       + '<div class="micro"><div class="k">公式</div><div class="v" style="font-size:13px">(1/PE)÷10Y国债</div><div class="m">'+fmt2(((DATA.market.bond_10y||{}).value||0)*100)+'%</div></div>'
       + '</div>').join('')
-    + '<div class="formula-mini">v2 定位：仅市场背景参考，不构成仓位硬闸门；不生成个股动作、清仓命令或总仓上限。</div></div>';
+    + '<div class="formula-mini">v2 定位：仅市场背景参考，不构成仓位硬闸门；不生成个股动作、清仓命令或总仓上限。格雷厄姆比值在低利率（10Y国债<2%）下分母趋零会乘数放大，故并列显示 ERP=1/PE−10Y国债（减法模型，D级补充，无历史序列不给分档）。指数 PE(TTM) 在周期顶/底部反向失真、成分股结构逐年漂移，仅作背景不逐日交易。</div></div>';
 }
 
 /* ============ 切换股票（数字滚动过渡） ============ */
@@ -1035,7 +1037,7 @@ function renderWall(st){
   document.getElementById('c1Body').innerHTML =
     '<div class="micro-row" style="border-top:none;padding-top:0">'
     + '<div class="micro"><div class="k">格雷厄姆指数</div><div class="v">'+(g.graham||'—')+'</div>'
-    + '<div class="m" style="color:'+gCol+'">'+(g.band||'—')+((DATA.market.cs985||{}).stale?' · 滞后':'')+'</div></div>'
+    + '<div class="m" style="color:'+gCol+'">'+(g.band||'—')+(g.erp_pct!=null?' · ERP '+g.erp_pct+'%':'')+((DATA.market.cs985||{}).stale?' · 滞后':'')+'</div></div>'
     + '<div class="micro"><div class="k">估值模型</div><div class="v" style="font-size:14px">'+(model.code||'—')+'</div>'
     + '<div class="m">'+((model.label||'').split('·')[0]||'')+'</div></div>'
     + '<div class="micro"><div class="k">数据质量</div><div class="v" style="color:'+(grade==='B'?'var(--green-d)':(grade==='C'?'var(--gold)':'var(--red-d)'))+'">'+grade+'</div>'
@@ -1113,6 +1115,7 @@ function renderWall(st){
       + buyRows.map(r=>'<div class="step buy'+(st.price<=r.v?' touched':'')+'"><span class="lab">'+r.lab+'</span><span>¥'+fmt2(r.v)+'</span><small class="st">'+r.stop+'</small></div>').join('')
       + '</div>'
       + '<div class="kelly-line">Kelly 单票上限 '+(kelly*100).toFixed(1)+'%（cap 20%）｜ MOS '+(mos*100).toFixed(1)+'%｜ model_confidence '+(st.model_confidence!=null?st.model_confidence.toFixed(1):'—')+'</div>'
+      + '<div class="kelly-line">触发确认：估值定方向（档位+上限），技术定时机——试探仓须待止跌确认/站上MA5 再执行，估值触档不单独满仓（防左侧接飞刀）。</div>'
       + foldHTML('fold3','<div class="formula-mini">'
       + 'Kelly_fraction = MOS ÷ (V_high − V_low) × 0.5（保守系数，分数凯利），cap 20%（D级可配置，spec 5.2）；'
       + '买入金字塔：试探 5% ≤V_low×1.05（止损 MA250×0.97）→ 主力 10% ≤V_low（止损 V_low×0.95）→ 加仓 5% ≤V_low×0.95（止损近60日低点）；'
@@ -1345,10 +1348,12 @@ function openGraham(){
   const m = DATA.market, g = (m.graham_metrics||[]).find(x=>x.key==='cs985') || (m.graham_metrics||[])[0] || {};
   if(!g.graham){ openModal('格雷厄姆指数','<div class="formula-box">大盘数据缺失（联网采集失败）。</div>'); return; }
   const b = m.bond_10y||{};
-  const rows = (m.graham_metrics||[]).map(x=>'<div class="step-item"><div class="step-no">•</div><div>'+x.label+'：PE '+x.pe+' → 指数 <b>'+x.graham+'</b>（'+x.band+'）</div></div>').join('');
-  openModal('市场估值温度（格雷厄姆指数）',
-    '<div class="formula-box"><b>公式：格雷厄姆指数 = (1÷全市场PE) ÷ 十年期国债收益率</b>\n分档：>2.3极低 / 2~2.3偏低 / 1.8~2略偏低 / 1.5~1.8中性 / 1~1.5偏高 / <1极高\n\nv2 定位：仅作市场背景参考，不构成仓位硬闸门。</div>' + rows
-    + '<span class="src-badge">A级公式与分档</span><span class="src-badge">D级：中证全指000985双口径</span>');
+  const rows = (m.graham_metrics||[]).map(x=>'<div class="step-item"><div class="step-no">•</div><div>'+x.label+'：PE '+x.pe+' → 格雷厄姆 <b>'+x.graham+'</b>（'+x.band+'）｜ ERP <b>'+(x.erp_pct!=null?x.erp_pct+'%':'—')+'</b> = 1/PE − 10Y国债</div></div>').join('');
+  openModal('市场估值温度（格雷厄姆指数 + ERP）',
+    '<div class="formula-box"><b>公式：格雷厄姆指数 = (1÷全市场PE) ÷ 十年期国债收益率</b>\n分档：>2.3极低 / 2~2.3偏低 / 1.8~2略偏低 / 1.5~1.8中性 / 1~1.5偏高 / <1极高\n\n'
+    + '<b>ERP（股权风险溢价）= 1÷PE − 10Y国债收益率</b>：减法模型，低利率下格雷厄姆比值分母趋零会乘数放大（如 10Y=1.7% 时指数达 3.98 显示"极低"），ERP 不随 rf→0 爆炸。无 10 年 ERP 历史序列，暂不给分档（D级工程补充）。\n\n'
+    + '注意：指数 PE(TTM) 在周期顶部盈利放大显得"便宜"、周期底部亏损显得"昂贵"（反向失真）；成分股结构逐年漂移（银行/地产权重下降、消费/科技上升），长周期绝对值对比不可比。仅市场背景，不生成动作。\n\nv2 定位：仅作市场背景参考，不构成仓位硬闸门。</div>' + rows
+    + '<span class="src-badge">A级公式与分档</span><span class="src-badge">D级：中证全指000985双口径</span><span class="src-badge">D级：ERP减法模型</span>');
 }
 
 /* ============ K线图引擎（Canvas 蜡烛/均线/成交量 + SVG 标注/十字光标） ============ */

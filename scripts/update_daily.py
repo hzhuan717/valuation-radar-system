@@ -352,6 +352,7 @@ def main():
                                ("hs300", "沪深300", market.get("hs300", {}).get("pe"))):
             if pe:
                 g = round((1 / pe) / bv, 2)
+                erp = (1 / pe) - bv
                 band = "市场估值极低" if g > 2.3 else ("市场估值偏低" if g >= 2 else
                        ("市场估值略偏低" if g >= 1.8 else ("市场估值中性" if g >= 1.5 else
                        ("市场估值偏高" if g >= 1 else "市场估值极高"))))
@@ -361,6 +362,12 @@ def main():
                     "thresholds": ">2.3 / 2.0 / 1.8 / 1.5 / 1.0",
                     "role": "market_context_only",
                     "not_position_instruction": True,
+                    # ERP 减法模型（D级工程补充）：低利率下格雷厄姆比值分母趋零会乘数放大，
+                    # 减法模型不受 rf→0 数值爆炸影响；无 10 年 ERP 历史序列，故不给分档，仅显示数值。
+                    "erp": round(erp, 4),
+                    "erp_pct": round(erp * 100, 2),
+                    "erp_formula": "1/PE - China_10Y_yield",
+                    "erp_note": "减法模型防低利率乘数失真；无历史序列不给分档（D级）",
                 })
     market["graham_metrics"] = metrics
     market["graham_role"] = "market_context_only"
