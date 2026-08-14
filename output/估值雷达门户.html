@@ -39,6 +39,11 @@ b{font-weight:600}
 .brand{display:flex;align-items:center;gap:8px;border:none;background:none;font-size:14px;font-weight:600;color:var(--ink);padding:5px 10px;border-radius:6px;transition:background .15s}
 .brand:hover{background:var(--blue-lt);color:var(--blue)}
 .brand i{width:15px;height:15px;border-radius:5px;background:var(--blue);display:inline-block}
+.top-tabs{display:flex;gap:4px;margin:0 8px}
+.top-tabs .tab{border:1px solid var(--hair);background:none;color:var(--sub2);font-size:13px;font-weight:600;
+  border-radius:7px;padding:5px 12px;transition:all .15s;line-height:1.5;white-space:nowrap}
+.top-tabs .tab:hover{border-color:var(--blue);color:var(--blue)}
+.top-tabs .tab.on{background:var(--blue-lt);color:var(--blue);border-color:rgba(0,113,227,.35)}
 .stock-trig{display:flex;align-items:center;gap:10px;border:1px solid var(--hair);background:var(--bg2);
   border-radius:var(--r-card);padding:6px 12px;font-size:13px;min-width:240px;max-width:330px}
 .stock-trig:hover{border-color:var(--blue)}
@@ -220,7 +225,23 @@ b{font-weight:600}
 .ktip .near-s{color:var(--green-d);font-weight:700}
 .ktip .near-r{color:var(--red-d);font-weight:700}
 .ktip .zone-badge{display:inline-block;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:700}
-.ov-wrap{flex:1;overflow-y:auto;min-height:0;padding:12px}
+.ov-wrap{flex:1;overflow-y:auto;min-height:0;padding:16px;background:var(--bg);height:calc(100vh - 44px);box-sizing:border-box}
+.ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+/* 板块水位行 */
+.sector-item{display:grid;grid-template-columns:minmax(0,1.4fr) auto minmax(90px,1fr) auto auto;gap:10px;align-items:center;
+  padding:9px 4px;border-bottom:1px solid var(--hair);font-size:13px;line-height:1.5}
+.sector-item .s-name{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sector-item .s-pe{font-family:var(--font-mono);color:var(--sub2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sector-item .s-bar{height:6px;border-radius:3px;background:var(--hair);overflow:hidden;min-width:60px}
+.sector-item .s-bar i{display:block;height:100%;border-radius:3px}
+.sector-item .s-pct{font-family:var(--font-mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sector-item .s-sig{font-size:12px;color:var(--sub2);white-space:nowrap}
+@media(max-width:1099px){
+  .ov-cards{grid-template-columns:1fr}
+  .sector-item{grid-template-columns:1fr auto 1fr;grid-template-areas:"n pe" "bar bar" "pct sig"}
+  .sector-item .s-name{grid-area:n}.sector-item .s-pe{grid-area:pe;text-align:right}
+  .sector-item .s-bar{grid-area:bar}.sector-item .s-pct{grid-area:pct}.sector-item .s-sig{grid-area:sig}
+}
 .ov-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2);
   border:1px solid var(--hair);border-radius:var(--r-card)}
 .ov-table th{text-align:left;padding:8px 10px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
@@ -472,7 +493,11 @@ body.wall-hidden .wall-grip{display:none}
 <body>
 
 <header class="topbar">
-  <button class="brand" onclick="showOverview()"><i></i>估值雷达</button>
+  <button class="brand" onclick="showTab('overview')"><i></i>估值雷达</button>
+  <div class="top-tabs">
+    <button class="tab on" id="tabOverview" onclick="showTab('overview')">大盘总览</button>
+    <button class="tab" id="tabStock" onclick="showTab('stock')">个股估值</button>
+  </div>
   <button class="stock-trig" id="stockTrig" onclick="togglePop()">
     <span id="trigName">—</span><span class="arr">▾</span>
   </button>
@@ -485,7 +510,7 @@ body.wall-hidden .wall-grip{display:none}
   </div>
 </header>
 
-<div class="shell">
+<div class="shell" id="shellMain">
   <aside class="sidebar">
     <div class="sb-hd"><span>自选池</span><span id="sbCnt">0</span></div>
     <input class="sb-search" id="sbSearch" placeholder="搜索…" oninput="filterList(this.value)">
@@ -554,10 +579,6 @@ body.wall-hidden .wall-grip{display:none}
         <div class="srfoot" id="srFoot" title="点击定位到对应价格"></div>
       </div>
     </div>
-
-    <div class="ov-wrap" id="ovWrap" style="display:none">
-      <table class="ov-table" id="ovTable"></table>
-    </div>
   </main>
 
   <div class="wall-grip" id="wallGrip" title="拖拽调整右栏宽度"></div>
@@ -577,8 +598,15 @@ body.wall-hidden .wall-grip{display:none}
   </aside>
 </div>
 
-<div class="mask" id="mask" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
+<div class="ov-wrap" id="ovWrap" style="display:none">
+  <div class="ov-cards">
+    <div class="w-card"><div class="w-title"><span>市场估值环境</span><span class="sp">格雷厄姆指数 · ERP · 仅背景</span></div><div class="w-body" id="ovMarket">—</div></div>
+    <div class="w-card"><div class="w-title"><span>板块估值水位</span><span class="sp">ETF 底层指数 PE 5年分位</span></div><div class="w-body" id="ovSectors">—</div></div>
+  </div>
+  <div class="w-card"><div class="w-title"><span>全池总览</span><span class="sp">点击行进入个股估值</span></div><div class="w-body"><table class="ov-table" id="ovTable"></table></div></div>
+</div>
+
+<div class="mask" id="mask" onclick="if(event.target===this)closeModal()">  <div class="modal">
     <div class="modal-hd">
       <h3 id="m-title">计算过程</h3>
       <div class="btns"><button class="copy" onclick="copyFormula()">复制公式</button><button class="close" onclick="closeModal()">✕</button></div>
@@ -689,7 +717,7 @@ function popConfirm(){
 function renderPop(filter){
   const q = (filter||'').trim().toLowerCase();
   document.getElementById('popList').innerHTML =
-    '<button class="pop-item" onclick="showOverview();togglePop()"><span class="nm">股票池总览</span><span class="st">全部 '+DATA.stocks.length+' 只</span></button>' +
+    '<button class="pop-item" onclick="showTab(\'overview\');togglePop()"><span class="nm">大盘总览（首页）</span><span class="st">市场 + 板块 + 全池</span></button>' +
     DATA.stocks.filter(s => !q || s.name.toLowerCase().includes(q) || s.ticker.includes(q))
       .map(s => { const zm = zmeta(s);
         return '<button class="pop-item" onclick="switchStock(\''+s.ticker+'\');togglePop()">'
@@ -724,12 +752,80 @@ function grahamPill(){
   document.getElementById('dataDate').textContent = DATA.data_date || '—';
 }
 
-/* ============ 总览 ============ */
-function showOverview(){
-  VIEW = 'overview'; CUR = null;
-  document.getElementById('chartZone').style.display = 'none';
-  const ov = document.getElementById('ovWrap'); ov.style.display = 'block';
-  document.getElementById('ovTable').innerHTML =
+/* ============ 双视图：大盘总览（首页封面） / 个股估值 ============ */
+function setTabUI(name){
+  const t1 = document.getElementById('tabOverview'), t2 = document.getElementById('tabStock');
+  if(t1) t1.classList.toggle('on', name === 'overview');
+  if(t2) t2.classList.toggle('on', name === 'stock');
+}
+function showTab(name){
+  const shell = document.getElementById('shellMain');
+  const ov = document.getElementById('ovWrap');
+  if(name === 'overview'){
+    VIEW = 'overview'; CUR = null;
+    if(shell) shell.style.display = 'none';
+    if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 44px)'; }
+    renderOvMarket();
+    renderOvSectors();
+    renderOvTable();
+    renderList();
+  } else {
+    if(ov) ov.style.display = 'none';
+    if(shell) shell.style.display = '';
+    if(!CUR){
+      const last = (() => { try{ return localStorage.getItem('radar_last'); }catch(e){ return null; } })();
+      const st = DATA.stocks.find(s => s.ticker === last) || DATA.stocks[0];
+      if(st) switchStock(st.ticker);
+    }
+  }
+  setTabUI(name);
+  try{ localStorage.setItem('radar_view', name); }catch(e){}
+}
+
+/* 大盘：市场估值环境（多口径：PE/格雷厄姆/ERP/分档） */
+function renderOvMarket(){
+  const el = document.getElementById('ovMarket');
+  if(!el) return;
+  const m = DATA.market;
+  const rows = (m.graham_metrics||[]).map(x =>
+    '<tr><td>' + x.label + '</td><td>' + fmt2(x.pe) + '</td><td style="color:'
+    + (x.graham>=2.3?'var(--green-d)':(x.graham>=1.8?'var(--gold)':'var(--red-d)')) + '">' + x.graham
+    + '</td><td>' + (x.erp_pct!=null ? x.erp_pct + '%' : '—') + '</td><td>' + x.band + '</td></tr>').join('');
+  el.innerHTML =
+    '<table class="ov-table">'
+    + '<tr><th>口径</th><th>PE(TTM)</th><th>格雷厄姆</th><th>ERP</th><th>分档</th></tr>' + rows
+    + '</table>'
+    + '<div class="formula-mini">10Y 国债 '
+    + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '，' + ((m.bond_10y||{}).source||'—') + '）｜ 格雷厄姆 = (1/PE)÷10Y；ERP = 1/PE − 10Y（D级减法模型防低利率乘数失真）。'
+    + 'v2 定位：仅市场背景参考，不构成仓位硬闸门、不生成个股动作。</div>';
+}
+
+/* 大盘：板块估值水位（ETF 底层指数 PE 5年分位） */
+function renderOvSectors(){
+  const el = document.getElementById('ovSectors');
+  if(!el) return;
+  const etfs = DATA.stocks.filter(s => s.route === 'etf' || s.ticker === '000001');
+  if(!etfs.length){ el.innerHTML = '<div class="formula-mini">暂无板块指数数据</div>'; return; }
+  el.innerHTML = etfs.map(s => {
+    const ph = (DATA.pe_history||{})[s.ticker] || {};
+    const pct = ph.ok && ph.pctile != null ? ph.pctile : null;
+    const col = pct == null ? 'var(--sub2)' : (pct < 0.3 ? 'var(--green-d)' : (pct > 0.7 ? 'var(--red-d)' : 'var(--gold)'));
+    return '<div class="sector-item">'
+      + '<span class="s-name" title="' + s.name + '">' + s.name + '</span>'
+      + '<span class="s-pe">PE ' + (ph.pe!=null ? fmt2(ph.pe) : (s.pe_ttm!=null ? fmt2(s.pe_ttm) : '—')) + '</span>'
+      + '<span class="s-bar"><i style="width:' + (pct!=null ? (pct*100).toFixed(0) + '%' : '0%') + ';background:' + col + '"></i></span>'
+      + '<span class="s-pct" style="color:' + col + '">' + (pct!=null ? Math.round(pct*100) + '% 分位' : '无历史') + '</span>'
+      + '<span class="s-sig">' + (ph.signal || '观察') + '</span>'
+      + '</div>';
+  }).join('')
+  + '<div class="formula-mini">分位 = 当前指数 PE 在 5 年历史中的位置（乐咕乐股/中证官网，D级参考）；点击上方「个股估值」可查看板块内个股。</div>';
+}
+
+/* 大盘：全池总览表 */
+function renderOvTable(){
+  const el = document.getElementById('ovTable');
+  if(!el) return;
+  el.innerHTML =
     '<tr><th>股票</th><th>现价</th><th>状态</th><th>质量</th><th>估值带</th><th>今日信号</th></tr>' +
     DATA.stocks.map(s => { const zm = zmeta(s);
       const g = ((s.decision_data||{}).quality||{}).grade || '—';
@@ -738,16 +834,6 @@ function showOverview(){
         + '<td>'+s.name+'<br><span style="color:var(--meta);font-size:12px">'+s.ticker+'</span></td>'
         + '<td>'+fmt2(s.price)+'</td><td>'+zm.label+'</td><td>'+g+'</td>'
         + '<td>'+(s.v_low!=null?fmt2(s.v_low)+' ~ '+fmt2(s.v_high):'—')+'</td><td>'+sig+'</td></tr>'; }).join('');
-  renderList();
-  const w = document.getElementById('wall');
-  w.innerHTML = '<div class="w-card"><div class="w-title">市场估值环境（格雷厄姆指数 · 仅背景）</div>'
-    + (DATA.market.graham_metrics||[]).map(x=>'<div class="micro-row" style="border-top:none;padding-top:0;margin-bottom:8px">'
-      + '<div class="micro"><div class="k">'+x.label+'</div><div class="v">'+x.pe+'</div><div class="m">PE</div></div>'
-      + '<div class="micro"><div class="k">格雷厄姆</div><div class="v">'+x.graham+'</div><div class="m">'+x.band+'</div></div>'
-      + '<div class="micro"><div class="k">ERP</div><div class="v">'+(x.erp_pct!=null?x.erp_pct+'%':'—')+'</div><div class="m">1/PE−10Y国债（D级）</div></div>'
-      + '<div class="micro"><div class="k">公式</div><div class="v" style="font-size:13px">(1/PE)÷10Y国债</div><div class="m">'+fmt2(((DATA.market.bond_10y||{}).value||0)*100)+'%</div></div>'
-      + '</div>').join('')
-    + '<div class="formula-mini">v2 定位：仅市场背景参考，不构成仓位硬闸门；不生成个股动作、清仓命令或总仓上限。格雷厄姆比值在低利率（10Y国债<2%）下分母趋零会乘数放大，故并列显示 ERP=1/PE−10Y国债（减法模型，D级补充，无历史序列不给分档）。指数 PE(TTM) 在周期顶/底部反向失真、成分股结构逐年漂移，仅作背景不逐日交易。</div></div>';
 }
 
 /* ============ 切换股票（数字滚动过渡） ============ */
@@ -759,6 +845,8 @@ function switchStock(ticker){
   localStorage.setItem('radar_last', ticker);
   document.getElementById('chartZone').style.display = '';
   document.getElementById('ovWrap').style.display = 'none';
+  document.getElementById('shellMain').style.display = '';
+  setTabUI('stock');
   document.getElementById('trigName').textContent = st.name + ' ' + st.ticker;
   renderList();
   renderHero(st, prevPrice, prevPct);
@@ -2649,9 +2737,15 @@ function init(){
   })();
   let resizeT = null;
   window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => KENGINE.resize(), 150); });
+  /* 默认打开首页（大盘总览）；记忆上次视图 */
+  const lastView = (() => { try{ return localStorage.getItem('radar_view'); }catch(e){ return null; } })();
   const last = localStorage.getItem('radar_last');
-  if(last && DATA.stocks.some(s=>s.ticker===last)) switchStock(last);
-  else switchStock(DATA.stocks[0].ticker);
+  if(lastView === 'stock'){
+    if(last && DATA.stocks.some(s=>s.ticker===last)) switchStock(last);
+    else switchStock(DATA.stocks[0].ticker);
+  } else {
+    showTab('overview');   /* 首页 = 大盘总览（封面），个股视图待点击进入 */
+  }
 }
 init();
 </script>
