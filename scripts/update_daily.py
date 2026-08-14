@@ -139,6 +139,17 @@ def compute_stock(st: dict, prev: dict, forecast_data: dict | None,
     else:
         zone = "待补充数据"
     action = decision.get("action") if usable else None
+    # 区间迟滞缓冲（D级工程参数）：现价距任一带边界 <1.5% 时维持昨日区间，
+    # 避免价格在边界微幅震荡导致区间标签/信号日频翻转。
+    hyst_held = False
+    pv = prev or {}
+    if (usable and bool(pv.get("decision_usable")) and pv.get("zone")
+            and pv.get("zone") != zone and v_low and v_mid and v_high):
+        boundaries = [0.9 * v_low, v_low, v_mid, v_high, 1.3 * v_high]
+        if any(b > 0 and abs(price / b - 1) <= 0.015 for b in boundaries):
+            zone = pv.get("zone")
+            action = pv.get("action")
+            hyst_held = True
     # MOS/区间位置是动作层指标；reference/blocked 只在 decision_data 内保留审计值，
     # 不向旧门户顶层暴露，避免被误读为可执行结论。
     mos = decision.get("margin_of_safety") if usable else None
@@ -223,6 +234,8 @@ def compute_stock(st: dict, prev: dict, forecast_data: dict | None,
                 out["signals"].append(f"下破 {label}（{vv}）")
     if usable and prev_usable and prev_zone and prev_zone != zone:
         out["signals"].insert(0, f"区间变化：{prev_zone} → {zone}")
+    if hyst_held:
+        out["signals"].insert(0, "区间边界迟滞：现价距边界<1.5%，维持昨日区间")
     if usable and isinstance(out["pct"], (int, float)) and abs(out["pct"]) >= 3:
         out["signals"].append(f"单日波动 {out['pct']:+.2f}%")
     return out

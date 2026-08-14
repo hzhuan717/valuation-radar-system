@@ -306,11 +306,12 @@ def _multiple_inputs(config: dict, result: dict) -> dict | None:
 
 
 def _zone(price: float, low: float, mid: float, high: float) -> dict:
+    has_mid = _finite_number(mid)
     if price <= 0.9 * low:
         zone, action = "深度低估", "进入研究清单；通过基本面复核后才可分批建仓"
     elif price <= low:
         zone, action = "低估", "研究通过后分批建仓，不以估值信号替代止跌确认"
-    elif price <= mid:
+    elif has_mid and price <= mid:
         zone, action = "合理下沿", "持有或等待更高安全边际"
     elif price <= high:
         zone, action = "合理上沿", "持有，避免追高"
@@ -318,12 +319,26 @@ def _zone(price: float, low: float, mid: float, high: float) -> dict:
         zone, action = "高估", "复核增长兑现度并分批控制风险"
     else:
         zone, action = "泡沫", "停止新增风险暴露，复核退出纪律"
-    raw_pos = (price - low) / (high - low) if high != low else None
+    # 估值带位置：双段线性映射，以 V_mid 为 50% 视觉轴心。
+    # 倍数带呈右偏（P25/P50/P75 历史分位），若用单段线性 (P-low)/(high-low)，
+    # 价格位于 V_mid 时视觉位置会偏离中轴（如 low=10/mid=15/high=50 → 12.5%），
+    # 落入低估色带造成误导。分段公式：
+    #   P<=mid: pos = 0.5 × (P-low)/(mid-low)
+    #   P> mid: pos = 0.5 + 0.5 × (P-mid)/(high-mid)
+    # 保留 <0 或 >1 的原值（数据契约要求，不用 clamp 隐藏越界）。
+    if not _finite_number(low) or not _finite_number(high) or high <= low:
+        raw_pos = None
+    elif not _finite_number(mid):
+        raw_pos = (price - low) / (high - low)
+    elif price <= mid:
+        raw_pos = 0.5 * (price - low) / (mid - low) if mid > low else 0.5
+    else:
+        raw_pos = 0.5 + (0.5 * (price - mid) / (high - mid) if high > mid else 0.0)
     return {
         "zone": zone,
         "action": action,
-        "margin_of_safety": round(1 - price / mid, 3),
-        # 估值带线性位置：保留 <0 或 >1 的原值（数据契约要求，不用 clamp 隐藏越界）
+        "margin_of_safety": round(1 - price / mid, 3) if has_mid and mid else None,
+        # 估值带位置（双段映射）：保留 <0 或 >1 的原值（数据契约要求，不用 clamp 隐藏越界）
         "band_position_raw": round(raw_pos, 3) if raw_pos is not None else None,
         # 可视化用夹取值（进度条宽度），不代表统计百分位
         "band_position": round(max(0.0, min(1.0, raw_pos)), 3) if raw_pos is not None else None,
