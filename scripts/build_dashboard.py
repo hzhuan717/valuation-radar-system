@@ -233,7 +233,8 @@ def build() -> str:
             "data_date": market.get("data_date", ""),
             "market": market, "stocks": stocks,
             "pe_history": state.get("pe_history", {}),
-            "market_screen": state.get("market_screen", {})}
+            "market_screen": state.get("market_screen", {}),
+            "sector_strength": state.get("sector_strength", {})}
     data_json = json.dumps(data, ensure_ascii=False)
 
     html = TEMPLATE
@@ -517,6 +518,21 @@ b{font-weight:600}
 .ts-row .t-r b{font-weight:600;font-size:12px}
 .ts-row .t-m{font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
 .ts-row .t-why{font-size:12px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 行业板块行 */
+.sec-row{display:grid;grid-template-columns:minmax(80px,auto) auto 1fr minmax(120px,auto);gap:12px;align-items:center;
+  padding:8px 6px;border-bottom:1px solid var(--hair);font-size:13px;border-radius:6px;line-height:1.5}
+.sec-row .t-nm{font-weight:600;color:var(--ink);white-space:nowrap}
+.sec-row .t-r{display:flex;gap:10px;white-space:nowrap;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.sec-row .t-r b{font-weight:600;font-size:12px}
+.sec-row .t-m{font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
+.sec-row .t-m b{font-weight:600}
+.sec-row .t-why{font-size:12px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-row .t-why b{font-weight:600}
+@media(max-width:1099px){
+  .sec-row{grid-template-columns:1fr auto;grid-template-areas:"nm r" "m m" "w w";gap:4px 10px}
+  .sec-row .t-nm{grid-area:nm}.sec-row .t-r{grid-area:r}
+  .sec-row .t-m{grid-area:m}.sec-row .t-why{grid-area:w}
+}
 @media(max-width:1099px){
   .ts-row{grid-template-columns:1fr auto;grid-template-areas:"nm r" "m m" "w w";gap:4px 10px}
   .ts-row .t-nm{grid-area:nm}.ts-row .t-r{grid-area:r}
@@ -881,7 +897,7 @@ body.wall-hidden .wall-grip{display:none}
 <div class="ov-wrap" id="ovWrap" style="display:none">
   <div class="ov-cards">
     <div class="w-card"><div class="w-title"><span>第一层 · 大盘环境</span><span class="sp">趋势判定 + 估值背景</span></div><div class="w-body" id="ovMarket">—</div></div>
-    <div class="w-card"><div class="w-title"><span>第二层 · 板块强弱</span><span class="sp">涨幅 / 量能 / 水位，点击进入</span></div><div class="w-body" id="ovSectors">—</div></div>
+    <div class="w-card"><div class="w-title"><span>第二层 · 板块强弱</span><span class="sp">同花顺 90 真实行业板块</span></div><div class="w-body" id="ovSectors">—</div></div>
   </div>
   <div class="w-card"><div class="w-title"><span>第三层 · 全市场趋势筛选</span><span class="sp">全A 5000+ 只 · 每类前10 · 可分自选/非自选</span></div><div class="w-body" id="ovScreenAll">—</div></div>
   <div class="w-card"><div class="w-title"><span>自选池趋势筛选</span><span class="sp">精确 5/10/20日分类（19 只）</span></div><div class="w-body" id="ovScreen">—</div></div>
@@ -1150,39 +1166,39 @@ function renderOvMarket(){
     + '<div class="formula-mini">10Y 国债 ' + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '）｜ 估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅背景标注，不构成仓位闸门；大盘强弱由趋势判定。</div>';
 }
 
-/* 第二层：板块强弱（ETF/指数：涨幅/量能/水位/状态） */
+/* 第二层：真实行业板块强弱（同花顺 90 行业板块，非自选池） */
 function renderOvSectors(){
   const el = document.getElementById('ovSectors');
   if(!el) return;
-  const etfs = DATA.stocks.filter(s => s.route === 'etf');
-  if(!etfs.length){ el.innerHTML = '<div class="formula-mini">暂无板块指数数据</div>'; return; }
-  el.innerHTML = etfs.map(s => {
-    const ph = (DATA.pe_history||{})[s.ticker] || {};
-    const pct = ph.ok && ph.pctile != null ? ph.pctile : null;
-    const wcol = pct == null ? 'var(--sub2)' : (pct < 0.3 ? 'var(--green-d)' : (pct > 0.7 ? 'var(--red-d)' : 'var(--gold)'));
-    const d = tsScreen(s);
-    if(!d) return '';
-    let st = '', stCol = '', why = [];
-    if(d.above20 && d.r20 != null && d.r20 > 0 && d.r5 != null && d.r5 > 0){
-      st = '持续强势'; stCol = 'var(--green-d)';
-      why.push('价>MA20', '20日+' + d.r20.toFixed(1) + '%', '5日续涨+' + d.r5.toFixed(1) + '%');
-    } else if(d.r20 != null && d.r20 > 0 && ((d.r5 != null && d.r5 > d.r20) || (d.vr != null && d.vr > 1.2))){
-      st = '正在加强'; stCol = 'var(--blue)';
-      why.push((d.r5 != null && d.r5 > d.r20 ? '5日加速' : '量比' + d.vr.toFixed(2)), '20日+' + d.r20.toFixed(1) + '%');
-    } else {
-      st = '走弱/观望'; stCol = 'var(--sub2)';
-      why.push(!d.above20 ? '跌破MA20' : '动能不足', '20日' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—'));
-    }
-    return '<div class="sector-item" onclick="switchStock(\'' + s.ticker + '\')" title="点击进入：' + s.name + ' 估值">'
-      + '<span class="s-name" title="' + s.name + '">' + s.name + '</span>'
-      + '<span class="s-pe">5日 <b class="' + (d.r5>=0?'up-c':'dn-c') + '">' + (d.r5!=null?(d.r5>=0?'+':'')+d.r5.toFixed(1)+'%':'—') + '</b>｜20日 <b class="' + (d.r20>=0?'up-c':'dn-c') + '">' + (d.r20!=null?(d.r20>=0?'+':'')+d.r20.toFixed(1)+'%':'—') + '</b>｜量比 ' + (d.vr!=null?d.vr.toFixed(2):'—') + '</span>'
-      + '<span class="s-bar"><i style="width:' + (pct!=null ? (pct*100).toFixed(0) + '%' : '0%') + ';background:' + wcol + '"></i></span>'
-      + '<span class="s-pct" style="color:' + wcol + '">' + (pct!=null ? Math.round(pct*100) + '% 分位' : '无历史') + '</span>'
-      + '<span class="s-sig" style="color:' + stCol + '">' + st + '</span>'
-      + '<span class="s-why">' + why.join('；') + '</span>'
-      + '</div>';
-  }).join('')
-  + '<div class="formula-mini">板块强弱 = 20日涨幅 + 5日动能（加速或量比>1.2）+ 价格 vs MA20 + 指数 PE 5年分位水位（D级工程化，仅筛选观察，不构成买卖建议）。</div>';
+  const ss = DATA.sector_strength || {};
+  const classes = ss.classes || {};
+  const stats = ss.stats || {};
+  const order = ['持续强势', '正在加强', '走弱/观望'];
+  const col = {'持续强势':'var(--green-d)','正在加强':'var(--blue)','走弱/观望':'var(--sub2)'};
+  const tot = order.reduce((a, g) => a + ((classes[g]||[]).length), 0);
+  if(!tot){
+    el.innerHTML = '<div class="formula-mini">暂无行业板块数据（每日收盘后自动生成）。</div>';
+    return;
+  }
+  el.innerHTML = '<div class="formula-mini" style="border:none;padding:0;margin-bottom:6px">数据源：同花顺 90 个真实行业板块（涨跌幅/净流入/上涨家数/领涨股）+ 板块指数近 6 月历史计算 5/20 日涨幅（D级工程化）。更新 ' + (ss.updated_at||'—') + '｜ 仅筛选观察，不构成买卖建议。</div>'
+    + order.map(g => {
+      const items = classes[g] || [];
+      if(!items.length) return '';
+      return '<div class="ts-group"><div class="ts-head"><span class="ts-badge" style="color:' + col[g] + ';border-color:' + col[g] + '">' + g + ' ' + (stats.counts||{})[g] + ' 个板块</span><span class="ts-mean">' + (g==='持续强势'?'20日涨幅>0、当日上涨、上涨家数占比≥55%':g==='正在加强'?'20日涨幅>0、当日上涨或5日加速': '其余（20日走弱或当日回调）') + '</span></div>'
+        + items.map(it => {
+          const c0 = (it.chg||0) >= 0 ? 'up-c' : 'dn-c';
+          const c5 = (it.r5||0) >= 0 ? 'up-c' : 'dn-c';
+          const c20 = (it.r20||0) >= 0 ? 'up-c' : 'dn-c';
+          const inflow = it.net_inflow;
+          const ic = inflow != null ? (inflow >= 0 ? 'up-c' : 'dn-c') : '';
+          return '<div class="sec-row" title="' + it.name + '：上涨 ' + (it.up_cnt!=null?it.up_cnt:'—') + ' / 下跌 ' + (it.dn_cnt!=null?it.dn_cnt:'—') + ' 家">'
+            + '<span class="t-nm">' + it.name + '</span>'
+            + '<span class="t-r"><b class="' + c0 + '">当日 ' + (it.chg!=null?(it.chg>=0?'+':'')+it.chg.toFixed(2)+'%':'—') + '</b><b class="' + c5 + '">5日 ' + (it.r5!=null?(it.r5>=0?'+':'')+it.r5.toFixed(1)+'%':'—') + '</b><b class="' + c20 + '">20日 ' + (it.r20!=null?(it.r20>=0?'+':'')+it.r20.toFixed(1)+'%':'—') + '</b></span>'
+            + '<span class="t-m">上涨 ' + (it.up_cnt!=null?it.up_cnt:'—') + '/' + (it.dn_cnt!=null?it.dn_cnt:'—') + ' 家' + (it.up_ratio!=null?'（' + it.up_ratio.toFixed(0) + '%）':'') + (inflow!=null?'｜净流入 <b class="' + ic + '">' + (inflow>=0?'+':'') + (inflow/1e8).toFixed(1) + '亿</b>':'') + '</span>'
+            + '<span class="t-why">领涨 ' + (it.leader||'—') + (it.leader_chg!=null?' <b class="' + (it.leader_chg>=0?'up-c':'dn-c') + '">' + (it.leader_chg>=0?'+':'') + it.leader_chg.toFixed(2) + '%</b>':'') + '</span>'
+            + '</div>';
+        }).join('') + '</div>';
+    }).join('');
 }
 
 /* 第三层·全市场趋势筛选：全A 5000+ 只，每类前 10，可按自选/非自选过滤 */

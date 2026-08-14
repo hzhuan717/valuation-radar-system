@@ -477,9 +477,18 @@ def main():
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from fetch_market_screener import main as market_screen_main
         market_screen_main()
-        log("全市场趋势筛选更新完成（东财快照）")
+        log("全市场趋势筛选更新完成（新浪快照+日K）")
     except Exception as e:
         log(f"全市场趋势筛选更新失败: {e}")
+
+    # ---- 真实行业板块强弱（大盘页第二层，同花顺90板块）----
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fetch_sector_strength import main as sector_main
+        sector_main()
+        log("行业板块强弱更新完成（同花顺90板块）")
+    except Exception as e:
+        log(f"行业板块强弱更新失败: {e}")
 
     # ---- 重建门户 ----
     try:
