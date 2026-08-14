@@ -234,6 +234,13 @@ b{font-weight:600}
   min-width:280px;max-width:480px;width:var(--wall-w,340px);container-type:inline-size}
 .wall-grip{cursor:col-resize;position:relative;z-index:5;background:transparent;transition:background .15s}
 .wall-grip:hover,.wall-grip.dragging{background:rgba(0,113,227,.25)}
+/* 整墙收起：K 线图占满右侧 */
+body.wall-hidden .shell{grid-template-columns:210px minmax(0,1fr) 0 0}
+body.wall-hidden .wall{min-width:0;max-width:0;width:0;border-left:none;padding:0;overflow:hidden}
+body.wall-hidden .wall-grip{display:none}
+.wall-toggle-btn{border:1px solid var(--hair);background:var(--bg2);color:var(--sub2);font-size:12px;
+  border-radius:7px;padding:5px 10px;transition:all .15s;line-height:1.5;white-space:nowrap}
+.wall-toggle-btn:hover{border-color:var(--blue);color:var(--blue)}
 /* 折叠控制条（sticky，滚动时始终可见） */
 .wall-ctrl{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:10px;padding:6px 4px 10px;
   margin:-6px -4px 4px;background:rgba(245,245,247,.82);backdrop-filter:blur(12px) saturate(180%);
@@ -408,6 +415,7 @@ b{font-weight:600}
 /* ============ 响应式 ============ */
 @media(max-width:1399px){
   .shell{grid-template-columns:84px minmax(0,1fr) 6px var(--wall-w,340px)}
+  body.wall-hidden .shell{grid-template-columns:84px minmax(0,1fr) 0 0}
   .sb-hd span:last-child,.sb-search{display:none}
   .sb-item{padding:10px 6px 12px;gap:3px}
   .sb-item .nm,.sb-item .cd,.sb-item .px{display:none}   /* 保持原产品决策：窄屏隐藏价格与名称 */
@@ -421,6 +429,9 @@ b{font-weight:600}
 @media(max-width:1099px){
   html,body{overflow:auto}
   .shell{grid-template-columns:1fr;grid-template-rows:auto;height:auto;display:block}
+  body.wall-hidden .shell{grid-template-columns:1fr;grid-template-rows:auto;height:auto;display:block}
+  body.wall-hidden .wall{width:auto;min-width:0;max-width:none;overflow:visible;padding:10px;border-left:none;display:block}
+  .wall-toggle-btn{display:none}   /* 数据墙在下方非右侧，收起无意义 */
   .wall-grip{display:none}
   .mos-track{display:none}   /* 窄屏省 hero-strip 垂直空间 */
   .sidebar{border-right:none;border-bottom:1px solid var(--hair)}
@@ -467,6 +478,7 @@ b{font-weight:600}
   </button>
   <div class="top-gate"><span class="dot" id="gateDot"></span><span id="gateTxt">市场数据加载中…</span></div>
   <div class="top-upd">更新 <span id="updAt">—</span> ｜ 数据 <span id="dataDate">—</span></div>
+  <button class="wall-toggle-btn" id="wallToggle" onclick="toggleWallHidden()" title="收起/显示右侧数据墙，K线图占满">⮜ 收起右侧</button>
   <div class="popover" id="popover">
     <input class="pop-search" id="popSearch" placeholder="搜索代码 / 名称…（Ctrl+K，↑↓ 选择，Enter 确认）" oninput="filterPop(this.value)">
     <div class="pop-list" id="popList"></div>
@@ -2503,6 +2515,14 @@ class ValuationChartEngine {
 
 const KENGINE = new ValuationChartEngine('chartWrap');
 
+/* ============ 整墙收起/展开（K线图占满右侧，状态记忆） ============ */
+function toggleWallHidden(){
+  const hidden = document.body.classList.toggle('wall-hidden');
+  try{ localStorage.setItem('wall_hidden', hidden ? '1' : '0'); }catch(e){}
+  const b = document.getElementById('wallToggle');
+  if(b) b.textContent = hidden ? '⮞ 显示右侧' : '⮜ 收起右侧';
+}
+
 /* ============ 数据墙折叠（仅 UI，不改数据；localStorage 记忆） ============ */
 const WALL_FOLD_KEY = 'wall_fold_state';
 function wallState(){ try{ return JSON.parse(localStorage.getItem(WALL_FOLD_KEY)||'{}'); }catch(e){ return {}; } }
@@ -2571,6 +2591,13 @@ function init(){
   renderList();
   applyWallState();
   bindWallAccordion();
+  try{
+    if(localStorage.getItem('wall_hidden') === '1'){
+      document.body.classList.add('wall-hidden');
+      const b = document.getElementById('wallToggle');
+      if(b) b.textContent = '⮞ 显示右侧';
+    }
+  }catch(e){}
   document.querySelectorAll('.range-btn').forEach(btn => {
     btn.onclick = function(){
       KENGINE.setRange(+this.dataset.n);
