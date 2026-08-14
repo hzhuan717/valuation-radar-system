@@ -2,9 +2,9 @@
 """估值雷达 · 每日更新看门狗（替代不可用的任务计划程序）
 
 以 pythonw 常驻运行（开机自启），每 60 秒检查一次：
-  1. 交易日 15:05~15:35 窗口内（A股 15:00 收盘后 30 分钟内）→ 执行 update_daily.py（首次）
-  2. 补跑：交易日 15:35 后~20:00，若当日尚未执行过（如 15:10 未开机）→ 立即补跑一次
-  3. 心跳写入 logs\scheduler.log，便于诊断
+  1. 交易日 15:30~15:32 窗口内（用户约定：每个交易日 15:30 准时更新）→ 执行 update_daily.py
+  2. 补跑：交易日 15:32 后~20:00，若当日尚未执行过（如 15:30 未开机）→ 立即补跑一次
+  3. 心跳写入 logs/scheduler.log，便于诊断
 
 启动方式：Windows 启动文件夹快捷方式 → pythonw scheduler_loop.py
 """
@@ -21,8 +21,8 @@ LOG = os.path.join(BASE, "logs", "scheduler.log")
 MARK = os.path.join(BASE, "logs", ".last_run_date")
 
 POLL_SECONDS = 60
-WINDOW_START = (15, 5)   # 收盘 15:00 后 5 分钟
-WINDOW_END = (15, 35)    # 收盘后 30 分钟内完成
+WINDOW_START = (15, 30)   # 用户约定：15:30 准时更新
+WINDOW_END = (15, 32)
 CATCHUP_END = (20, 0)
 
 
@@ -70,7 +70,7 @@ def run_update():
 
 
 def main():
-    s_log("看门狗启动（POLL=60s，窗口 15:05~15:35，补跑至 20:00）")
+    s_log("看门狗启动（POLL=60s，15:30 准时触发，补跑至 20:00）")
     while True:
         try:
             today = datetime.date.today().isoformat()
@@ -83,9 +83,9 @@ def main():
                 if in_window:
                     run_update()
                     mark_run(today)
-                    s_log(f"今日 {today} 已标记完成")
+                    s_log(f"今日 {today} 已标记完成（15:30 窗口）")
                 elif catchup:
-                    s_log("检测到当日未运行（疑似 16:10 未开机），执行补跑")
+                    s_log("检测到当日未运行（疑似 15:30 未开机），执行补跑")
                     run_update()
                     mark_run(today)
             elif last_run_date() != today:

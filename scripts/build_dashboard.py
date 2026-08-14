@@ -497,6 +497,16 @@ b{font-weight:600}
 .env-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .env-badge{font-size:15px;font-weight:700;border:1px solid;border-radius:999px;padding:6px 16px;line-height:1.5;white-space:nowrap}
 .env-ev{font-family:var(--font-mono);font-size:12px;color:var(--sub2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 市场宽度 */
+.breadth-box{margin:8px 0;padding:10px 12px;border-radius:8px;background:var(--bg2);border:1px solid var(--hair)}
+.b-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;line-height:1.6}
+.b-lab{font-weight:700;color:var(--ink)}
+.b-num{font-family:var(--font-mono);color:var(--sub2);white-space:nowrap}
+.b-num b{font-weight:600}
+.b-bar{position:relative;height:6px;border-radius:3px;background:var(--hair);margin:8px 0 4px;overflow:hidden}
+.b-bar i{position:absolute;top:0;bottom:0;left:0}
+.b-bar i:last-child{right:0;left:auto}
+.b-note{font-size:12px;line-height:1.5}
 /* 第三层：五类状态分组 */
 .filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
 .filter-row .f-tabs{display:flex;gap:4px;margin-left:auto}
@@ -1132,13 +1142,15 @@ function tsScreen(st){
           above20: m20 != null && price > m20, m20g60: m20 != null && m60 != null && m20 > m60};
 }
 
-/* 第一层：大盘环境（上证指数趋势 + 市场估值背景） */
+/* 第一层：大盘环境（市场宽度 + 上证指数趋势 + 市场估值背景） */
 function renderOvMarket(){
   const el = document.getElementById('ovMarket');
   if(!el) return;
   const m = DATA.market;
+  const ms = DATA.market_screen || {};
+  const bd = ms.breadth || {};
   const idx = DATA.stocks.find(s => s.ticker === '000001');
-  let head = '', evidence = [], envGrade = null;
+  let head = '', evidence = [], envGrade = null, tech = '';
   if(idx){
     const d = tsScreen(idx);
     if(d){
@@ -1148,6 +1160,18 @@ function renderOvMarket(){
                   '价 vs MA20 ' + (d.dist20!=null?(d.dist20>=0?'+':'')+d.dist20.toFixed(1)+'%':'—'),
                   'MA20 ' + (d.m20g60 ? '>' : '≤') + ' MA60',
                   '5日 ' + (d.r5!=null?(d.r5>=0?'+':'')+d.r5.toFixed(1)+'%':'—')];
+      const tc = v => v!=null ? (v>=0?'up-c':'dn-c') : '';
+      const tf = v => v!=null ? ((v>=0?'+':'')+v.toFixed(1)+'%') : '—';
+      tech = '<div class="micro-row" style="border-top:none;padding-top:0">'
+        + '<div class="micro"><div class="k">上证 5日</div><div class="v" style="font-size:14px;color:' + (d.r5>=0?'var(--green-d)':'var(--red-d)') + '">' + tf(d.r5) + '</div></div>'
+        + '<div class="micro"><div class="k">上证 10日</div><div class="v" style="font-size:14px;color:' + (d.r10>=0?'var(--green-d)':'var(--red-d)') + '">' + tf(d.r10) + '</div></div>'
+        + '<div class="micro"><div class="k">上证 20日</div><div class="v" style="font-size:14px;color:' + (d.r20>=0?'var(--green-d)':'var(--red-d)') + '">' + tf(d.r20) + '</div></div>'
+        + '<div class="micro"><div class="k">上证 60日</div><div class="v" style="font-size:14px;color:' + (d.r60>=0?'var(--green-d)':'var(--red-d)') + '">' + tf(d.r60) + '</div></div>'
+        + '<div class="micro"><div class="k">量比(5/20日)</div><div class="v" style="font-size:14px">' + (d.vr!=null?d.vr.toFixed(2):'—') + '</div></div>'
+        + '<div class="micro"><div class="k">250日位置</div><div class="v" style="font-size:14px">' + (d.pos250!=null?d.pos250.toFixed(0)+'%':'—') + '</div></div>'
+        + '<div class="micro"><div class="k">ATR(14日)</div><div class="v" style="font-size:14px">' + (d.atrPct!=null?d.atrPct.toFixed(1)+'%':'—') + '</div></div>'
+        + '<div class="micro"><div class="k">MA排列</div><div class="v" style="font-size:14px;font-family:var(--font-base)">' + (d.m20g60?'多':'空') + '头</div></div>'
+        + '</div>';
     }
   }
   const g = (m.graham_metrics||[]).find(x => x.key === 'cs985') || (m.graham_metrics||[])[0] || {};
@@ -1156,14 +1180,29 @@ function renderOvMarket(){
     + (x.graham>=2.3?'var(--green-d)':(x.graham>=1.8?'var(--gold)':'var(--red-d)')) + '">' + x.graham
     + '</td><td>' + (x.erp_pct!=null ? x.erp_pct + '%' : '—') + '</td><td>' + x.band + '</td></tr>').join('');
   const gCol = envGrade === '强' ? 'var(--green-d)' : (envGrade === '偏弱' ? 'var(--red-d)' : 'var(--blue)');
+  const upCol = bd.up_ratio != null ? (bd.up_ratio >= 55 ? 'var(--green-d)' : (bd.up_ratio >= 40 ? 'var(--gold)' : 'var(--red-d)')) : 'var(--sub2)';
+  const breadthHTML = (bd.total ? 
+    '<div class="breadth-box">'
+    + '<div class="b-line"><span class="b-lab">市场宽度</span>'
+    + '<span class="b-num" style="color:var(--green-d)">涨 ' + bd.up + '</span>'
+    + '<span class="b-num" style="color:var(--red-d)">跌 ' + bd.down + '</span>'
+    + '<span class="b-num" style="color:var(--sub2)">平 ' + (bd.flat||0) + '</span>'
+    + '<span class="b-num">涨停 ' + (bd.limit_up||0) + ' / 跌停 ' + (bd.limit_dn||0) + '</span>'
+    + '<span class="b-num">中位涨幅 <b style="color:' + (bd.median_chg!=null && bd.median_chg>=0?'var(--green-d)':'var(--red-d)') + '">' + (bd.median_chg!=null?(bd.median_chg>=0?'+':'')+bd.median_chg.toFixed(2)+'%':'—') + '</b></span></div>'
+    + '<div class="b-bar"><i style="width:' + bd.up_ratio + '%;background:var(--green-d)"></i><i style="left:' + bd.up_ratio + '%;background:var(--red-d)"></i></div>'
+    + '<div class="b-note" style="color:' + upCol + '">上涨占比 ' + bd.up_ratio + '%（' + (bd.up_ratio>=55?'普涨·环境偏强':bd.up_ratio>=40?'分化·中性':'普跌·环境偏弱') + '，全市场 ' + bd.total + ' 只）</div>'
+    + '</div>'
+    : '');
   head = '<div class="env-banner"><span class="env-badge" style="color:' + gCol + ';border-color:' + gCol + '">大盘环境：' + (envGrade || '—') + '</span>'
     + '<span class="env-ev">' + (evidence.join(' · ') || '指数K线不足') + '</span></div>'
-    + '<div class="formula-mini">判定规则（D级工程化）：价>MA20 且 MA20>MA60 且 20日涨幅>2% = 强；价<MA20 或 MA20≤MA60 且 20日涨幅<0 = 偏弱；其余 = 正常。</div>';
+    + breadthHTML
+    + tech
+    + '<div class="formula-mini">大盘强弱 = 上证价 vs MA20 + MA20 vs MA60 + 20日涨幅（D级工程化）；市场宽度 = 全市场涨跌家数/涨停跌停/中位涨幅（新浪快照，当日）。估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅标注，不构成仓位闸门。</div>';
   el.innerHTML = head
     + '<table class="ov-table">'
     + '<tr><th>口径</th><th>PE(TTM)</th><th>格雷厄姆</th><th>ERP</th><th>分档</th></tr>' + rows
     + '</table>'
-    + '<div class="formula-mini">10Y 国债 ' + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '）｜ 估值背景（格雷厄姆=' + (g.graham||'—') + ' ' + (g.band||'') + '，ERP=' + (g.erp_pct!=null?g.erp_pct+'%':'—') + '）：仅背景标注，不构成仓位闸门；大盘强弱由趋势判定。</div>';
+    + '<div class="formula-mini">10Y 国债 ' + fmt2(((m.bond_10y||{}).value||0)*100) + '%（' + ((m.bond_10y||{}).date||'—') + '）｜ 格雷厄姆 = (1/PE)÷10Y；ERP = 1/PE − 10Y（D级减法模型防低利率乘数失真）。</div>';
 }
 
 /* 第二层：真实行业板块强弱（同花顺 90 行业板块，非自选池） */

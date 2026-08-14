@@ -58153,7 +58153,7 @@
   },
   "market_screen": {
     "as_of": "2026-08-14",
-    "updated_at": "2026-08-14 21:43:29",
+    "updated_at": "2026-08-14 22:23:32",
     "stats": {
       "total": 296,
       "candidates": 300,
@@ -58164,6 +58164,16 @@
         "回调观察": 31,
         "排除": 8
       }
+    },
+    "breadth": {
+      "up": 2322,
+      "down": 2719,
+      "flat": 166,
+      "limit_up": 81,
+      "limit_dn": 19,
+      "median_chg": -0.136,
+      "total": 5207,
+      "up_ratio": 44.6
     },
     "classes": {
       "启动观察": [

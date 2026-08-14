@@ -207,6 +207,41 @@ def main():
         return
     log(f"全市场快照: {len(df)} 行")
 
+    # 1.5) 市场宽度（全市场涨跌家数/涨停跌停/中位涨幅）
+    breadth = {"up": 0, "down": 0, "flat": 0, "limit_up": 0, "limit_dn": 0,
+               "median_chg": None, "total": 0}
+    chgs = []
+    for _, row in df.iterrows():
+        name = str(row.get("名称", "")).strip()
+        code = str(row.get("代码", "")).strip()
+        if code[:2] in ("sh", "sz", "bj"):
+            code = code[2:]
+        if not name or len(code) != 6:
+            continue
+        if code.startswith(("4", "8", "9")):
+            continue
+        c = num(row.get("涨跌幅"))
+        if c is None:
+            continue
+        breadth["total"] += 1
+        chgs.append(c)
+        if c > 0:
+            breadth["up"] += 1
+            if c >= 9.8:
+                breadth["limit_up"] += 1
+        elif c < 0:
+            breadth["down"] += 1
+            if c <= -9.8:
+                breadth["limit_dn"] += 1
+        else:
+            breadth["flat"] += 1
+    if chgs:
+        chgs.sort()
+        breadth["median_chg"] = chgs[len(chgs) // 2]
+    breadth["up_ratio"] = round(breadth["up"] / breadth["total"] * 100, 1) if breadth["total"] else None
+    log(f"市场宽度: 涨 {breadth['up']} / 跌 {breadth['down']} / 平 {breadth['flat']}，"
+        f"涨停 {breadth['limit_up']} / 跌停 {breadth['limit_dn']}，中位涨幅 {breadth['median_chg']}%")
+
     # 2) 粗筛活跃股
     cands = []
     for _, row in df.iterrows():
@@ -281,6 +316,7 @@ def main():
         "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "stats": {"total": len(results), "candidates": len(cands),
                   "counts": {c: len(classes[c]) for c in classes}},
+        "breadth": breadth,
         "classes": out,
         "note": "新浪全市场快照粗筛（成交额>3亿）→ 新浪日K真实计算 5/10/20/60日涨幅/MA20/量比/ATR/250日位置（D级工程化）；前10按类内排序",
     }
