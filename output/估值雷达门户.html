@@ -64,7 +64,7 @@ b{font-weight:600}
 .pop-item .st{margin-left:auto;font-size:12px}
 
 /* ============ 主体三栏 Grid（100vh 单屏） ============ */
-.shell{display:grid;grid-template-columns:210px minmax(0,1fr) 400px;grid-template-rows:minmax(0,1fr);
+.shell{display:grid;grid-template-columns:210px minmax(0,1fr) 6px var(--wall-w,340px);grid-template-rows:minmax(0,1fr);
   height:calc(100vh - 44px);overflow:hidden}
 
 /* ---- 左导航 210px ---- */
@@ -153,7 +153,7 @@ b{font-weight:600}
   border-bottom:1px solid var(--hair);flex-wrap:wrap}
 .hero-strip .hl{min-width:0;flex:1}
 .hero-strip .eyebrow{font-size:12px;letter-spacing:.05em;color:var(--sub2);text-transform:uppercase}
-.hero-strip h1{font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1.3}
+.hero-strip h1{font-size:23px;font-weight:700;letter-spacing:0;line-height:1.3}
 .hero-strip .tick{font-size:12px;color:var(--sub2);font-family:var(--font-mono)}
 .hero-strip .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:12px;
@@ -194,7 +194,7 @@ b{font-weight:600}
 .ma-chip.off{opacity:.4;text-decoration:line-through}
 .chart-wrap{flex:1;position:relative;min-height:200px;border:1px solid var(--hair);border-radius:var(--r-card);
   background:var(--bg2);overflow:hidden;user-select:none;transition:opacity .2s ease}
-.chart-wrap.fade{opacity:.3}
+.chart-wrap.fade{opacity:.6}
 .chart-wrap canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .chart-wrap svg{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
 .chart-foot{display:flex;gap:16px;font-size:12px;color:var(--sub2);padding:5px 2px 0;flex-wrap:wrap;line-height:1.5}
@@ -229,8 +229,10 @@ b{font-weight:600}
 .ov-table tr{cursor:pointer;transition:background .15s,transform .15s}
 .ov-table tr:hover{background:var(--blue-lt);transform:translateX(2px)}
 
-/* ---- 右数据墙 400px ---- */
+/* ---- 右数据墙 var(--wall-w) 可拖拽 ---- */
 .wall{background:var(--bg);border-left:1px solid var(--hair);overflow-y:auto;padding:10px;min-height:0}
+.wall-grip{cursor:col-resize;position:relative;z-index:5;background:transparent;transition:background .15s}
+.wall-grip:hover,.wall-grip.dragging{background:rgba(0,113,227,.25)}
 .w-card{background:var(--bg2);border:1px solid var(--hair);border-radius:var(--r-card);
   padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow-card);
   animation:cardIn .4s var(--ease, ease-out) both}
@@ -351,7 +353,7 @@ b{font-weight:600}
 
 /* ============ 响应式 ============ */
 @media(max-width:1399px){
-  .shell{grid-template-columns:84px minmax(0,1fr) 340px}
+  .shell{grid-template-columns:84px minmax(0,1fr) 6px var(--wall-w,340px)}
   .sb-hd span:last-child,.sb-search{display:none}
   .sb-item{padding:10px 6px 12px;gap:3px}
   .sb-item .nm,.sb-item .cd,.sb-item .px{display:none}   /* 保持原产品决策：窄屏隐藏价格与名称 */
@@ -365,6 +367,8 @@ b{font-weight:600}
 @media(max-width:1099px){
   html,body{overflow:auto}
   .shell{grid-template-columns:1fr;grid-template-rows:auto;height:auto;display:block}
+  .wall-grip{display:none}
+  .mos-track{display:none}   /* 窄屏省 hero-strip 垂直空间 */
   .sidebar{border-right:none;border-bottom:1px solid var(--hair)}
   .sb-list{display:flex;overflow-x:auto;flex:none}
   .sb-item{min-width:120px;border-right:1px solid var(--hair);border-bottom:none}
@@ -450,6 +454,7 @@ b{font-weight:600}
           <button class="ma-chip on" data-ma="120"><i style="background:#af52de"></i>MA120</button>
           <button class="ma-chip on" data-ma="250"><i style="background:#34c759"></i>MA250</button>
           <button class="ma-chip on" id="bandChip" title="显隐 V_low/V_mid/V_high 估值色带与锚线"><i style="background:rgba(0,113,227,.55)"></i>估值带</button>
+          <button class="ma-chip" id="hollowChip" title="色觉友好：上涨空心/下跌实心，颜色+形状双区分"><i style="background:#d94a47"></i>空心/实心</button>
         </div>
       </div>
       <div class="chart-wrap" id="chartWrap">
@@ -474,6 +479,8 @@ b{font-weight:600}
       <table class="ov-table" id="ovTable"></table>
     </div>
   </main>
+
+  <div class="wall-grip" id="wallGrip" title="拖拽调整右栏宽度"></div>
 
   <aside class="wall" id="wall">
     <div class="w-card"><div class="w-title">关键价位 · 支撑压力</div><div id="c0Body">—</div></div>
@@ -562,6 +569,9 @@ function renderList(filter){
       const zm = zmeta(s);
       const zc = ['z0','z0','z2','z2','z4','z4','z6'][zm.c] || 'z6';
       const rawPos = bandPosPct(s.price, s.v_low, s.v_mid, s.v_high);
+      const barTitle = (s.v_low!=null && s.v_high!=null && s.v_high>s.v_low)
+        ? '估值带位置 ' + rawPos.toFixed(0) + '%（' + fmt2(s.v_low) + ' ~ ' + fmt2(s.v_high) + '）'
+        : '无估值区间';
       return '<button class="sb-item '+(s.ticker===CUR?.ticker&&VIEW==='stock'?'on':'')+'" onclick="switchStock(\''+s.ticker+'\')">'
         + '<div class="sb-row-top">'
         + '<div class="sb-name-group"><span class="nm">'+s.name+'</span><span class="cd">'+s.ticker+'</span><span class="code">'+s.ticker+'</span></div>'
@@ -571,7 +581,7 @@ function renderList(filter){
         + '<div class="sb-change-group"><span class="chg '+pctCol(s.pct)+'">'+(s.pct>0?'+':'')+fmt2(s.pct)+'%</span></div>'
         + '<div class="sb-zone-group"><span class="sb-zone '+zc+'">'+zm.label+'</span></div>'
         + '</div>'
-        + '<div class="bar"><span class="mark" style="left:'+rawPos+'%"></span></div>'
+        + '<div class="bar" title="'+barTitle+'"><span class="mark" style="left:'+rawPos+'%"></span></div>'
         + '</button>';
     }).join('');
   document.getElementById('sbCnt').textContent = DATA.stocks.length + ' 只';
@@ -1148,6 +1158,7 @@ class ValuationChartEngine {
     this.slot = 6; this.viewStart = 0; this.rangeN = 250;
     this.maVis = {5:true, 10:true, 20:true, 60:true, 120:true, 250:true};
     this.bandVis = true;
+    this.hollow = (() => { try{ return localStorage.getItem('radar_hollow') === '1'; }catch(e){ return false; } })();
     this.pinned = false; this.pinIdx = -1; this._pinY = null; this._tipIdx = -1;
     this._drag = null; this._raf = 0; this._anim = null; this._resT = null; this._ro = null;
     this._ch = null; this._animateSR = false; this._custom = false;
@@ -1401,8 +1412,17 @@ class ValuationChartEngine {
       }
       const yo = y(Math.max(r.o, r.c));
       const bh = Math.max(1, Math.abs(y(r.o) - y(r.c)));
-      ctx.fillStyle = col;
-      ctx.fillRect(cx - bodyW / 2, yo, bodyW, bh);
+      if(this.hollow && up && !thin){
+        /* 色觉友好：上涨空心描边 + 浅填充，下跌实心——颜色与形状双重区分 */
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(cx - bodyW / 2, yo, bodyW, bh);
+        ctx.fillStyle = 'rgba(217,74,71,.14)';
+        ctx.fillRect(cx - bodyW / 2, yo, bodyW, bh);
+      } else {
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - bodyW / 2, yo, bodyW, bh);
+      }
     }
   }
 
@@ -2154,6 +2174,14 @@ class ValuationChartEngine {
     this._scheduleDraw();
   }
 
+  toggleHollow(){
+    this.hollow = !this.hollow;
+    const chip = document.getElementById('hollowChip');
+    if(chip) chip.classList.toggle('on', this.hollow);
+    this._scheduleDraw();
+    try{ localStorage.setItem('radar_hollow', this.hollow ? '1' : '0'); }catch(e){}
+  }
+
   setData(st){
     if(!st){ return; }
     const tok = ++this._dataTok;
@@ -2288,6 +2316,42 @@ function init(){
   document.getElementById('bandChip').onclick = function(){
     KENGINE.toggleBand();
   };
+  document.getElementById('hollowChip').onclick = function(){
+    KENGINE.toggleHollow();
+  };
+  if(KENGINE.hollow) document.getElementById('hollowChip').classList.add('on');
+
+  /* ---- 右栏宽度拖拽（默认 340px，持久化 localStorage） ---- */
+  (function(){
+    const grip = document.getElementById('wallGrip');
+    if(!grip) return;
+    let dragging = false;
+    grip.addEventListener('pointerdown', e => {
+      dragging = true;
+      grip.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      grip.setPointerCapture(e.pointerId);
+    });
+    grip.addEventListener('pointermove', e => {
+      if(!dragging) return;
+      const shell = grip.parentElement.getBoundingClientRect();
+      const w = Math.max(260, Math.min(560, shell.right - e.clientX - 3));
+      document.documentElement.style.setProperty('--wall-w', w + 'px');
+    });
+    const endDrag = () => {
+      if(!dragging) return;
+      dragging = false;
+      grip.classList.remove('dragging');
+      document.body.style.cursor = '';
+      try{ localStorage.setItem('radar_wall_w', document.documentElement.style.getPropertyValue('--wall-w')); }catch(e){}
+    };
+    grip.addEventListener('pointerup', endDrag);
+    grip.addEventListener('pointercancel', endDrag);
+    try{
+      const saved = localStorage.getItem('radar_wall_w');
+      if(saved) document.documentElement.style.setProperty('--wall-w', saved);
+    }catch(e){}
+  })();
   let resizeT = null;
   window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => KENGINE.resize(), 150); });
   const last = localStorage.getItem('radar_last');
