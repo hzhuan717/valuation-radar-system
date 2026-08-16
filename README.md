@@ -4,6 +4,10 @@ A 股自选池估值区间决策门户：单文件 HTML 终端仪表盘 + 每日
 
 > 仅用于研究、教学、回测和决策辅助。不得承诺收益、不连接券商、不执行交易。
 
+## 开源协议
+
+MIT License（见 [LICENSE](LICENSE)）：可自由使用、修改、商用，仅需保留版权声明。
+
 ## 在线访问
 
 - 公开门户（每日 15:05 后自动刷新）：https://hzhuan717.github.io/valuation-radar-portal/

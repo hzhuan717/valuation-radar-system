@@ -58152,8 +58152,8 @@
     }
   },
   "market_screen": {
-    "as_of": "2026-08-14",
-    "updated_at": "2026-08-14 22:36:18",
+    "as_of": "2026-08-15",
+    "updated_at": "2026-08-15 08:47:02",
     "stats": {
       "total": 296,
       "candidates": 300,
@@ -58175,6 +58175,67 @@
       "total": 5207,
       "total_amount": 21423.0,
       "up_ratio": 44.6
+    },
+    "congestion": {
+      "value": 47.37,
+      "as_of": "2026-08-15",
+      "method": "sina-snapshot-local",
+      "top5_count": 260,
+      "total_count": 5204,
+      "history": {
+        "source": "legulegu-akshare",
+        "updated_at": "2026-08-15 08:47:40",
+        "points": 3573,
+        "first_date": "2011-09-05",
+        "last_date": "2026-06-04",
+        "last_value": 49.32,
+        "threshold": 45.0,
+        "episodes_total": 60,
+        "peaks": [
+          {
+            "start": "2015-07-07",
+            "end": "2015-07-08",
+            "peak_date": "2015-07-07",
+            "peak": 57.3
+          },
+          {
+            "start": "2014-12-16",
+            "end": "2015-01-16",
+            "peak_date": "2014-12-31",
+            "peak": 57.1
+          },
+          {
+            "start": "2020-02-03",
+            "end": "2020-02-03",
+            "peak_date": "2020-02-03",
+            "peak": 56.0
+          },
+          {
+            "start": "2020-12-30",
+            "end": "2021-03-17",
+            "peak_date": "2021-02-10",
+            "peak": 55.2
+          },
+          {
+            "start": "2018-02-02",
+            "end": "2018-02-23",
+            "peak_date": "2018-02-05",
+            "peak": 53.2
+          },
+          {
+            "start": "2015-07-10",
+            "end": "2015-07-10",
+            "peak_date": "2015-07-10",
+            "peak": 53.0
+          },
+          {
+            "start": "2026-05-19",
+            "end": "2026-06-04",
+            "peak_date": "2026-06-03",
+            "peak": 51.6
+          }
+        ]
+      }
     },
     "classes": {
       "启动观察": [

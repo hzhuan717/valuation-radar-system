@@ -1,0 +1,49 @@
+/* 补丁2 CSS —— 全部改动点 */
+
+/* 1) chart-wrap 三层 z-index 分层：canvas(0) < axis-panel(1) < svg(2) */
+.chart-wrap canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+/* 右侧 Y 轴毛玻璃面板：56px 半透明 + 背景模糊，位于 canvas 之上、svg 覆盖层之下 */
+.axis-panel{position:absolute;top:12px;right:0;bottom:24px;width:56px;z-index:1;pointer-events:none;
+  background:color-mix(in srgb,var(--bg2) 85%,transparent);
+  backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);
+  border-left:1px solid var(--hair)}
+.chart-wrap svg{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;z-index:2}
+
+/* 2) .ktip 重写：不写死 left/top（JS 负责翻转定位），z-index:24 位于一切浮层之上 */
+.ktip{position:absolute;background:color-mix(in srgb,var(--bg2) 86%,transparent);
+  backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);
+  border:1px solid var(--hair);
+  border-radius:10px;padding:10px 14px;font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--ink);
+  box-shadow:var(--shadow-lift);pointer-events:none;opacity:0;min-width:186px;max-width:280px;z-index:24;
+  font-variant-numeric:tabular-nums;white-space:pre;transition:opacity var(--dur-instant) var(--ease-instant)}
+.ktip.show{opacity:1}
+.ktip.mobile{left:6px !important;right:6px !important;top:auto !important;bottom:6px !important;max-width:none}
+.ktip .tk{color:var(--sub2)}
+.ktip .kdate{color:var(--ink);font-weight:700}
+.ktip .ztip{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ktip .krow{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.ktip .krow .tk{min-width:3.2em}
+.ktip .krow.ma{flex-wrap:wrap;row-gap:2px}
+.ktip .krow .mma{display:inline-flex;align-items:center;gap:4px}
+.ktip .krow .mma i{width:9px;height:3px;border-radius:1px}
+.ktip .near-s{color:var(--green-d);font-weight:700}
+.ktip .near-r{color:var(--red-d);font-weight:700}
+.ktip .zone-badge{display:inline-block;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:700}
+/* 3日迷你走势（Sparkline） */
+.ktip .spark{margin-top:6px;height:24px;display:block}
+.ktip .spark polyline{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ktip .spark .last-dot{fill:var(--candle-dn)}
+
+/* 3) 价格 z-index:6 位于 edge-alert(5) 之上，警示条不截断价格闪烁 */
+.hero-strip .price{font-size:var(--text-xl);font-weight:700;font-family:var(--font-mono);font-variant-numeric:tabular-nums;
+  letter-spacing:0;line-height:1.2;transition:border-color var(--dur-change) var(--ease-instant);position:relative;z-index:6}
+.edge-alert{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);
+  opacity:0;pointer-events:none;z-index:5;transition:opacity .3s}
+
+/* 4) 周期切换按钮：弹性缓动（弹簧） */
+.range-btn{font-size:12px;padding:4px 11px;border-radius:999px;border:1px solid var(--hair);
+  background:var(--bg2);color:var(--sub2);transition:all var(--dur-layout) var(--ease-spring);position:relative}
+
+/* 5) ma-chip 显隐切换：透明度渐隐（不瞬跳） */
+.ma-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;border:1px solid var(--hair);
+  border-radius:999px;padding:3px 10px;background:var(--bg2);color:var(--sub2);transition:transform var(--dur-instant) var(--ease-instant),box-shadow var(--dur-instant) var(--ease-instant),opacity var(--dur-change) var(--ease-instant)}

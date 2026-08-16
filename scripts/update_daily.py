@@ -481,6 +481,15 @@ def main():
     except Exception as e:
         log(f"全市场趋势筛选更新失败: {e}")
 
+    # ---- 大盘拥挤度历史极值（乐咕 akshare，补充当日现算）----
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fetch_congestion_history import main as congestion_history_main
+        congestion_history_main()
+        log("大盘拥挤度历史极值更新完成（乐咕+本地缓存）")
+    except Exception as e:
+        log(f"大盘拥挤度历史极值更新失败: {e}")
+
     # ---- 真实行业板块强弱（大盘页第二层，同花顺90板块）----
     try:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

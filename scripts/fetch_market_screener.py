@@ -248,6 +248,35 @@ def main():
         f"涨停 {breadth['limit_up']} / 跌停 {breadth['limit_dn']}，中位涨幅 {breadth['median_chg']}%，"
         f"总成交额 {breadth['total_amount']:.0f} 亿")
 
+    # 1.6) 大盘拥挤度（当日现算）：成交额排名前5%个股成交额占全市场总成交额比重
+    amts = []
+    for _, row in df.iterrows():
+        name = str(row.get("名称", "")).strip()
+        code = str(row.get("代码", "")).strip()
+        if code[:2] in ("sh", "sz", "bj"):
+            code = code[2:]
+        if not name or len(code) != 6:
+            continue
+        if code.startswith(("4", "8", "9")):
+            continue
+        a = num(row.get("成交额"))
+        if a is not None and a > 0:
+            amts.append(a)
+    congestion = None
+    congestion_top5 = None
+    if len(amts) >= 40:
+        amts.sort(reverse=True)
+        congestion_top5 = max(1, int(len(amts) * 0.05))
+        congestion = round(sum(amts[:congestion_top5]) / sum(amts) * 100, 2)
+    congestion_local = {
+        "value": congestion,
+        "as_of": datetime.date.today().isoformat(),
+        "method": "sina-snapshot-local",
+        "top5_count": congestion_top5,
+        "total_count": len(amts),
+    }
+    log(f"大盘拥挤度(当日现算): {congestion}%（成交额前5% {congestion_top5} 只 / 全市场 {len(amts)} 只）")
+
     # 2) 粗筛活跃股
     cands = []
     for _, row in df.iterrows():
@@ -328,6 +357,10 @@ def main():
     }
     with open(STATE, encoding="utf-8") as f:
         state = json.load(f)
+    old_con = (state.get("market_screen") or {}).get("congestion") or {}
+    old_hist = old_con.get("history") or {}
+    congestion_local["history"] = old_hist   # 保留乐咕历史极值，避免被当日现算覆盖
+    screen["congestion"] = congestion_local
     state["market_screen"] = screen
     with open(STATE, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
