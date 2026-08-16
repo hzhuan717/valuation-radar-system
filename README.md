@@ -12,6 +12,19 @@ MIT License（见 [LICENSE](LICENSE)）：可自由使用、修改、商用，�
 
 - 公开门户（每日 15:05 后自动刷新）：https://hzhuan717.github.io/valuation-radar-portal/
 
+## 快速开始（本地运行）
+
+```powershell
+git clone https://github.com/hzhuan717/valuation-radar-system.git
+cd valuation-radar-system
+pip install -r requirements.txt      # 核心流水线仅需标准库；akshare/pandas 为回退通道
+python scripts\update_daily.py --force   # 拉取行情与估值数据（交易日收盘后）
+python scripts\build_dashboard.py        # 生成门户 HTML
+start output\估值雷达门户.html            # 单文件离线可打开
+```
+
+想换自选池：编辑 `watchlist.json`（冻结参数：路由/模型/倍数/来源）后重跑上面三步即可。
+
 ## 目录结构
 
 ```
