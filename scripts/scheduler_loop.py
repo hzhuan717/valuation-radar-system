@@ -61,12 +61,14 @@ def run_update():
     try:
         env = dict(os.environ, PYTHONIOENCODING="utf-8")
         r = subprocess.run([sys.executable, UPDATE], capture_output=True, text=True,
-                           encoding="utf-8", errors="replace", env=env, timeout=900)
+                           encoding="utf-8", errors="replace", env=env, timeout=1500)
         s_log(f"update_daily 退出码 {r.returncode}" + (f"：{(r.stdout or '').strip()[-200:]}" if r.stdout else ""))
         if r.returncode != 0 and r.stderr:
             s_log("stderr: " + r.stderr[-500:])
+        return r.returncode == 0
     except Exception as e:
         s_log(f"update_daily 异常: {e}")
+        return False
 
 
 def main():
@@ -81,13 +83,19 @@ def main():
                 in_window = WINDOW_START <= hhmm < WINDOW_END
                 catchup = hhmm >= WINDOW_END and hhmm < CATCHUP_END
                 if in_window:
-                    run_update()
-                    mark_run(today)
-                    s_log(f"今日 {today} 已标记完成（15:30 窗口）")
+                    ok = run_update()
+                    if ok:
+                        mark_run(today)
+                        s_log(f"今日 {today} 已标记完成（15:30 窗口）")
+                    else:
+                        s_log(f"今日 {today} 首次运行失败，等待补跑重试")
                 elif catchup:
                     s_log("检测到当日未运行（疑似 15:30 未开机），执行补跑")
-                    run_update()
-                    mark_run(today)
+                    ok = run_update()
+                    if ok:
+                        mark_run(today)
+                    else:
+                        s_log(f"今日 {today} 补跑失败，等待下一轮重试")
             elif last_run_date() != today:
                 pass  # 非交易日
         except Exception as e:

@@ -22,6 +22,7 @@ import os
 import sys
 import datetime
 import statistics
+import threading
 
 # 仅作为主脚本运行时包装 stdout（被 update_daily import 时不包装，避免管道关闭）
 if __name__ == '__main__':
@@ -52,20 +53,38 @@ def _fresh_pe_ttm(ticker: str, fallback) -> float | None:
     return fallback
 
 
-def fetch_pe_history(symbol: str, years: str = "近五年") -> list:
-    import akshare as ak
-    df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator="市盈率(TTM)", period=years)
+def fetch_baidu_hist(symbol: str, indicator: str, years: str = "近五年",
+                     timeout: float = 20.0) -> list:
+    """百度股市通 5 年历史抓取，带单只超时保护（防 2026-08-17 挂起 6.4 小时复现）。"""
+    box = {}
+
+    def _run():
+        try:
+            import akshare as ak
+            df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator=indicator, period=years)
+            box["df"] = df
+        except Exception as e:
+            box["err"] = f"{type(e).__name__}: {e}"
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        return []
+    if "err" in box:
+        return []
+    df = box.get("df")
     if df is None or df.empty or "value" not in df.columns:
         return []
     return sorted(df["value"].dropna().astype(float).tolist())
+
+
+def fetch_pe_history(symbol: str, years: str = "近五年") -> list:
+    return fetch_baidu_hist(symbol, "市盈率(TTM)", years)
 
 
 def fetch_pb_history(symbol: str, years: str = "近五年") -> list:
-    import akshare as ak
-    df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator="市净率", period=years)
-    if df is None or df.empty or "value" not in df.columns:
-        return []
-    return sorted(df["value"].dropna().astype(float).tolist())
+    return fetch_baidu_hist(symbol, "市净率", years)
 
 
 def quantile(vals, q):

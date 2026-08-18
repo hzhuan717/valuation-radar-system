@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import datetime
+import threading
 
 # 仅作为主脚本运行时包装 stdout（被 update_daily import 时不包装，避免管道关闭）
 if __name__ == '__main__':
@@ -73,16 +74,35 @@ def fetch_legu_index_pe(legu_code: str) -> tuple:
     return rows, {"source": "legulegu-index", "n": len(rows)}
 
 
-def fetch_baidu_hist(symbol: str, indicator: str, years: str = "近五年") -> tuple:
-    try:
-        import akshare as ak
-        df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator=indicator, period=years)
-        if df is None or df.empty or "value" not in df.columns:
-            return None, {"status": "error", "error": "empty"}
-        df["value"] = df["value"].astype(float)
-        return df, {"status": "ok", "n": len(df)}
-    except Exception as e:
-        return None, {"status": "error", "error": f"{type(e).__name__}: {e}"}
+def fetch_baidu_hist(symbol: str, indicator: str, years: str = "近五年",
+                     timeout: float = 20.0) -> tuple:
+    """百度股市通 5 年历史抓取，带单只超时保护。
+
+    2026-08-18 修复：2026-08-17 该步骤单只请求曾挂起约 6.4 小时，拖垮整条每日流水线
+    导致门户未重建。现用守护线程包裹，超时即视为失败并继续下一只，不再阻塞流水线。
+    """
+    box = {}
+
+    def _run():
+        try:
+            import akshare as ak
+            df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator=indicator, period=years)
+            box["df"] = df
+        except Exception as e:
+            box["err"] = f"{type(e).__name__}: {e}"
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        return None, {"status": "error", "error": f"timeout>{timeout}s"}
+    if "err" in box:
+        return None, {"status": "error", "error": box["err"]}
+    df = box.get("df")
+    if df is None or df.empty or "value" not in df.columns:
+        return None, {"status": "error", "error": "empty"}
+    df["value"] = df["value"].astype(float)
+    return df, {"status": "ok", "n": len(df)}
 
 
 def percentile(sorted_vals, value):
