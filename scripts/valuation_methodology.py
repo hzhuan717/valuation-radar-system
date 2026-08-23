@@ -105,13 +105,20 @@ def fy1_growth(selected: dict, actual_history: list) -> float | None:
 
 
 def equity_cost_r(market: dict, config: dict) -> float | None:
-    """股权成本 r = 无风险利率 + ERP。国债利率来自大盘数据，缺省用 DEFAULT_RF。"""
+    """股权成本 r = 无风险利率 + ERP。国债利率来自大盘数据，缺省用 DEFAULT_RF。
+
+    中债-akshare 返回小数形式（0.0168=1.68%），腾讯等部分源为百分数（2.5=2.5%）；
+    以 0.5 为分界自适应判别（中国10Y历史区间 0.5%~5%，两种口径不重叠）。
+    """
     ke = config.get("ke")
     if isinstance(ke, (int, float)) and 0 < ke < 0.5:
         return float(ke)
     bond = (market or {}).get("bond_10y") or {}
     val = bond.get("value")
-    rf = float(val) / 100.0 if isinstance(val, (int, float)) and 0 < val < 20 else DEFAULT_RF
+    if isinstance(val, (int, float)) and 0 < val < 20:
+        rf = float(val) if val < 0.5 else float(val) / 100.0
+    else:
+        rf = DEFAULT_RF
     return rf + DEFAULT_ERP
 
 
@@ -148,7 +155,7 @@ def sustainable_growth(actual_history: list, r: float | None, config: dict | Non
             g = min(max(cagr, 0.0), G_CAP)
         else:
             g = DEFAULT_G
-    ceiling = max((r if isinstance(r, (int, float)) else 0.08) - MIN_R_MINUS_G, 0.0)
+    ceiling = max((r if isinstance(r, (int, float)) else 0.08) - MIN_R_MINUS_G - 1e-9, 0.0)
     return min(g, ceiling)
 
 
