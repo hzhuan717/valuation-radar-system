@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import os
 import sys
@@ -99,13 +100,21 @@ def run_offline(audit: Audit):
     audit.check(result["schema_version"] == SCHEMA_VERSION, "engine.schema_version")
     audit.check(result["decision_status"] == "ready" and result["decision_usable"],
                 "engine.ready")
-    audit.check(result["valuation"]["v_low"] == 5.7 and
-                result["valuation"]["v_mid"] == 7.74 and
-                result["valuation"]["v_high"] == 10.8,
-                "engine.transparent_values", repr(result["valuation"]))
+    # v2.1 方法论：forward_pe 稳定路由默认行业折扣 ×0.95 → EPS 0.38/0.43/0.45 → 0.361/0.4085/0.4275
+    audit.check(result["valuation"]["v_low"] == 5.42 and
+                result["valuation"]["v_mid"] == 7.35 and
+                result["valuation"]["v_high"] == 10.26,
+                "engine.transparent_values_haircut", repr(result["valuation"]))
     audit.check(len(result["valuation"]["calc_steps"]) == 3 and
-                result["valuation"]["calc_steps"][1]["substitution"] == "0.43 × 18",
-                "engine.calc_steps")
+                result["valuation"]["calc_steps"][1]["substitution"] == "0.4085 × 18",
+                "engine.calc_steps_haircut", repr(result["valuation"]["calc_steps"]))
+    audit.check(result["forecast"]["base"] == 0.43 and
+                result["earnings_adjustment"]["raw_eps"]["base"] == 0.43 and
+                result["earnings_adjustment"]["adjusted_eps"]["base"] == 0.4085,
+                "engine.haircut_raw_preserved_audit")
+    audit.check(any(x["id"] == "EARNINGS_CONSENSUS_HAIRCUT"
+                    for x in result["quality"]["checks"]),
+                "engine.haircut_info_check")
 
     cfg_string = base_config()
     cfg_string["valuation_model"] = "growth_pe"
@@ -145,6 +154,79 @@ def run_offline(audit: Audit):
     audit.check(cold["decision_usable"] and
                 cold["decision"]["band_position_raw"] < 0.0,
                 "engine.band_position_raw_negative")
+
+    # ---- 方法论升级 v2.1：覆盖门槛 / 三尺互证 / 分歧降级 / 反向验证 ----
+    thin_payload = {
+        "provider": "同花顺F10", "url": "https://example.invalid/worth",
+        "as_of": "2026-08-08", "retrieved_at": "2026-08-09 10:00:00",
+        "forecasts": [{"year": 2026, "count": 1, "min": 0.40, "mean": 0.43, "max": 0.45}],
+        "actual_eps_history": [{"year": 2025, "eps": 0.31}],
+    }
+    thin = evaluate_stock(base_config(), {"price": 6.0}, thin_payload, meta, "2026-08-09")
+    audit.check(thin["decision_status"] == "blocked" and
+                any(x["code"] == "FORECAST_COVERAGE_MIN" for x in thin["quality"]["blockers"]),
+                "v21.coverage_min_blocks_decision", repr(thin["quality"]["blockers"]))
+
+    tri_cfg = base_config()
+    tri_cfg["dividend_payout_ratio"] = 0.60
+    tri_cfg["peer_industry_pe"] = 12.0
+    tri = evaluate_stock(tri_cfg, {"price": 6.0}, payload, meta, "2026-08-09")
+    fus = tri.get("multiple_fusion") or {}
+    audit.check(fus.get("n_rulers") == 3 and fus.get("quality") == "B" and
+                not fus.get("divergent"),
+                "v21.tri_ruler_fused_quality_b", repr(fus))
+    audit.check(fus.get("effective", {}).get("mid") == 12.0,
+                "v21.fusion_median_mid", repr(fus.get("effective")))
+    audit.check(tri["multiple"]["low"] == 10.5 and tri["multiple"]["high"] == 16.0 and
+                tri["multiple"]["source"]["method"] == "tri_ruler_consensus",
+                "v21.fusion_band_guardrails", repr(tri["multiple"]))
+    audit.check(tri["multiple"]["source"]["provenance"].get("method") == "historical_quantile",
+                "v21.history_provenance_kept")
+    audit.check(tri["decision_usable"] and abs(tri["valuation"]["v_mid"] - 4.9) < 0.01,
+                "v21.fused_valuation_ready", repr(tri["valuation"]))
+    ruler_mids = [r["mid"] for r in fus.get("rulers", [])]
+    audit.check(len(ruler_mids) == 3 and abs(ruler_mids[1] - 11.1818) < 0.001,
+                "v21.formula_ruler_value", repr(ruler_mids))
+
+    div_cfg = base_config()
+    div_cfg["dividend_payout_ratio"] = 0.60
+    div_cfg["peer_industry_pe"] = 45.0
+    div = evaluate_stock(div_cfg, {"price": 6.0}, payload, meta, "2026-08-09")
+    audit.check(any(w["code"] == "MULTIPLE_SOURCE_DIVERGENCE"
+                    for w in div["quality"]["warnings"]) and
+                div["decision_status"] == "reference_only" and
+                not div["decision_usable"],
+                "v21.divergence_forces_reference_only", repr(div["quality"]["warnings"]))
+    audit.check(abs(div["valuation"]["v_mid"] - 7.35) < 0.01,
+                "v21.divergence_median_still_hist", repr(div["valuation"]))
+
+    payload_g0 = {
+        "provider": "同花顺F10", "url": "https://example.invalid/worth",
+        "as_of": "2026-08-08", "retrieved_at": "2026-08-09 10:00:00",
+        "forecasts": [{"year": 2026, "count": 6, "min": 0.38, "mean": 0.43, "max": 0.45}],
+        "actual_eps_history": [{"year": 2024, "eps": 0.30}, {"year": 2025, "eps": 0.43}],
+    }
+    rev_cfg = base_config()
+    rev_cfg["dividend_payout_ratio"] = 0.60
+    rev = evaluate_stock(rev_cfg, {"price": 50.0, "pe_ttm": 80.0},
+                         payload_g0, meta, "2026-08-09")
+    rv = rev.get("reverse_valuation") or {}
+    audit.check(rv.get("overheated") is True and abs(rv.get("g_implied", 0) - 0.072) < 0.002 and
+                rv.get("g_expected_consensus") == 0.0,
+                "v21.reverse_valuation_overheated", repr(rv))
+    audit.check(any(w["code"] == "PRICE_EMBEDS_EXCESS_OPTIMISM"
+                    for w in rev["quality"]["warnings"]) and
+                rev["decision_status"] == "reference_only",
+                "v21.reverse_warn_downgrades_only", repr(rev["quality"]["warnings"]))
+
+    from valuation_methodology import justified_pe, implied_growth_from_pe, fuse_multiples
+    audit.check(justified_pe(0.60, 0.14, 0.15) is None, "v21.justified_pe_r_minus_g_guard")
+    audit.check(justified_pe(0.60, 0.05, 0.11) == 10.5, "v21.justified_pe_normal_case")
+    audit.check(abs(implied_growth_from_pe(20.0, 0.50, 0.08) - 0.053659) < 0.0001,
+                "v21.implied_growth_inversion")
+    band_none, reason = fuse_multiples({"low": 15, "mid": 18, "high": 24}, [],
+                                       dt.date(2026, 8, 9))
+    audit.check(band_none is None and "insufficient" in reason, "v21.fusion_needs_two_rulers")
 
     missing = evaluate_stock(base_config(), {"price": 6.0}, None,
                              {"status": "error", "stale": True, "error": "fixture"},

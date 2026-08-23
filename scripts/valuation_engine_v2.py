@@ -19,7 +19,13 @@ from typing import Any
 
 
 SCHEMA_VERSION = "decision-data-v2"
-ENGINE_VERSION = "2026.08-v2"
+ENGINE_VERSION = "2026.08-v3"
+
+from valuation_methodology import (  # noqa: E402
+    apply_haircut, fy1_growth, fuse_multiples, resolve_industry_haircut,
+    resolve_payout, equity_cost_r, justified_pe, reverse_valuation,
+    sustainable_growth,
+)
 
 MODEL_LABELS = {
     "forward_pe": "稳定盈利·前瞻 PE",
@@ -250,14 +256,21 @@ def _select_forecast(config: dict, payload: dict | None, as_of: dt.date,
                "EPS 必须为正，且 min ≤ mean ≤ max；亏损/反转股不得套用 PE")
     _add_check(result, "FORECAST_SAMPLE_COUNT", selected["count"] >= 3, "warn",
                f"有效预测机构数={selected['count']}；少于 3 家信号偏弱")
+    _add_check(result, "FORECAST_COVERAGE_MIN", selected["count"] >= 3, "block",
+               f"机构覆盖={selected['count']} 家；少于 3 家无法形成有效一致预期"
+               "（A股卖方预测系统性乐观且离散度大，样本不足时 fail-closed 阻断 decision）")
     _add_check(result, "FORECAST_COVERAGE_SUFFICIENT", selected["count"] >= 5, "info",
                f"机构覆盖={selected['count']} 家；少于 5 家时结论可信度下降，建议人工核对同花顺F10是否遗漏机构")
     return selected if ordered else None
 
 
-def _multiple_inputs(config: dict, result: dict) -> dict | None:
-    block = config.get("multiple")
-    block = dict(block) if isinstance(block, dict) else {}
+def _multiple_inputs(config: dict, result: dict, override: dict | None = None) -> dict | None:
+    """倍数输入校验。override 为三尺融合后的 multiple 对象（已含 source）；
+    传入时以融合值为准，否则回退 config 原始值（行为与 v2 完全一致）。"""
+    block = dict(override) if isinstance(override, dict) else {}
+    if not block:
+        raw = config.get("multiple")
+        block = dict(raw) if isinstance(raw, dict) else {}
     values = {
         "low": block.get("low", config.get("pe_low")),
         "mid": block.get("mid", config.get("pe_mid")),
@@ -343,6 +356,133 @@ def _zone(price: float, low: float, mid: float, high: float) -> dict:
         # 可视化用夹取值（进度条宽度），不代表统计百分位
         "band_position": round(max(0.0, min(1.0, raw_pos)), 3) if raw_pos is not None else None,
     }
+
+
+def _hist_band_from_config(config: dict) -> dict:
+    """原始历史分位带（P25/P50/P75），优先 multiple 对象，回退顶层字段。"""
+    blk = config.get("multiple") if isinstance(config.get("multiple"), dict) else {}
+    return {
+        "low": blk.get("low", config.get("pe_low")),
+        "mid": blk.get("mid", config.get("pe_mid")),
+        "high": blk.get("high", config.get("pe_high")),
+    }
+
+
+def _apply_tri_ruler_methodology(config: dict, result: dict, market: dict,
+                                 selected: dict, as_of_date: dt.date):
+    """方法论升级 v2.1：E 端行业折扣 + 倍数三尺互证 + 反向验证。
+
+    返回 (eps_eff, fused_multiple)。任何一把尺子缺输入就跳过该尺；
+    全部参数与明细落账本（earnings_adjustment / multiple_fusion /
+    reverse_valuation / quality.checks），只可能新增 warn 降级，绝不升级。
+    """
+    route_code = result["model"]["code"]
+
+    # ---- 尺前处理：E 端一致预期行业折扣（防卖方系统性乐观）----
+    eps_eff = None
+    hc_info = resolve_industry_haircut(config, route_code)
+    if hc_info and all(_finite_number(selected.get(k)) for k in ("bear", "base", "bull")):
+        eps_eff = apply_haircut(selected, hc_info["haircut"])
+        raw = {k: round(float(selected[k]), 6) for k in ("bear", "base", "bull")}
+        if any(abs(eps_eff[k] - raw[k]) > 1e-9 for k in eps_eff):
+            result["earnings_adjustment"] = {
+                **hc_info,
+                "haircut_applied": True,
+                "raw_eps": raw,
+                "adjusted_eps": eps_eff,
+                "evidence": "东方证券2020《机器增强一致预期》：A股卖方利润增速预测年年高估，"
+                            "中位数10%~15%；误差较小行业×0.95、易高估行业×0.85、未知×0.90",
+            }
+            _add_check(result, "EARNINGS_CONSENSUS_HAIRCUT", True, "info",
+                       f"一致预期按行业折扣 ×{hc_info['haircut']}（{hc_info['tag']}，"
+                       "D级经验参数）后入估值；原始值保留于 earnings_adjustment 审计")
+
+    # ---- 三把尺子 ----
+    extras = []
+    actual_hist = result.get("forecast", {}).get("actual_eps_history") or []
+    g_raw = fy1_growth(selected, actual_hist)
+    payout_info = resolve_payout(config, market)
+    r = equity_cost_r(market, config)
+    if payout_info and r is not None:
+        g_sust = sustainable_growth(actual_hist, r, config)
+        payout = payout_info[0]
+        pe_formula = justified_pe(payout, g_sust, r)
+        if pe_formula:
+            extras.append({
+                "ruler": "formula_justified_pe",
+                "mid": pe_formula,
+                "detail": (f"戈登合理PE = payout({payout:.2f})×(1+g) ÷ (r−g)；"
+                           f"g={g_sust:.4f}（永续口径：配置/长期CAGR/默认2.5%，clamp至r−2%；"
+                           f"FY1短期增速 {g_raw if g_raw is not None else '—'} 不得充当永续）、"
+                           f"r={r:.4f}（rf+ERP 6%，均 D 级）；payout来源={payout_info[1]}"),
+            })
+        else:
+            _add_check(result, "FORMULA_RULER_SKIPPED", False, "info",
+                       f"公式尺跳过：r−g < 2%（r={r:.4f}, g_ceiling={max(r - 0.02, 0.0):.4f}）"
+                       "时戈登公式失真，宁缺毋滥")
+    peer = config.get("peer_industry_pe")
+    if isinstance(peer, (int, float)) and math.isfinite(peer) and peer > 0:
+        extras.append({
+            "ruler": "peer_industry_pe_proxy",
+            "mid": float(peer),
+            "detail": "行业/可比 PE 代理（C级）：非严格可比公司中位数，仅作交叉验证",
+        })
+
+    # ---- 融合（历史分位降级为护栏，不再单尺主导）----
+    fused = None
+    hist_band = _hist_band_from_config(config)
+    fused_band, meta = fuse_multiples(hist_band, extras, as_of_date)
+    if fused_band and meta:
+        src0 = {}
+        mblk = config.get("multiple")
+        if isinstance(mblk, dict) and isinstance(mblk.get("source"), dict):
+            src0 = dict(mblk["source"])
+        elif isinstance(config.get("multiple_source"), dict):
+            src0 = dict(config["multiple_source"])
+        ticker = config.get("ticker", "unknown")
+        ruler_names = "+".join(x["ruler"].split("_")[0] for x in meta["rulers"])
+        fused_source = {
+            "id": f"tri-ruler-{ticker}",
+            "title": (f"三尺互证倍数（{meta['n_rulers']}尺：{ruler_names}，"
+                      f"分歧比 {meta['divergence_ratio']}，质量 {meta['quality']}）"),
+            "method": meta["method"],
+            "quality": meta["quality"],
+            "as_of": meta["as_of"],
+            "url": src0.get("url") or f"https://basic.10jqka.com.cn/{ticker}/",
+            "source_id": f"tri-ruler-{ticker}",
+            "type": "valuation_multiple",
+            "metric": "forward_pe",
+            "unit": "x",
+            "provenance": src0,
+        }
+        fused = {**fused_band, "source": fused_source}
+        result["multiple_fusion"] = meta
+        if meta["divergent"]:
+            ruler_dump = "/".join(f"{x['ruler']}:{x['mid']}" for x in meta["rulers"])
+            _add_check(result, "MULTIPLE_SOURCE_DIVERGENCE", False, "warn",
+                       f"倍数尺间分歧过大 max/min={meta['divergence_ratio']}>1.8 "
+                       f"（{ruler_dump}）；"
+                       "单一来源不可信，强制 reference_only")
+        else:
+            _add_check(result, "MULTIPLE_FUSION_APPLIED", True, "info",
+                       f"三尺互证生效：中枢=median(各尺)={fused_band['mid']}×，"
+                       f"带宽 clamp 进 [{meta['guardrails']['floor']}, {meta['guardrails']['cap']}]；"
+                       f"历史 P25/P50/P75 保留为护栏与审计")
+
+    # ---- 反向验证：现价隐含增长 vs 一致预期 ----
+    pe_now = (market or {}).get("pe_ttm")
+    if payout_info and r is not None and g_raw is not None and \
+            isinstance(pe_now, (int, float)) and math.isfinite(pe_now) and pe_now > 0:
+        rv = reverse_valuation(float(pe_now), payout_info[0], r, g_raw)
+        if rv:
+            result["reverse_valuation"] = rv
+            if rv["overheated"]:
+                _add_check(result, "PRICE_EMBEDS_EXCESS_OPTIMISM", False, "warn",
+                           f"现价PE(TTM)={pe_now} 隐含永续增长 {rv['g_implied']*100:.1f}%，"
+                           f"高于一致预期增速 {g_raw*100:.1f}% 达 {rv['excess_pp']}pp；"
+                           "上行空间依赖盈利预测上调，警惕现价透支")
+
+    return eps_eff, fused
 
 
 def _evaluate_insurance_pev(config: dict, market: dict, result: dict) -> dict:
@@ -815,7 +955,6 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
                "本次预测抓取失败或沿用旧值时只允许参考，不可生成动作")
 
     selected = _select_forecast(config, forecast_data, as_of_date, result)
-    multiple = _multiple_inputs(config, result)
     result["forecast"] = selected
     if selected:
         result["forecast"].update({
@@ -825,6 +964,14 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
             "retrieved_at": (forecast_data or {}).get("retrieved_at"),
             "actual_eps_history": _actual_history(forecast_data),
         })
+
+    # ---- 方法论升级 v2.1：E 端行业折扣 + 三尺互证 + 反向验证（只降不升）----
+    eps_eff, fused = None, None
+    if selected and not result["quality"]["blockers"]:
+        eps_eff, fused = _apply_tri_ruler_methodology(
+            config, result, market, selected, as_of_date)
+
+    multiple = _multiple_inputs(config, result, override=fused)
 
     # ---- 成长修正认知补偿（隐患：历史 TTM 分位 × 前瞻 EPS 的混合失真）----
     # 对 growth_pe 路由且 FY1 增速 >30% 的股票，历史 TTM 分位倍数可能系统性低估
@@ -886,9 +1033,10 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
     if result["quality"]["blockers"] or not selected or not multiple:
         return result
 
-    low = round(selected["bear"] * multiple["low"], 2)
-    mid = round(selected["base"] * multiple["mid"], 2)
-    high = round(selected["bull"] * multiple["high"], 2)
+    eps_used = eps_eff or {k: selected[k] for k in ("bear", "base", "bull")}
+    low = round(eps_used["bear"] * multiple["low"], 2)
+    mid = round(eps_used["base"] * multiple["mid"], 2)
+    high = round(eps_used["bull"] * multiple["high"], 2)
     anchors_ordered = 0 < low <= mid <= high
     _add_check(result, "VALUATION_ANCHORS_ORDERED", anchors_ordered, "block",
                "计算后必须满足 0 < V_low ≤ V_mid ≤ V_high")
@@ -896,6 +1044,7 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
         return result
 
     source_ids = [x.get("id") for x in result["sources"] if x.get("id")]
+    haircut_note = "（已按行业折扣）" if eps_eff else ""
     steps = []
     for key, eps_key, pe_key, value, label in (
         ("v_low", "bear", "low", low, "保守"),
@@ -905,15 +1054,17 @@ def evaluate_stock(config: dict, market: dict, forecast_data: dict | None,
         steps.append({
             "id": key,
             "label": label,
-            "formula": f"{key} = EPS_{eps_key} × PE_{pe_key}",
-            "substitution": f"{selected[eps_key]:.6g} × {multiple[pe_key]:.6g}",
+            "formula": f"{key} = EPS_{eps_key}{haircut_note} × PE_{pe_key}",
+            "substitution": f"{eps_used[eps_key]:.6g} × {multiple[pe_key]:.6g}",
             "result": value,
             "unit": "CNY/share",
             "source_ids": source_ids,
         })
     result["valuation"] = {
         "v_low": low, "v_mid": mid, "v_high": high,
-        "formula": "V = structured forward EPS × sourced target PE",
+        "formula": ("V = structured forward EPS(haircut-adjusted) × fused multi-ruler PE"
+                    if eps_eff else
+                    "V = structured forward EPS × sourced target PE"),
         "calc_steps": steps,
     }
     # spec §8：成长股区间过宽（V_high/V_low > 5）必须追加 PEG 交叉验证并取交集

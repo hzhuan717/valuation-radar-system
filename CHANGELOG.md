@@ -2,6 +2,33 @@
 
 仅研究/教学/回测用途。每次发布版本对应一次功能或数据修复，注释见下。
 
+## v1.22.0（2026-08-23）—— 方法论升级：三尺互证估值 + 一致预期行业折扣 + 反向验证
+**问题**（底层逻辑缺陷）：
+1. 盈利端直接采用一致预期，未修正 A 股卖方系统性乐观偏差（东方证券 2020 实证：
+   利润增速预测年年高估，中位数 10%~15%，约八成预测偏乐观）。
+2. 倍数端仅用"5 年历史 TTM 分位"单尺定价，与前瞻 EPS 基数错配（spec 3.1/3.2
+   已确认并强制 C 级，但无替代锚），高成长股合理估值被系统性低估。
+3. 缺少"现价是否已透支预期"的反向检验。
+
+**新增/修改**：
+- `scripts/valuation_methodology.py`（新）：方法论纯函数库——
+  E 端行业折扣（较准行业 ×0.95 / 易高估 ×0.85 / 未知 ×0.90，D 级参数入账本）；
+  公式尺戈登合理 PE（g 为永续口径：配置/长期CAGR≥3年/默认2.5%，clamp 至 r−2%，
+  禁止 FY1 短期增速冒充永续；r = 10Y 国债 + ERP 6%）；同行尺 peer_industry_pe
+  显式传入；融合取中位数、带宽按历史形状重塑并 clamp 进 [P25×0.7, P75×1.6]
+  ——历史分位从主锚降级为护栏（保留不删除）；3 尺 B 级 / 2 尺 C 级；
+  分歧门：尺间 max/min >1.8 → warn 强制 reference_only；
+  反向验证 g_impl=(PE×r−payout)/(PE+payout)，超预期增速 5pp 且 >3pp → warn。
+- `scripts/fetch_dividend_yield.py`（新）：腾讯行情股息率(TTM) 每日刷新
+  （协议第 64 字段），结构化来源 C 级；payout ≈ 股息率 × PE(TTM) 推导。
+- `scripts/valuation_engine_v2.py`：FORECAST_COVERAGE_MIN block 门（覆盖 <3 家
+  fail-closed）；PE 路由接入三尺互证 + E 端折扣 + 反向验证，全部落账本
+  （earnings_adjustment / multiple_fusion / reverse_valuation）；
+  ENGINE_VERSION → 2026.08-v3。decision_usable 判据不变，新增检查只降不升。
+- `scripts/update_daily.py`：股息率刷新步骤、10Y 国债注入个股行情视图、新字段透传 state.json。
+- `scripts/verify_decision_data.py`：离线验证扩至 52 项（覆盖门槛 / 三尺融合 /
+  分歧降级 / 反向透支 / 公式尺护栏），RESULT: PASS。
+
 ## v1.21.2（2026-08-18）—— 每日更新防挂起：修复 8/17 门户未重建
 **问题**：8/17（交易日）15:30 看门狗触发每日更新，但门户 HTML 一直停在 8/15 未重建。
 **根因**：`fetch_pe_history.py`（百度股市通 5 年 PE/PB 历史分位）对单只股票抓取无超时，

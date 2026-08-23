@@ -214,6 +214,9 @@ def compute_stock(st: dict, prev: dict, forecast_data: dict | None,
         "sources": engine.get("sources") or [],
         "decision_data": engine,
         "growth_momentum": engine.get("growth_momentum"),
+        "earnings_adjustment": engine.get("earnings_adjustment"),
+        "multiple_fusion": engine.get("multiple_fusion"),
+        "reverse_valuation": engine.get("reverse_valuation"),
         "review_date": st.get("review_date"),
         "signals": [],
     }
@@ -310,6 +313,18 @@ def main():
         log("估值倍数校准完成（百度股市通5年分位）")
     except Exception as e:
         log(f"估值倍数校准失败: {e}")
+
+    # ---- 股息率刷新（公式尺 payout 推导 + 反向验证输入；失败仅跳过该尺）----
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fetch_dividend_yield import main as dividend_main
+        n_div = dividend_main()
+        with open(WATCHLIST, encoding="utf-8") as f:
+            wl = json.load(f)
+        stocks_cfg = {s["ticker"]: s for s in wl["stocks"]}
+        log(f"股息率更新完成（{n_div} 只）")
+    except Exception as e:
+        log(f"股息率更新失败: {e}")
 
     # ---- 大盘 ----
     market = dict(prev_state.get("market", {}))
@@ -444,6 +459,8 @@ def main():
 
         cfg2 = dict(cfg)
         cfg2["market"] = m
+        # 公式尺/反向验证需要无风险利率：把大盘 10Y 国债注入个股行情视图（缺省引擎兜底）
+        m.setdefault("bond_10y", market.get("bond_10y"))
         res = compute_stock(cfg2, prev_map.get(code), forecast_data, forecast_meta, as_of)
         if res:
             out_stocks[code] = res
