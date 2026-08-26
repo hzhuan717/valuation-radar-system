@@ -93,7 +93,7 @@
       "dividend_yield_ttm": {
         "value_pct": 2.05,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:49",
+        "retrieved_at": "2026-08-26 11:57:28",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-600085",
@@ -101,7 +101,7 @@
           "url": "https://qt.gtimg.cn/q=sh600085",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:49"
+          "retrieved_at": "2026-08-26 11:57:28"
         }
       },
       "dividend_yield_refresh": null
@@ -177,7 +177,7 @@
       "dividend_yield_ttm": {
         "value_pct": 0.0,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:50",
+        "retrieved_at": "2026-08-26 11:57:29",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002384",
@@ -185,7 +185,7 @@
           "url": "https://qt.gtimg.cn/q=sz002384",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:50"
+          "retrieved_at": "2026-08-26 11:57:29"
         }
       }
     },
@@ -259,7 +259,7 @@
       "dividend_yield_ttm": {
         "value_pct": 1.29,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:50",
+        "retrieved_at": "2026-08-26 11:57:30",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002472",
@@ -267,7 +267,7 @@
           "url": "https://qt.gtimg.cn/q=sz002472",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:50"
+          "retrieved_at": "2026-08-26 11:57:30"
         }
       },
       "dividend_yield_refresh": null
@@ -342,7 +342,7 @@
       "dividend_yield_ttm": {
         "value_pct": 2.61,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:51",
+        "retrieved_at": "2026-08-26 11:57:31",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-300760",
@@ -350,7 +350,7 @@
           "url": "https://qt.gtimg.cn/q=sz300760",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:51"
+          "retrieved_at": "2026-08-26 11:57:31"
         }
       },
       "dividend_yield_refresh": null
@@ -441,7 +441,7 @@
         "title": "中国平安2025-12-31年报内含价值",
         "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
         "as_of": "2025-12-31",
-        "retrieved_at": "2026-08-26 11:35:23"
+        "retrieved_at": "2026-08-26 11:56:59"
       },
       "pev_low": 0.6,
       "pev_mid": 0.9,
@@ -469,7 +469,7 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-08-26 11:35:23"
+        "ok_at": "2026-08-26 11:56:59"
       }
     },
     {
@@ -542,7 +542,7 @@
       "dividend_yield_ttm": {
         "value_pct": 1.79,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:52",
+        "retrieved_at": "2026-08-26 11:57:31",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-605090",
@@ -550,7 +550,7 @@
           "url": "https://qt.gtimg.cn/q=sh605090",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:52"
+          "retrieved_at": "2026-08-26 11:57:31"
         }
       },
       "dividend_yield_refresh": null
@@ -589,7 +589,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-26 11:35:24"
+        "ok_at": "2026-08-26 11:57:00"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -610,7 +610,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:24"
+          "retrieved_at": "2026-08-26 11:57:00"
         }
       },
       "multiple_source": {
@@ -677,7 +677,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-08-26 11:35:25",
+        "failed_at": "2026-08-26 11:57:01",
         "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
       }
     },
@@ -715,7 +715,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-26 11:35:26"
+        "ok_at": "2026-08-26 11:57:02"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -736,7 +736,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:26"
+          "retrieved_at": "2026-08-26 11:57:02"
         }
       },
       "multiple_source": {
@@ -803,7 +803,7 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-26 11:35:27"
+        "ok_at": "2026-08-26 11:57:03"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -824,7 +824,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:27"
+          "retrieved_at": "2026-08-26 11:57:03"
         }
       },
       "multiple_source": {
@@ -940,7 +940,7 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-08-26 11:35:30"
+        "ok_at": "2026-08-26 11:57:06"
       },
       "bank": {
         "bps": 8.46,
@@ -979,13 +979,13 @@
           "title": "光大银行 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601818/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:30"
+          "retrieved_at": "2026-08-26 11:57:06"
         },
         "f10_source": {
           "provider": "东方财富F10主要指标",
           "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code=SH601818",
           "as_of": "2026-03-31",
-          "retrieved_at": "2026-08-26 11:35:30"
+          "retrieved_at": "2026-08-26 11:57:06"
         }
       },
       "pb_low": 0.4,
@@ -1065,7 +1065,7 @@
       "pe_high": 14.41,
       "net_profit_fc": null,
       "shares": 48.3453,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=9.03/P50=12.43/P75=14.41，样本 913 日；当前 PE 16.3 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=9.03/P50=12.43/P75=14.41，样本 913 日；当前 PE 16.33 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "TTM外推（一致预期采集失败，D级待校准）",
       "market": {
         "price": 10.86,
@@ -1092,7 +1092,7 @@
       "dividend_yield_ttm": {
         "value_pct": 3.85,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:52",
+        "retrieved_at": "2026-08-26 11:57:32",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-600350",
@@ -1100,7 +1100,7 @@
           "url": "https://qt.gtimg.cn/q=sh600350",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:52"
+          "retrieved_at": "2026-08-26 11:57:32"
         }
       },
       "dividend_yield_refresh": null
@@ -1310,11 +1310,11 @@
           "title": "中国铁建 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601186/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:31"
+          "retrieved_at": "2026-08-26 11:57:07"
         }
       },
       "special_refresh": {
-        "ok_at": "2026-08-26 11:35:31"
+        "ok_at": "2026-08-26 11:57:07"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,
@@ -1421,7 +1421,7 @@
       "pe_high": 37.54,
       "net_profit_fc": null,
       "shares": 51.0,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=29.01/P50=31.92/P75=37.54，样本 913 日；当前 PE 20.87 处于历史 10% 以下极端低位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=29.01/P50=31.92/P75=37.54，样本 913 日；当前 PE 21.42 处于历史 10% 以下极端低位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "eps_source": "同花顺一致预期 2027E EPS中值0.58（3家0.52~0.69）",
       "support": [
         {
@@ -1512,7 +1512,7 @@
       "dividend_yield_ttm": {
         "value_pct": 1.42,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:53",
+        "retrieved_at": "2026-08-26 11:57:33",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002340",
@@ -1520,7 +1520,7 @@
           "url": "https://qt.gtimg.cn/q=sz002340",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:53"
+          "retrieved_at": "2026-08-26 11:57:33"
         }
       },
       "dividend_yield_refresh": null
@@ -1603,7 +1603,7 @@
       "dividend_yield_ttm": {
         "value_pct": 0.21,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:53",
+        "retrieved_at": "2026-08-26 11:57:34",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002837",
@@ -1611,7 +1611,7 @@
           "url": "https://qt.gtimg.cn/q=sz002837",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:53"
+          "retrieved_at": "2026-08-26 11:57:34"
         }
       },
       "dividend_yield_refresh": null
@@ -1758,16 +1758,16 @@
           "title": "陕西煤业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601225/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:28"
+          "retrieved_at": "2026-08-26 11:57:04"
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-26 11:35:28"
+        "ok_at": "2026-08-26 11:57:04"
       },
       "pe_low": 6.89,
       "pe_mid": 8.68,
       "pe_high": 11.44,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=6.89/P50=8.68/P75=11.44，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=6.89/P50=8.68/P75=11.44，样本 913 日；当前 PE 15.85 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-601225",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
@@ -1830,16 +1830,16 @@
           "title": "永泰能源 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/600157/finance.html",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:29"
+          "retrieved_at": "2026-08-26 11:57:05"
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-08-26 11:35:29"
+        "ok_at": "2026-08-26 11:57:05"
       },
       "pe_low": 14.35,
       "pe_mid": 17.09,
       "pe_high": 29.7,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=14.35/P50=17.09/P75=29.7，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-08-26）：P25=14.35/P50=17.09/P75=29.7，样本 913 日；当前 PE 159.11 处于历史 90% 以上极端高位；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-600157",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
@@ -1919,7 +1919,7 @@
       "dividend_yield_ttm": {
         "value_pct": 1.32,
         "as_of": "2026-08-26",
-        "retrieved_at": "2026-08-26 11:35:54",
+        "retrieved_at": "2026-08-26 11:57:34",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-601888",
@@ -1927,7 +1927,7 @@
           "url": "https://qt.gtimg.cn/q=sh601888",
           "method": "spot_snapshot_dividend_yield_ttm",
           "as_of": "2026-08-26",
-          "retrieved_at": "2026-08-26 11:35:54"
+          "retrieved_at": "2026-08-26 11:57:34"
         }
       },
       "dividend_yield_refresh": null
