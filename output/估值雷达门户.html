@@ -1058,9 +1058,12 @@ function renderMySectors(){
         + g.items.slice().sort((a,b) => (b.pct||0) - (a.pct||0)).map(s => {
             const zm = zmeta(s);
             const col = (zm.c===0||zm.c===1) ? 'var(--green-d)' : (typeof zm.c === 'number' && zm.c>=4 ? 'var(--red-d)' : 'var(--sub2)');
-            const why = s.decision_usable && s.v_low != null
-              ? '估值带 ' + fmt2(s.v_low) + '~' + fmt2(s.v_high)
-              : (s.eps_base != null ? 'FY' + (s.forecast_year||'') + ' EPS ' + fmt2(s.eps_base) : (zm.label || '—'));
+            const epsLbl = s.forecast_basis === 'NTM' ? 'NTM EPS'
+              : (s.forecast_basis === 'NORMALIZED' ? '正常化 EPS'
+                 : ('FY' + (s.forecast_year || '') + ' EPS'));
+            const why = s.v_low != null
+              ? (s.decision_usable ? '估值带 ' : '参考带 ') + fmt2(s.v_low) + '~' + fmt2(s.v_high)
+              : (s.eps_base != null ? epsLbl + ' ' + fmt2(s.eps_base) : (zm.label || '—'));
             return '<div class="my-sec-row" onclick="switchStock(\''+s.ticker+'\')" title="点击进入 '+s.name+' 估值">'
               + '<span class="m-nm">'+s.name+'<br><i>'+s.ticker+'</i></span>'
               + '<span class="m-px">¥'+fmt2(s.price)+'<br><i style="font-style:normal;color:'
