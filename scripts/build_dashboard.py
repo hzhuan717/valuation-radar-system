@@ -232,6 +232,8 @@ def build() -> str:
     data = {"updated_at": state.get("meta", {}).get("updated_at", ""),
             "data_date": market.get("data_date", ""),
             "market": market, "stocks": stocks,
+            "sectors": state.get("meta", {}).get("sectors", []),
+            "sector_note": state.get("meta", {}).get("sector_note", ""),
             "pe_history": state.get("pe_history", {}),
             "market_screen": state.get("market_screen", {}),
             "sector_strength": state.get("sector_strength", {})}
@@ -398,6 +400,18 @@ b{font-weight:600}
 .sb-item:hover{background:var(--blue-lt);transform:translateX(2px)}
 .sb-item.on{background:var(--blue-lt);box-shadow:inset 3px 0 0 0 var(--blue), -4px 0 12px rgba(0,113,227,.08)}
 .sb-item.on .bar{border:1px solid rgba(0,113,227,.35)}
+/* ---- 板块分组：横向滚动板块筛选条 + 分组标题 ---- */
+.sb-sectors{display:flex;gap:4px;overflow-x:auto;padding:0 10px 8px;scrollbar-width:none}
+.sb-sectors::-webkit-scrollbar{display:none}
+.sb-sec{border:1px solid var(--hair);background:none;color:var(--sub2);font-size:12px;font-weight:600;
+  border-radius:999px;padding:3px 10px;white-space:nowrap;line-height:1.5;transition:all .15s;flex:0 0 auto}
+.sb-sec:hover{border-color:var(--blue);color:var(--blue)}
+.sb-sec.on{background:var(--blue-lt);color:var(--blue);border-color:rgba(0,113,227,.35)}
+.sb-grp{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 12px 4px;background:var(--bg2);font-size:11px;font-weight:700;letter-spacing:.06em;
+  color:var(--meta);text-transform:uppercase}
+.sb-grp .n{font-family:var(--font-mono);font-weight:600;letter-spacing:0}
+.sb-grp.focus{color:var(--blue)}
 /* 双行容器：左标识 / 右数据 */
 .sb-row-top,.sb-row-btm{
   display:flex;
@@ -653,6 +667,27 @@ b{font-weight:600}
 .sec-row .t-m b{font-weight:600}
 .sec-row .t-why{font-size:12px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sec-row .t-why b{font-weight:600}
+/* ---- 自选池板块聚合卡（研究分组，非行业指数）---- */
+.my-sec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.my-sec{border:1px solid var(--hair);border-radius:10px;padding:12px 12px 8px;background:var(--bg3)}
+.my-sec.focus{border-color:rgba(0,113,227,.35);box-shadow:0 0 0 2px var(--blue-lt)}
+.my-sec-hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+.my-sec-nm{font-size:15px;font-weight:700;color:var(--ink)}
+.my-sec-nm .tag{font-size:11px;font-weight:600;color:var(--blue);border:1px solid rgba(0,113,227,.35);
+  border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.my-sec-chg{font-family:var(--font-mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.my-sec-stat{font-size:12px;color:var(--sub2);font-family:var(--font-mono);font-variant-numeric:tabular-nums;
+  margin-bottom:6px;display:flex;gap:12px;flex-wrap:wrap}
+.my-sec-note{font-size:12px;color:var(--meta);line-height:1.7;margin-bottom:6px}
+.my-sec-row{display:grid;grid-template-columns:minmax(72px,auto) auto 1fr auto;gap:10px;align-items:center;
+  padding:5px 4px;border-top:1px solid var(--hair);font-size:12px;cursor:pointer;border-radius:6px;
+  transition:background .15s,transform .15s}
+.my-sec-row:hover{background:var(--blue-lt);transform:translateX(2px)}
+.my-sec-row .m-nm{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-sec-row .m-nm i{font-style:normal;font-size:11px;color:var(--meta);font-family:var(--font-mono)}
+.my-sec-row .m-px{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.my-sec-row .m-why{font-size:11px;color:var(--meta);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-sec-row .m-st{font-size:11px;font-weight:600;white-space:nowrap}
 @media(max-width:1099px){
   .sec-row{grid-template-columns:1fr auto;grid-template-areas:"nm r" "m m" "w w";gap:4px 10px}
   .sec-row .t-nm{grid-area:nm}.sec-row .t-r{grid-area:r}
@@ -980,6 +1015,7 @@ body.wall-hidden .wall-grip{display:none}
   <aside class="sidebar">
     <div class="sb-hd"><span>自选池</span><span id="sbCnt">0</span></div>
     <input class="sb-search" id="sbSearch" placeholder="搜索…" oninput="filterList(this.value)">
+    <div class="sb-sectors" id="sbSectors"></div>
     <div class="sb-list" id="sbList"></div>
   </aside>
 
@@ -1079,6 +1115,7 @@ body.wall-hidden .wall-grip{display:none}
     <div class="w-card"><div class="w-title"><span>第一层 · 大盘环境</span><span class="sp">趋势判定 + 估值背景</span></div><div class="w-body" id="ovMarket">—</div></div>
     <div class="w-card"><div class="w-title"><span>第二层 · 板块强弱</span><span class="sp">同花顺 90 真实行业板块</span></div><div class="w-body" id="ovSectors">—</div></div>
   </div>
+  <div class="w-card"><div class="w-title"><span>自选池板块</span><span class="sp">研究分组聚合 · 点击成员进入个股估值</span></div><div class="w-body" id="ovMySectors">—</div></div>
   <div class="w-card"><div class="w-title"><span>第三层 · 全市场趋势筛选</span><span class="sp">全A 5000+ 只 · 每类前10 · 可分自选/非自选</span></div><div class="w-body" id="ovScreenAll">—</div></div>
   <div class="w-card"><div class="w-title"><span>自选池趋势筛选</span><span class="sp">精确 5/10/20日分类（19 只）</span></div><div class="w-body" id="ovScreen">—</div></div>
   <div class="w-card"><div class="w-title"><span>全池总览</span><span class="sp">点击行进入个股估值</span></div><div class="w-body"><table class="ov-table" id="ovTable"></table></div></div>
@@ -1150,12 +1187,45 @@ function animateNum(el, from, to, fmt){
   requestAnimationFrame(step);
 }
 
-/* ============ 左导航列表 ============ */
+/* ============ 左导航列表（按板块分组）============ */
+let SEC_FILTER = '全部';
+function sectorMeta(k){ return (DATA.sectors||[]).find(s => s.key === k) || null; }
+function sectorKeys(){
+  const declared = (DATA.sectors||[]).map(s => s.key).filter((k,i,a) => k && a.indexOf(k) === i);
+  const used = DATA.stocks.map(s => s.sector || '未分组').filter((k,i,a) => a.indexOf(k) === i);
+  return ['全部'].concat(declared, used.filter(k => declared.indexOf(k) < 0));
+}
+function renderSbSectors(){
+  const el = document.getElementById('sbSectors');
+  if(!el) return;
+  el.innerHTML = sectorKeys().map(k =>
+    '<button class="sb-sec'+(SEC_FILTER===k?' on':'')+'" onclick="setSecFilter(\''+k+'\')">'+k+'</button>'
+  ).join('');
+}
+function setSecFilter(k){
+  SEC_FILTER = (SEC_FILTER === k && k !== '全部') ? '全部' : k;
+  renderSbSectors(); renderList();
+}
+function sectorGroups(filter){
+  const q = (filter||'').trim().toLowerCase();
+  const list = DATA.stocks.filter(s => !q || s.name.toLowerCase().includes(q) || s.ticker.includes(q))
+    .filter(s => SEC_FILTER === '全部' || (s.sector || '未分组') === SEC_FILTER);
+  const map = {};
+  list.forEach(s => { const k = s.sector || '未分组'; (map[k] = map[k] || []).push(s); });
+  const order = (DATA.sectors||[]).map(s => s.key);
+  const keys = order.filter(k => map[k] && map[k].length);
+  Object.keys(map).forEach(k => { if(keys.indexOf(k) < 0) keys.push(k); });
+  return keys.map(k => ({ key: k, items: map[k], focus: !!(sectorMeta(k) || {}).focus }));
+}
 function renderList(filter){
   const el = document.getElementById('sbList');
-  const q = (filter||'').trim().toLowerCase();
-  el.innerHTML = DATA.stocks.filter(s => !q || s.name.toLowerCase().includes(q) || s.ticker.includes(q))
-    .map(s => {
+  const groups = sectorGroups(filter);
+  el.innerHTML = groups.map(g => {
+      const meta = sectorMeta(g.key);
+      const tip = meta && meta.note ? ' title="' + String(meta.note).replace(/"/g, '') + '"' : '';
+      return '<div class="sb-grp'+(g.focus?' focus':'')+'"'+tip+'><span>'+g.key+'</span>'
+             + '<span class="n">'+g.items.length+'</span></div>'
+             + g.items.map(s => {
       const zm = zmeta(s);
       const zc = ['z0','z0','z2','z2','z4','z4','z6'][zm.c] || 'z6';
       const rawPos = bandPosPct(s.price, s.v_low, s.v_mid, s.v_high);
@@ -1174,9 +1244,83 @@ function renderList(filter){
         + '<div class="bar" title="'+barTitle+'"><span class="mark" style="left:'+rawPos+'%"></span></div>'
         + '</button>';
     }).join('');
-  document.getElementById('sbCnt').textContent = DATA.stocks.length + ' 只';
+  }).join('');
+  const n = groups.reduce((a, g) => a + g.items.length, 0);
+  document.getElementById('sbCnt').textContent = n + ' 只';
 }
 function filterList(v){ renderList(v); }
+
+/* ============ 自选池板块聚合（大盘页）============ */
+function secStat(items){
+  let sum = 0, up = 0, dn = 0, flat = 0, bp = [], pp = [], zones = {};
+  items.forEach(s => {
+    if(typeof s.pct === 'number' && isFinite(s.pct)){ sum += s.pct; if(s.pct > 0) up++; else if(s.pct < 0) dn++; else flat++; }
+    const zm = zmeta(s);
+    zones[zm.label] = (zones[zm.label] || 0) + 1;
+    if(s.decision_usable && s.band_pos_raw != null) bp.push(s.band_pos_raw);
+    const ph = (DATA.pe_history||{})[s.ticker];
+    if(ph && ph.ok && ph.pctile != null) pp.push(ph.pctile);
+  });
+  const avg = xs => xs.length ? xs.reduce((a,b) => a+b, 0) / xs.length : null;
+  return { n: items.length, chg: items.length ? sum / items.length : null, up, dn, flat,
+           bpAvg: avg(bp), bpN: bp.length, ppAvg: avg(pp), ppN: pp.length, zones };
+}
+function secVerdict(st){
+  if(st.bpAvg != null){
+    const p = st.bpAvg;
+    return { text: p < 0.25 ? '板块整体处估值带下沿（偏低）' : p < 0.5 ? '板块整体合理偏低' :
+                   p < 0.75 ? '板块整体合理偏高' : '板块整体处估值带上沿（偏高）',
+             col: p < 0.25 ? 'var(--green-d)' : p < 0.5 ? 'var(--green-d)' :
+                  p < 0.75 ? 'var(--gold)' : 'var(--red-d)' };
+  }
+  if(st.ppAvg != null){
+    const p = st.ppAvg;
+    return { text: p < 0.3 ? '板块 PE 历史分位偏低' : p <= 0.7 ? '板块 PE 历史分位居中' : '板块 PE 历史分位偏高',
+             col: p < 0.3 ? 'var(--green-d)' : p <= 0.7 ? 'var(--gold)' : 'var(--red-d)' };
+  }
+  return { text: '板块内无可用估值锚，按分位与质量门逐只判断', col: 'var(--sub2)' };
+}
+function renderMySectors(){
+  const el = document.getElementById('ovMySectors');
+  if(!el) return;
+  const groups = sectorGroups();
+  if(!groups.length){ el.innerHTML = '<div class="formula-mini">暂无板块数据。</div>'; return; }
+  el.innerHTML = (DATA.sector_note ? '<div class="formula-mini" style="border:none;padding:0;margin-bottom:8px">'
+      + DATA.sector_note + '</div>' : '')
+    + '<div class="my-sec-grid">' + groups.map(g => {
+      const meta = sectorMeta(g.key) || {};
+      const st = secStat(g.items);
+      const vd = secVerdict(st);
+      const zs = Object.keys(st.zones).sort((a,b) => st.zones[b] - st.zones[a])
+        .map(k => k + ' ' + st.zones[k]).join(' / ');
+      const cChg = st.chg != null ? pctCol(st.chg) : '';
+      return '<div class="my-sec'+(meta.focus?' focus':'')+'">'
+        + '<div class="my-sec-hd"><span class="my-sec-nm">'+g.key
+        + (meta.focus ? '<span class="tag">重点跟踪</span>' : '')
+        + '</span><span class="my-sec-chg '+cChg+'">'+(st.chg != null ? (st.chg>0?'+':'')+st.chg.toFixed(2)+'%' : '—')+'</span></div>'
+        + '<div class="my-sec-stat"><span>成员 '+st.n+'</span><span>涨 '+st.up+' / 跌 '+st.dn+'</span>'
+        + (st.ppAvg != null ? '<span>平均 PE 分位 '+Math.round(st.ppAvg*100)+'%（'+st.ppN+'只）</span>' : '')
+        + (st.bpAvg != null ? '<span>估值带位置 '+Math.round(st.bpAvg*100)+'%（'+st.bpN+'只决策级）</span>' : '')
+        + '</div>'
+        + '<div class="my-sec-note">'+(meta.note || '')+'<br><b style="color:'+vd.col+'">'+vd.text+'</b>｜状态分布：'+zs+'</div>'
+        + g.items.slice().sort((a,b) => (b.pct||0) - (a.pct||0)).map(s => {
+            const zm = zmeta(s);
+            const col = (zm.c===0||zm.c===1) ? 'var(--green-d)' : (typeof zm.c === 'number' && zm.c>=4 ? 'var(--red-d)' : 'var(--sub2)');
+            const why = s.decision_usable && s.v_low != null
+              ? '估值带 ' + fmt2(s.v_low) + '~' + fmt2(s.v_high)
+              : (s.eps_base != null ? 'FY' + (s.forecast_year||'') + ' EPS ' + fmt2(s.eps_base) : (zm.label || '—'));
+            return '<div class="my-sec-row" onclick="switchStock(\''+s.ticker+'\')" title="点击进入 '+s.name+' 估值">'
+              + '<span class="m-nm">'+s.name+'<br><i>'+s.ticker+'</i></span>'
+              + '<span class="m-px">¥'+fmt2(s.price)+'<br><i style="font-style:normal;color:'
+              + (s.pct>0?'var(--candle-up)':(s.pct<0?'var(--candle-dn)':'var(--sub2)'))+'">'
+              + (s.pct>0?'+':'')+fmt2(s.pct)+'%</i></span>'
+              + '<span class="m-why">'+why+'</span>'
+              + '<span class="m-st" style="color:'+col+'">'+zm.label+'</span>'
+              + '</div>';
+          }).join('')
+        + '</div>';
+    }).join('') + '</div>';
+}
 
 /* ============ 弹出选股器（↑↓ Enter 键盘导航） ============ */
 function togglePop(){ const p = document.getElementById('popover'); p.classList.toggle('on'); if(p.classList.contains('on')){ renderPop(); POP_IDX = -1; } }
@@ -1245,6 +1389,7 @@ function showTab(name){
     if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 38px)'; }
     renderOvMarket();
     renderOvSectors();
+    renderMySectors();
     renderOvScreenAll();
     renderOvScreen();
     renderOvTable();
@@ -1619,12 +1764,13 @@ function renderOvTable(){
   const el = document.getElementById('ovTable');
   if(!el) return;
   el.innerHTML =
-    '<tr><th>股票</th><th>现价</th><th>状态</th><th>质量</th><th>估值带</th><th>今日信号</th></tr>' +
+    '<tr><th>股票</th><th>板块</th><th>现价</th><th>状态</th><th>质量</th><th>估值带</th><th>今日信号</th></tr>' +
     DATA.stocks.map(s => { const zm = zmeta(s);
       const g = ((s.decision_data||{}).quality||{}).grade || '—';
       const sig = (s.signals||[]).join('；') || '—';
       return '<tr onclick="switchStock(\''+s.ticker+'\')">'
         + '<td>'+s.name+'<br><span style="color:var(--meta);font-size:12px">'+s.ticker+'</span></td>'
+        + '<td style="font-family:inherit">'+(s.sector||'未分组')+'</td>'
         + '<td>'+fmt2(s.price)+'</td><td>'+zm.label+'</td><td>'+g+'</td>'
         + '<td>'+(s.v_low!=null?fmt2(s.v_low)+' ~ '+fmt2(s.v_high):'—')+'</td><td>'+sig+'</td></tr>'; }).join('');
 }
@@ -1662,7 +1808,9 @@ function renderHero(st, prevPrice, prevPct){
   document.getElementById('hTicker').textContent = st.ticker + ' · TTM PE ' + fmt2(st.pe_ttm) + ' · PB ' + fmt2(st.pb);
   const zm = zmeta(st);
   const zcol = ['var(--green-d)','var(--green-d)','var(--gold)','var(--gold)','var(--red-d)','var(--red-d)','var(--sub2)'][zm.c] || 'var(--sub2)';
-  const pills = ['<span class="pill"><span class="dot" style="background:'+zcol+'"></span>'+zm.label+'</span>'];
+  const pills = [];
+  if(st.sector) pills.push('<span class="pill">板块 · '+st.sector+'</span>');
+  pills.push('<span class="pill"><span class="dot" style="background:'+zcol+'"></span>'+zm.label+'</span>');
   if(st.decision_usable && st.band_pos_raw!=null) pills.push('<span class="pill num">估值带位置 '+fmt2(st.band_pos_raw*100)+'%</span>');
   if(st.decision_usable && st.mos!=null) pills.push('<span class="pill num">安全边际 '+(st.mos>=0?'+':'')+(st.mos*100).toFixed(1)+'%</span>');
   if(!st.decision_usable && st.reference_usable && st.reference_zone) pills.push('<span class="pill num">参考区间 '+st.reference_zone+'</span>');
@@ -3828,6 +3976,7 @@ function init(){
   let resizeT = null;
   /* 尺寸自适应统一由 KENGINE 内部 ResizeObserver（100ms 防抖）接管，不再监听 window.resize */
   /* 默认打开首页（大盘总览）；记忆上次视图 */
+  renderSbSectors();
   const lastView = (() => { try{ return localStorage.getItem('radar_view'); }catch(e){ return null; } })();
   const last = localStorage.getItem('radar_last');
   if(lastView === 'stock'){

@@ -160,6 +160,7 @@ def compute_stock(st: dict, prev: dict, forecast_data: dict | None,
     kline = m.get("kline") or []
     out = {
         "ticker": st["ticker"], "name": st["name"], "route": st.get("route", "equity"),
+        "sector": st.get("sector") or "未分组",
         "price": price, "pct": m.get("pct", 0.0), "pe_ttm": m.get("pe_ttm"),
         "pb": m.get("pb"), "total_mv": m.get("total_mv"),
         "v_low": v_low, "v_mid": v_mid, "v_high": v_high,
@@ -475,7 +476,9 @@ def main():
         json.dump(snap, f, ensure_ascii=False, indent=2)
 
     state = {"meta": {"updated_at": now(), "last_data_date": market["data_date"],
-                      "as_of": args.as_of},
+                      "as_of": args.as_of,
+                      "sectors": wl.get("meta", {}).get("sectors", []),
+                      "sector_note": wl.get("meta", {}).get("sector_note", "")},
              "market": market, "stocks": out_stocks}
     save_state(state)
     log(f"快照 {snap_name} 已写；{len(out_stocks)} 只股票计算完成")
