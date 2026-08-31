@@ -19,9 +19,23 @@ CN_PREFIX = {"6": "sh", "9": "sh", "0": "sz", "3": "sz", "5": "sh", "1": "sz", "
 # 池内指数条目一律强制 sh 前缀，禁止误拉个股行情。
 INDEX_SPECIAL_PREFIX = {"000001": "sh"}
 
+# 港股代码：5 位数字（01208 / 01258），币种 HKD，与 A 股 6 位区分。
+HK_CODE_LEN = 5
+
+
+def is_hk(symbol: str) -> bool:
+    """是否港股代码（5 位纯数字）。A 股一律 6 位。"""
+    return len(symbol) == HK_CODE_LEN and symbol.isdigit()
+
 
 def _code_tencent(symbol: str) -> str:
-    """股票代码 → 腾讯格式 sh600085 / sz002384；ETF 515220 → sh，159xxx → sz；指数 000001 → sh000001"""
+    """股票代码 → 腾讯格式 sh600085 / sz002384 / hk01208。
+
+    A 股 6 位：ETF 515220 → sh，159xxx → sz；指数 000001 → sh000001。
+    港股 5 位：01208 → hk01208（腾讯港股专用通道，字段布局与 A 股不同）。
+    """
+    if is_hk(symbol):
+        return "hk" + symbol
     p = INDEX_SPECIAL_PREFIX.get(symbol) or CN_PREFIX.get(symbol[0], "sh")
     return p + symbol
 
@@ -29,6 +43,65 @@ def _code_tencent(symbol: str) -> str:
 def _code_sina(symbol: str) -> str:
     p = INDEX_SPECIAL_PREFIX.get(symbol) or ("sh" if symbol[0] in "69" else "sz")
     return p + symbol
+
+
+def fetch_hk_indicator(symbol: str, timeout: int = 15) -> tuple:
+    """港股财务与估值快照（东方财富 F10 港股指标）。
+
+    返回 (dict, meta)。字段：pe_ttm / pb / roe / bps / eps / net_profit /
+    market_cap_hkd / shares / dividend_yield / payout_ratio。
+    用途：港股无 A 股同花顺 F10 一致预期与财务摘要通道，PE/PB 只能取第三方口径；
+    腾讯港股行情第 39 位是**静态 PE**（市值 ÷ 上一年度归母），与 TTM 不是同一口径，
+    因此港股估值一律走本接口，不用腾讯 PE。
+    """
+    try:
+        import akshare as ak
+    except Exception as e:
+        return None, {"source": "eastmoney-hk", "stale": True,
+                      "error": f"akshare 不可用: {e}", "collected_at": now()}
+    try:
+        df = ak.stock_hk_financial_indicator_em(symbol=symbol)
+    except Exception as e:
+        return None, {"source": "eastmoney-hk", "stale": True,
+                      "error": f"{type(e).__name__}: {str(e)[:120]}", "collected_at": now()}
+    if df is None or df.empty:
+        return None, {"source": "eastmoney-hk", "stale": True,
+                      "error": "empty", "collected_at": now()}
+
+    def _pick(row, keys):
+        for k in row:
+            for key in keys:
+                if key in str(k):
+                    return row[k]
+        return None
+
+    def _num(v):
+        try:
+            s = str(v).replace(",", "").strip()
+            if s in ("", "-", "--", "None", "nan"):
+                return None
+            return float(s)
+        except (TypeError, ValueError):
+            return None
+
+    row = df.iloc[0].to_dict()
+    out = {
+        "pe_ttm": _num(_pick(row, ["市盈率"])),
+        "pb": _num(_pick(row, ["市净率"])),
+        "roe": _num(_pick(row, ["股东权益回报"])),
+        "bps": _num(_pick(row, ["每股净资产"])),
+        "eps": _num(_pick(row, ["基本每股收益"])),
+        "net_profit": _num(_pick(row, ["净利润"])),
+        "market_cap": _num(_pick(row, ["总市值"])),
+        "shares": _num(_pick(row, ["已发行股本"])),
+        "dividend_yield": _num(_pick(row, ["股息率TTM"])),
+        "payout_ratio": _num(_pick(row, ["派息比率"])),
+    }
+    if out["shares"] and out["shares"] > 1e6:
+        out["shares"] = out["shares"] / 1e8  # 股 → 亿股
+    return out, {"source": "eastmoney-hk-indicator", "stale": False,
+                 "collected_at": now(),
+                 "url": f"https://emweb.securities.eastmoney.com/PC_HKF10/NewFinanceAnalysis/MainTarget?code={symbol}"}
 
 
 def now() -> str:
@@ -56,6 +129,10 @@ def fetch_spot(codes: list) -> tuple:
         parts = line.split('"')[1].split("~")
         if len(parts) < 46:
             continue
+        # 港股：腾讯港股字段布局与 A 股不同——第 39 位是"静态 PE"（市值 ÷ 上一年度
+        # 归母），第 46 位是英文简称而非 PB。二者口径均不可信，一律置空由
+        # fetch_hk_indicator（东财）补 TTM 口径，避免把静态 PE 当 TTM 用。
+        hk_row = is_hk(sym)
         try:
             price = float(parts[3])
             try:
@@ -63,9 +140,9 @@ def fetch_spot(codes: list) -> tuple:
             except (ValueError, IndexError):
                 total_mv = None  # 指数无总市值字段
             pe_raw = parts[39]
-            pe = float(pe_raw) if pe_raw not in ("", "-", "--") else None
+            pe = None if hk_row else (float(pe_raw) if pe_raw not in ("", "-", "--") else None)
             pb_raw = parts[46]
-            pb = float(pb_raw) if pb_raw not in ("", "-", "--") else None
+            pb = None if hk_row else (float(pb_raw) if pb_raw not in ("", "-", "--") else None)
             # 指数无 PE/PB 概念，腾讯返回 0；归一为 None 避免页面显示伪 0 值
             pe = pe if pe else None
             pb = pb if pb else None
@@ -78,6 +155,7 @@ def fetch_spot(codes: list) -> tuple:
                 "total_mv": total_mv,
                 "shares": round(total_mv / price / 1e8, 4) if price > 0 and total_mv else None,  # 亿股
                 "time": parts[30],
+                "currency": "HKD" if hk_row else "CNY",
             }
         except (ValueError, IndexError):
             continue
@@ -94,6 +172,21 @@ def fetch_kline(symbol: str, days: int = 260) -> tuple:
     end = datetime.date.today()
     start = end - datetime.timedelta(days=int(days * 1.8) + 30)
     sd, ed = start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
+
+    # 港股：akshare stock_hk_daily（新浪港股前复权），字段为英文小写
+    if is_hk(symbol):
+        try:
+            import akshare as ak
+            df = ak.stock_hk_daily(symbol=symbol, adjust="qfq")
+            if df is not None and not df.empty:
+                rows = [{"d": str(r["date"]), "o": float(r["open"]), "c": float(r["close"]),
+                         "h": float(r["high"]), "l": float(r["low"]), "v": float(r["volume"])}
+                        for _, r in df.tail(days).iterrows()]
+                return rows, {"source": "ak-hk-sina", "stale": False, "collected_at": now()}
+        except Exception:
+            pass
+        return None, {"source": "all-failed", "stale": True,
+                      "error": "hk kline sources all failed", "collected_at": now()}
 
     # 1) akshare 东财（指数用 index_zh_a_hist，个股用 stock_zh_a_hist；
     #    000001 是上证指数也是平安银行，走错接口会取到个股数据）

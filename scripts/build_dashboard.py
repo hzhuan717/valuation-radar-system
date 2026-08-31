@@ -1154,6 +1154,7 @@ function bandPosPct(p, lo, mid, hi){
 }
 const fmt0 = v => v==null ? '—' : (+v).toLocaleString('zh-CN',{maximumFractionDigits:0});
 const pctCol = p => p > 0 ? 'up-c' : (p < 0 ? 'dn-c' : '');
+const csym = st => ((st && st.currency === 'HKD') ? 'HK$' : '\u00a5');
 const phDetail = ph => ph && ph.ok ? ((ph.metric||'PE') + ' ' + (ph.pe!=null?fmt2(ph.pe):'—') + (ph.pe_min!=null?' · 5年区间 '+fmt2(ph.pe_min)+'~'+fmt2(ph.pe_max):'') + (ph.source?' · '+ph.source:'')) : '—';
 function lastMa(rows, win){ if(!rows || rows.length < win) return null; let s=0; const n=rows.length; for(let j=n-win;j<n;j++) s+=rows[j].c; return s/win; }
 function zoneIdx(z){ return { '深度低估':0,'低估':1,'合理下沿':2,'合理上沿':3,'高估':4,'泡沫':5 }[z] ?? 6; }
@@ -1235,7 +1236,7 @@ function renderList(filter){
       return '<button class="sb-item '+(s.ticker===CUR?.ticker&&VIEW==='stock'?'on':'')+'" onclick="switchStock(\''+s.ticker+'\')">'
         + '<div class="sb-row-top">'
         + '<div class="sb-name-group"><span class="nm">'+s.name+'</span><span class="cd">'+s.ticker+'</span><span class="code">'+s.ticker+'</span></div>'
-        + '<div class="sb-price-group"><span class="px">¥'+fmt2(s.price)+'</span></div>'
+        + '<div class="sb-price-group"><span class="px">'+csym(s)+fmt2(s.price)+'</span></div>'
         + '</div>'
         + '<div class="sb-row-btm">'
         + '<div class="sb-change-group"><span class="chg '+pctCol(s.pct)+'">'+(s.pct>0?'+':'')+fmt2(s.pct)+'%</span></div>'
@@ -1314,7 +1315,7 @@ function renderMySectors(){
               : (s.eps_base != null ? epsLbl + ' ' + fmt2(s.eps_base) : (zm.label || '—'));
             return '<div class="my-sec-row" onclick="switchStock(\''+s.ticker+'\')" title="点击进入 '+s.name+' 估值">'
               + '<span class="m-nm">'+s.name+'<br><i>'+s.ticker+'</i></span>'
-              + '<span class="m-px">¥'+fmt2(s.price)+'<br><i style="font-style:normal;color:'
+              + '<span class="m-px">'+csym(s)+fmt2(s.price)+'<br><i style="font-style:normal;color:'
               + (s.pct>0?'var(--candle-up)':(s.pct<0?'var(--candle-dn)':'var(--sub2)'))+'">'
               + (s.pct>0?'+':'')+fmt2(s.pct)+'%</i></span>'
               + '<span class="m-why">'+why+'</span>'
@@ -1774,7 +1775,7 @@ function renderOvTable(){
       return '<tr onclick="switchStock(\''+s.ticker+'\')">'
         + '<td>'+s.name+'<br><span style="color:var(--meta);font-size:12px">'+s.ticker+'</span></td>'
         + '<td style="font-family:inherit">'+(s.sector||'未分组')+'</td>'
-        + '<td>'+fmt2(s.price)+'</td><td>'+zm.label+'</td><td>'+g+'</td>'
+        + '<td>'+csym(s)+fmt2(s.price)+'</td><td>'+zm.label+'</td><td>'+g+'</td>'
         + '<td>'+(s.v_low!=null?fmt2(s.v_low)+' ~ '+fmt2(s.v_high):'—')+'</td><td>'+sig+'</td></tr>'; }).join('');
 }
 
@@ -1792,7 +1793,7 @@ function switchStock(ticker){
   document.getElementById('trigName').textContent = st.name + ' ' + st.ticker;
   const tp = document.getElementById('trigPx');
   if(tp){
-    tp.textContent = '¥' + fmt2(st.price);
+    tp.textContent = csym(st) + fmt2(st.price);
     tp.className = 'px-block' + (st.pct>0?' up':(st.pct<0?' dn':''));
   }
   renderList();
@@ -1822,7 +1823,7 @@ function renderHero(st, prevPrice, prevPct){
   document.getElementById('hPills').innerHTML = pills.join('');
   const pcol = st.pct>0?'var(--candle-up)':(st.pct<0?'var(--candle-dn)':'var(--sub2)');
   const priceEl = document.getElementById('hPrice');
-  animateNum(priceEl, prevPrice, st.price, v => '¥' + fmt2(v));
+  animateNum(priceEl, prevPrice, st.price, v => csym(st) + fmt2(v));
   priceEl.style.color = pcol;
   /* 价格更新闪烁（200ms） */
   if(prevPrice != null && isFinite(+prevPrice) && +prevPrice !== +st.price){
@@ -1970,12 +1971,12 @@ function renderC2V3(st){
   const pLow = seg(+st.v_low * 0.9, +st.v_low), pMid = seg(+st.v_low, +st.v_mid), pHigh = seg(+st.v_mid, +st.v_high);
   let html =
     '<div class="v3-blocks">'
-    + '<div class="v3b low"><div class="k">保守 V_low'+(usable?' · 买入启动':'')+'</div><div class="v">¥'+fmt2(st.v_low)+'</div><div class="f">'+e1+' × '+m1+'×</div>'+pbar(pLow)+'</div>'
-    + '<div class="v3b mid"><div class="k">基准 V_mid · 价值中枢</div><div class="v">¥'+fmt2(st.v_mid)+'</div><div class="f">'+e2+' × '+m2+'×</div>'+pbar(pMid)+'</div>'
-    + '<div class="v3b high"><div class="k">乐观 V_high'+(usable?' · 卖出启动':'')+'</div><div class="v">¥'+fmt2(st.v_high)+'</div><div class="f">'+e3+' × '+m3+'×</div>'+pbar(pHigh)+'</div>'
+    + '<div class="v3b low"><div class="k">保守 V_low'+(usable?' · 买入启动':'')+'</div><div class="v">'+csym(st)+fmt2(st.v_low)+'</div><div class="f">'+e1+' × '+m1+'×</div>'+pbar(pLow)+'</div>'
+    + '<div class="v3b mid"><div class="k">基准 V_mid · 价值中枢</div><div class="v">'+csym(st)+fmt2(st.v_mid)+'</div><div class="f">'+e2+' × '+m2+'×</div>'+pbar(pMid)+'</div>'
+    + '<div class="v3b high"><div class="k">乐观 V_high'+(usable?' · 卖出启动':'')+'</div><div class="v">'+csym(st)+fmt2(st.v_high)+'</div><div class="f">'+e3+' × '+m3+'×</div>'+pbar(pHigh)+'</div>'
     + '</div>'
     + '<div class="band-track"><div class="dot" style="left:'+bandPosPct(st.price, st.v_low, st.v_mid, st.v_high)+'%"></div></div>'
-    + '<div class="band-labels" style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub2);margin-top:4px"><span>低估 ¥'+fmt2(st.v_low)+'</span><span>现价 ¥'+fmt2(st.price)+'</span><span>高估 ¥'+fmt2(st.v_high)+'</span></div>'
+    + '<div class="band-labels" style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub2);margin-top:4px"><span>低估 '+csym(st)+fmt2(st.v_low)+'</span><span>现价 ¥'+fmt2(st.price)+'</span><span>高估 ¥'+fmt2(st.v_high)+'</span></div>'
     + (!usable?'<div class="warn-line">质量门未通过：参考级区间，不构成买卖动作。</div>':'');
   let foldInner = calcStepsHTML(st);
   if(usable && !isIns && !isBank && !isInfra && !isNorm){
@@ -2035,18 +2036,18 @@ function renderWall(st){
   [20,40,60,80].forEach(p => { c0 += '<span class="tick" style="left:'+p+'%"></span>'; });
   pct.forEach((pd,i) => {
     const d = pd.d;
-    c0 += '<span class="sr-dot '+d.cls+'" style="left:'+pd.p+'%" title="'+d.t+' ¥'+fmt2(d.v)+'"></span>'
-      + '<span class="sr-lbl '+(labelTier[i]?'tier2':'')+'" style="left:'+pd.p+'%" title="'+d.t+' ¥'+fmt2(d.v)+'">'
-      + (d.touched?'✦':'')+pd.t+' ¥'+fmt2(d.v)+'</span>';
+    c0 += '<span class="sr-dot '+d.cls+'" style="left:'+pd.p+'%" title="'+d.t+' '+csym(st)+fmt2(d.v)+'"></span>'
+      + '<span class="sr-lbl '+(labelTier[i]?'tier2':'')+'" style="left:'+pd.p+'%" title="'+d.t+' '+csym(st)+fmt2(d.v)+'">'
+      + (d.touched?'✦':'')+pd.t+' '+csym(st)+fmt2(d.v)+'</span>';
   });
-  c0 += '<span class="sr-dot cur" style="left:'+pos(st.price)+'%" title="现价 ¥'+fmt2(st.price)+'"></span>';
+  c0 += '<span class="sr-dot cur" style="left:'+pos(st.price)+'%" title="现价 '+csym(st)+fmt2(st.price)+'"></span>';
   c0 += '</div>';
   c0 += '<div class="sr-list">';
-  srs.forEach((x,i) => { c0 += '<div class="row s"><span class="m">S'+(i+1)+' · '+(x.method||'')+' <b class="g">'+x.level_ev+'级</b></span><span class="v">¥'+fmt2(x.level)+'</span></div>'; });
-  rrs.forEach((x,i) => { c0 += '<div class="row r"><span class="m">R'+(i+1)+' · '+(x.method||'')+' <b class="g">'+x.level_ev+'级</b></span><span class="v">¥'+fmt2(x.level)+'</span></div>'; });
+  srs.forEach((x,i) => { c0 += '<div class="row s"><span class="m">S'+(i+1)+' · '+(x.method||'')+' <b class="g">'+x.level_ev+'级</b></span><span class="v">'+csym(st)+fmt2(x.level)+'</span></div>'; });
+  rrs.forEach((x,i) => { c0 += '<div class="row r"><span class="m">R'+(i+1)+' · '+(x.method||'')+' <b class="g">'+x.level_ev+'级</b></span><span class="v">'+csym(st)+fmt2(x.level)+'</span></div>'; });
   c0 += '</div>';
   if(!srs.length && !rrs.length) c0 = '<div class="formula-mini">暂无支撑/压力数据（K线不足或未配置）。</div>';
-  c0 += '<div class="formula-mini">轨道区间：¥'+fmt2(tMin)+' ~ ¥'+fmt2(tMax)+'（250日高低点）；蓝点=现价，实心=A级技术位，虚线=B级，细边=C级（估值锚/贴线/转换位）。</div>';
+  c0 += '<div class="formula-mini">轨道区间：'+csym(st)+fmt2(tMin)+' ~ '+csym(st)+fmt2(tMax)+'（250日高低点）；蓝点=现价，实心=A级技术位，虚线=B级，细边=C级（估值锚/贴线/转换位）。</div>';
   document.getElementById('c0Body').innerHTML = c0;
 
   /* ---- Card 1：市场与模型 + 质检折叠 ---- */
@@ -2107,7 +2108,7 @@ function renderWall(st){
       + '止盈倒金字塔：≥V_mid 减仓30%、≥V_high 清仓50%（spec 5.3）。触达档位自动高亮。</div>');
   } else if(st.v_low!=null && st.v_high!=null){
     document.getElementById('c3Body').innerHTML =
-      '<div class="warn-line">参考区间 ¥'+fmt2(st.v_low)+' ~ ¥'+fmt2(st.v_high)+'（不可执行）：质量门未通过，不生成买卖阶梯。</div>';
+      '<div class="warn-line">参考区间 '+csym(st)+fmt2(st.v_low)+' ~ '+csym(st)+fmt2(st.v_high)+'（不可执行）：质量门未通过，不生成买卖阶梯。</div>';
   } else {
     document.getElementById('c3Body').innerHTML =
       '<div class="warn-line">质量门拦截 / 观察路由：补齐输入后由引擎自动恢复。</div>';
@@ -2128,7 +2129,7 @@ function renderWall(st){
     else if(m5<m10&&m10<m20&&m20<m60){ maState='▼ 空头排列（5<10<20<60）'; maCls='bear'; }
   }
   const srCell = (arr, cls, pre) => arr.slice(0,2).map((x,i)=>
-    '<div class="sr-list"><div class="row '+cls+'"><span class="m">'+pre+(i+1)+' · '+(x.method||'')+'</span><span class="v">¥'+fmt2(x.level)+'</span></div></div>').join('');
+    '<div class="sr-list"><div class="row '+cls+'"><span class="m">'+pre+(i+1)+' · '+(x.method||'')+'</span><span class="v">'+csym(st)+fmt2(x.level)+'</span></div></div>').join('');
   document.getElementById('c4Body').innerHTML =
     '<div class="spark-wrap">' + spark
     + '<div class="ma-state '+maCls+'">'+maState+'<br><span style="font-weight:400;font-size:12px;color:var(--sub2)">MA5 '+fmt2(m5)+' · MA10 '+fmt2(m10)+' · MA20 '+fmt2(m20)+' · MA60 '+fmt2(m60)+'</span></div></div>'
@@ -2181,12 +2182,12 @@ function renderWall(st){
     const el = document.getElementById(id);
     if(el) el.textContent = txt;
   };
-  const s1 = srs[0] ? 'S1 ¥'+fmt2(srs[0].level) : (rrs[0] ? 'R1 ¥'+fmt2(rrs[0].level) : '');
-  const sTop = rrs.length ? 'R1 ¥'+fmt2(rrs[rrs.length-1].level) : '';
-  setMicro('c0Micro', (s1 ? s1 + ' → ' : '') + (sTop ? sTop : '现价 ¥'+fmt2(st.price)));
+  const s1 = srs[0] ? 'S1 '+csym(st)+fmt2(srs[0].level) : (rrs[0] ? 'R1 '+csym(st)+fmt2(rrs[0].level) : '');
+  const sTop = rrs.length ? 'R1 '+csym(st)+fmt2(rrs[rrs.length-1].level) : '';
+  setMicro('c0Micro', (s1 ? s1 + ' → ' : '') + (sTop ? sTop : '现价 '+csym(st)+fmt2(st.price)));
   setMicro('c1Micro', '模型 '+(model.code||'—') + ' · 质量 '+(q.grade||'—'));
-  setMicro('c2Micro', 'V_low ¥'+fmt2(st.v_low)+' / 中枢 ¥'+fmt2(st.v_mid)+' / V_high ¥'+fmt2(st.v_high));
-  setMicro('c3Micro', st.v_low!=null && st.v_high!=null ? '¥'+fmt2(st.v_low)+'~¥'+fmt2(st.v_high) : '—');
+  setMicro('c2Micro', 'V_low '+csym(st)+fmt2(st.v_low)+' / 中枢 '+csym(st)+fmt2(st.v_mid)+' / V_high '+csym(st)+fmt2(st.v_high));
+  setMicro('c3Micro', st.v_low!=null && st.v_high!=null ? '+csym(st)+fmt2(st.v_low)+'~'+csym(st)+fmt2(st.v_high) : '—');
   const b3 = document.querySelector('.pos-legend');
   const posTxt = b3 && b3.textContent ? b3.textContent.trim().replace(/\s+/g,' ') : '';
   setMicro('c4Micro', st.ma250!=null ? 'MA250 '+fmt2(st.ma250) : '—');
@@ -2756,10 +2757,10 @@ class ValuationChartEngine {
     const svg = y0 => {
       let t = '<rect x="' + x0 + '" y="' + y0.toFixed(1) + '" width="' + w + '" height="' + h + '" rx="6" fill="' + this.C.bg2 + '" fill-opacity=".96" stroke="' + this.C.hair + '"/>';
       if(mob){
-        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 14).toFixed(1) + '" font-size="10" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">¥' + fmt2(c) + '</text>'
+        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 14).toFixed(1) + '" font-size="10" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">' + csym(this.st) + fmt2(c) + '</text>'
            + '<text x="' + (x0 + 8) + '" y="' + (y0 + 27).toFixed(1) + '" font-size="10" fill="' + col + '" font-family="SF Mono,monospace">' + name + '</text>';
       } else {
-        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 17).toFixed(1) + '" font-size="11" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">现价 ¥' + fmt2(c) + '</text>'
+        t += '<text x="' + (x0 + 8) + '" y="' + (y0 + 17).toFixed(1) + '" font-size="11" font-weight="700" fill="' + col + '" font-family="SF Mono,monospace">现价 ' + csym(this.st) + fmt2(c) + '</text>'
            + '<text x="' + (x0 + 8) + '" y="' + (y0 + 33).toFixed(1) + '" font-size="11" fill="' + col + '" font-family="SF Mono,monospace">处于 · ' + name + '</text>'
            + '<text x="' + (x0 + 8) + '" y="' + (y0 + 47).toFixed(1) + '" font-size="11" fill="' + this.C.sub + '" font-family="SF Mono,monospace">' + dist + '</text>';
       }
@@ -3008,8 +3009,8 @@ class ValuationChartEngine {
       if(isFinite(yy) && yy >= this.TL - 6 && yy <= priceB + 6) return;
       const isSup = rr.isSup;
       const col = isSup ? this.C.green : this.C.red;
-      if(vv > pr.pmax) edgeTop.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ¥' + fmt0(vv), col, method: rr.sr.method || '', up: true, sup: isSup});
-      else if(vv < pr.pmin) edgeBot.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ¥' + fmt0(vv), col, method: rr.sr.method || '', up: false, sup: isSup});
+      if(vv > pr.pmax) edgeTop.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ' + csym(this.st) + fmt0(vv), col, method: rr.sr.method || '', up: true, sup: isSup});
+      else if(vv < pr.pmin) edgeBot.push({lab: (isSup?'S':'R') + (rr.idx + 1) + ' ' + csym(this.st) + fmt0(vv), col, method: rr.sr.method || '', up: false, sup: isSup});
     });
 
     packLbl(srLbls, 22).forEach(it => {
@@ -3029,7 +3030,7 @@ class ValuationChartEngine {
       else if(ev === 'B') s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="4" fill="' + it.col + '" opacity=".35"/><circle cx="16" cy="' + it.yy.toFixed(1) + '" r="2.2" fill="' + it.col + '"/>');
       else s.push('<circle cx="16" cy="' + it.yy.toFixed(1) + '" r="3.5" fill="none" stroke="' + it.col + '" stroke-width="1.2"/>');
       s.push('<text x="24" y="' + (it.yy + 3.5).toFixed(1) + '" font-size="10" font-weight="700" fill="' + it.col + '" font-family="SF Mono,monospace">' + it.type + '</text>');
-      s.push('<text x="46" y="' + (it.yy + 4).toFixed(1) + '" font-size="11" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">¥' + it.price + '</text>');
+      s.push('<text x="46" y="' + (it.yy + 4).toFixed(1) + '" font-size="11" font-weight="600" fill="' + it.col + '" font-family="SF Mono,monospace">' + csym(this.st) + it.price + '</text>');
       if(it.methodTxt){
         s.push('<text x="' + (52 + it.price.length * 6.6).toFixed(0) + '" y="' + (it.yy + 4).toFixed(1) + '" font-size="9" fill="' + this.C.sub + '" font-family="SF Mono,monospace">' + it.methodTxt + '</text>');
       }
@@ -3048,7 +3049,7 @@ class ValuationChartEngine {
           const dashAttr = a[6] ? ' stroke-dasharray="' + a[6] + '"' : '';
           s.push('<line' + cls + ' id="anchor-' + a[0] + '" x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + a[2] + '" stroke-width="1.6" stroke-linecap="round"' + dashAttr + ' opacity=".8"/>'
                + '<circle cx="8" cy="' + yy.toFixed(1) + '" r="2.5" fill="' + a[2] + '"/>');
-          rightItems.push({y: yy, lab: a[4] + ' ¥' + fmt2(a[1]), col: a[2], bg: a[3], bar: a[5]});
+          rightItems.push({y: yy, lab: a[4] + ' ' + csym(this.st) + fmt2(a[1]), col: a[2], bg: a[3], bar: a[5]});
           hl.push({id: 'anchor-' + a[0], yy, price: a[1], name: '估值锚 V_' + a[0] + '（' + a[4] + '）', ev: 'A', isSup: a[0] !== 'high', sw: 1.6, op: .7, kind: 'anchor'});
         }
       });
@@ -3079,8 +3080,8 @@ class ValuationChartEngine {
              + '<text x="14" y="' + (this.TL + 15) + '" font-size="12" fill="' + this.C.sub2 + '" font-weight="600">参考区间 · 不可执行</text>');
       }
     } else if(isFinite(+st.v_low) && isFinite(+st.v_high)){
-      edgeBot.push({lab: 'V_low ¥' + fmt0(+st.v_low), col: this.C.green, method: '', up: false, sup: true});
-      edgeTop.push({lab: 'V_high ¥' + fmt0(+st.v_high), col: this.C.red, method: '', up: true, sup: false});
+      edgeBot.push({lab: 'V_low ' + csym(this.st) + fmt0(+st.v_low), col: this.C.green, method: '', up: false, sup: true});
+      edgeTop.push({lab: 'V_high ' + csym(this.st) + fmt0(+st.v_high), col: this.C.red, method: '', up: true, sup: false});
     }
 
     if(this.N >= 60 && this.barsPerView() >= Math.min(this.N, 240)){
@@ -3093,7 +3094,7 @@ class ValuationChartEngine {
           const yy = y(p);
           if(isFinite(yy) && yy >= this.TL && yy <= priceB){
             s.push('<line x1="0" y1="' + yy.toFixed(1) + '" x2="' + this.px1 + '" y2="' + yy.toFixed(1) + '" stroke="' + this.C.gold + '" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>');
-            if(W >= 560) rightItems.push({y: yy, lab: rt + ' ¥' + fmt2(p), col: this.C.gold, bg: hexA(this.C.bg2, .9)});
+            if(W >= 560) rightItems.push({y: yy, lab: rt + ' ' + csym(this.st) + fmt2(p), col: this.C.gold, bg: hexA(this.C.bg2, .9)});
           }
         });
       }
@@ -3357,7 +3358,7 @@ class ValuationChartEngine {
       else if(r.c <= pr.vhigh) z = {t: '合理区', c: this.C.blue};
       else z = {t: '高估区', c: this.C.red};
       const dv = (r.c / pr.vlow - 1) * 100;
-      t += '<div class="krow"><span class="tk">估值位置</span><b style="color:' + z.c + '">' + z.t + '</b><span>距保守 ¥' + fmt2(pr.vlow) + ' ' + (dv >= 0 ? '+' : '') + dv.toFixed(1) + '%</span></div>';
+      t += '<div class="krow"><span class="tk">估值位置</span><b style="color:' + z.c + '">' + z.t + '</b><span>距保守 ' + csym(st) + fmt2(pr.vlow) + ' ' + (dv >= 0 ? '+' : '') + dv.toFixed(1) + '%</span></div>';
     }
     const supLv = (st.support || []).map(x => ({v: +x.level, m: x.method || ''})).filter(x => isFinite(x.v) && x.v > 0);
     const resLv = (st.resistance || []).map(x => ({v: +x.level, m: x.method || ''})).filter(x => isFinite(x.v) && x.v > 0);
@@ -3368,9 +3369,9 @@ class ValuationChartEngine {
       const inS = nearS && Math.abs(r.c / nearS.v - 1) <= 0.02;
       const inR = nearR && Math.abs(r.c / nearR.v - 1) <= 0.02;
       t += '<div class="krow"><span class="tk">最近</span>'
-        + (nearS ? '<span class="' + (inS ? 'near-s' : '') + '">支撑 ¥' + fmt2(nearS.v) + '</span>' + (mShort(nearS.m) ? '<span>（' + mShort(nearS.m) + '）</span>' : '') : '')
+        + (nearS ? '<span class="' + (inS ? 'near-s' : '') + '">支撑 ' + csym(st) + fmt2(nearS.v) + '</span>' + (mShort(nearS.m) ? '<span>（' + mShort(nearS.m) + '）</span>' : '') : '')
         + (nearS && nearR ? '<span>　</span>' : '')
-        + (nearR ? '<span class="' + (inR ? 'near-r' : '') + '">阻力 ¥' + fmt2(nearR.v) + '</span>' + (mShort(nearR.m) ? '<span>（' + mShort(nearR.m) + '）</span>' : '') : '')
+        + (nearR ? '<span class="' + (inR ? 'near-r' : '') + '">阻力 ' + csym(st) + fmt2(nearR.v) + '</span>' + (mShort(nearR.m) ? '<span>（' + mShort(nearR.m) + '）</span>' : '') : '')
         + '</div>';
     }
     this.tip.innerHTML = t;
@@ -3436,7 +3437,7 @@ class ValuationChartEngine {
       const g = document.getElementById('hoverHl');
       if(g){
         const name = hit.kind === 'anchor' ? hit.name : (hit.name || ((hit.isSup ? '支撑' : '压力') + '位'));
-        const t1 = (hit.kind === 'anchor' ? '' : (hit.ev + '级 ')) + name.slice(0, 14) + ' ¥' + fmt2(hit.price);
+        const t1 = (hit.kind === 'anchor' ? '' : (hit.ev + '级 ')) + name.slice(0, 14) + ' ' + csym(this.st) + fmt2(hit.price);
         const t2 = hit.kind === 'anchor' ? '估值锚边界' : ((hit.isSup ? '支撑 S' : '压力 R') + ' · ' + hit.ev + '级强度');
         const r1 = document.getElementById('hoverHlT1'), r2 = document.getElementById('hoverHlT2');
         if(r1){ r1.textContent = t1; }
@@ -3765,8 +3766,8 @@ class ValuationChartEngine {
     const evOrder = {A: 0, B: 1, C: 2};
     inView.sort((a, b) => evOrder[a.level_ev] - evOrder[b.level_ev] || +a.level - +b.level);
     foot.innerHTML = inView.map((x, i) =>
-      '<button class="cap ' + (x.s ? 's' : 'r') + '" title="' + (x.method || '') + ' ¥' + fmt2(+x.level) + '" onclick="KENGINE.scrollToPrice(' + (+x.level) + ')">'
-      + '<i></i><span class="v">' + (x.s ? 'S' : 'R') + (i + 1) + ' ¥' + fmt2(+x.level) + '</span></button>').join('');
+      '<button class="cap ' + (x.s ? 's' : 'r') + '" title="' + (x.method || '') + ' ' + csym(this.st) + fmt2(+x.level) + '" onclick="KENGINE.scrollToPrice(' + (+x.level) + ')">'
+      + '<i></i><span class="v">' + (x.s ? 'S' : 'R') + (i + 1) + ' ' + csym(this.st) + fmt2(+x.level) + '</span></button>').join('');
   }
 
   _fitRange(){

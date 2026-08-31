@@ -25,7 +25,7 @@ STATE = os.path.join(BASE, "state.json")
 
 import sys as _sys  # noqa: E402
 _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from data_fetch import fetch_csindex_indicator  # noqa: E402
+from data_fetch import fetch_csindex_indicator, is_hk  # noqa: E402
 
 # ETF → 底层跟踪指数（天天基金F10 跟踪标的核对）
 # legu：乐咕乐股指数估值代码（TTM PE 全历史，主源）；csindex：中证官网（近20交易日，回退）
@@ -86,7 +86,9 @@ def fetch_baidu_hist(symbol: str, indicator: str, years: str = "近五年",
     def _run():
         try:
             import akshare as ak
-            df = ak.stock_zh_valuation_baidu(symbol=symbol, indicator=indicator, period=years)
+            # 港股走百度港股估值通道（A 股接口对 5 位港股代码返回 chartInfo 缺失）
+            fn = ak.stock_hk_valuation_baidu if is_hk(symbol) else ak.stock_zh_valuation_baidu
+            df = fn(symbol=symbol, indicator=indicator, period=years)
             box["df"] = df
         except Exception as e:
             box["err"] = f"{type(e).__name__}: {e}"
@@ -272,6 +274,7 @@ def main():
         stats = {
             "ok": True,
             "metric": "PE",
+            "currency": "HKD" if is_hk(code) else "CNY",
             "pe": round(pe_now, 2),
             "pe_min": round(hist[0], 2),
             "pe_max": round(hist[-1], 2),
@@ -282,8 +285,10 @@ def main():
             "color": color,
             "hist_n": len(hist),
             "hist_last_date": str(df["date"].iloc[-1]),
-            "source": "百度股市通历史PE(TTM)",
+            "source": ("百度股市通历史PE(TTM)·港股" if is_hk(code) else "百度股市通历史PE(TTM)"),
             "collected_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "note": ("港股口径：PE(TTM) 与股价同为港元计价，来源百度股市通港股估值通道"
+                     if is_hk(code) else None),
         }
         pe_stats[code] = stats
         print(f"{code} {name}: PE={pe_now} 5Y分位={pct*100:.0f}% -> {signal}")

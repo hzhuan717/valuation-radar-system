@@ -27,7 +27,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from data_fetch import (fetch_spot, fetch_kline, fetch_csindex_pe,  # noqa: E402
                         fetch_bond_10y, fetch_trade_calendar,
-                        fetch_ths_worth_forecast, now)
+                        fetch_ths_worth_forecast, fetch_hk_indicator, is_hk, now)
 from valuation_engine_v2 import evaluate_stock  # noqa: E402
 
 BASE = r"E:\财报解读\watchlist"
@@ -161,6 +161,7 @@ def compute_stock(st: dict, prev: dict, forecast_data: dict | None,
     out = {
         "ticker": st["ticker"], "name": st["name"], "route": st.get("route", "equity"),
         "sector": st.get("sector") or "未分组",
+        "currency": "HKD" if is_hk(st["ticker"]) else "CNY",
         "price": price, "pct": m.get("pct", 0.0), "pe_ttm": m.get("pe_ttm"),
         "pb": m.get("pb"), "total_mv": m.get("total_mv"),
         "v_low": v_low, "v_mid": v_mid, "v_high": v_high,
@@ -403,6 +404,18 @@ def main():
                       "total_mv": spot[code]["total_mv"],
                       "shares": spot[code]["shares"]})
             m["spot_meta"] = dict(spot_meta or {})
+            # 港股：腾讯行情不提供可信 PE/PB（第 39 位为静态 PE、第 46 位为英文简称），
+            # 一律用东财港股指标的 TTM 口径覆盖；失败则置空并保持 fail-closed。
+            if is_hk(code):
+                ind, ind_meta = fetch_hk_indicator(code)
+                if ind:
+                    m["pe_ttm"] = ind.get("pe_ttm")
+                    m["pb"] = ind.get("pb")
+                    m["hk_fundamentals"] = {**ind, "source": ind_meta}
+                else:
+                    m["pe_ttm"] = None
+                    m["pb"] = None
+                    m["hk_fundamentals"] = {"failed": True, **ind_meta}
         else:
             pv = prev_map.get(code) or {}
             m.update({"price": pv.get("price"), "pct": pv.get("pct", 0.0),
@@ -437,7 +450,7 @@ def main():
         # 会让引擎降为 reference_only；绝不使用 price/PE 生成替代 EPS。
         vm = cfg.get("valuation_model") or {}
         vm_code = vm.get("code") if isinstance(vm, dict) else vm
-        if (cfg.get("route") in ("etf", "loss")
+        if (cfg.get("route") in ("etf", "loss", "hk")
                 or vm_code in ("normalized_pe", "bank_pb_roe", "infrastructure_cashflow")):
             forecast_data = None
             forecast_meta = {
