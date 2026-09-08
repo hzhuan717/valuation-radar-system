@@ -1939,7 +1939,7 @@ function renderWall(st){
   setMicro('c0Micro', (s1 ? s1 + ' → ' : '') + (sTop ? sTop : '现价 '+csym(st)+fmt2(st.price)));
   setMicro('c1Micro', '模型 '+(model.code||'—') + ' · 质量 '+(q.grade||'—'));
   setMicro('c2Micro', 'V_low '+csym(st)+fmt2(st.v_low)+' / 中枢 '+csym(st)+fmt2(st.v_mid)+' / V_high '+csym(st)+fmt2(st.v_high));
-  setMicro('c3Micro', st.v_low!=null && st.v_high!=null ? '+csym(st)+fmt2(st.v_low)+'~'+csym(st)+fmt2(st.v_high) : '—');
+  setMicro('c3Micro', st.v_low!=null && st.v_high!=null ? csym(st)+fmt2(st.v_low)+'~'+csym(st)+fmt2(st.v_high) : '—');
   const b3 = document.querySelector('.pos-legend');
   const posTxt = b3 && b3.textContent ? b3.textContent.trim().replace(/\s+/g,' ') : '';
   setMicro('c4Micro', st.ma250!=null ? 'MA250 '+fmt2(st.ma250) : '—');
