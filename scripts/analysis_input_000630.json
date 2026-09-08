@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "ticker": "000630",
+    "company": "铜陵有色",
+    "analysis_date": "2026-09-08",
+    "data_cutoff": "2026-09-07"
+  },
+  "market": {
+    "market_pe": 19.69,
+    "bond_yield": 0.016798,
+    "pe_source": "中证全指000985 加权PE=19.69 / 等权PE=22.83，中证指数公司，2026-09-07",
+    "bond_source": "中国国债10年 1.6798%，中国债券信息网，2026-09-07"
+  },
+  "forecast": {
+    "net_profit_fc": 24.15,
+    "shares": 134.0947,
+    "eps_bear": 0.1107,
+    "eps_base": 0.1819,
+    "eps_bull": 0.2437
+  },
+  "pe": {
+    "pe_low": 12.22,
+    "pe_mid": 14.49,
+    "pe_high": 16.73,
+    "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-08）：P25=12.22/P50=14.49/P75=16.73，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）"
+  },
+  "price": 6.38,
+  "sector": {
+    "industry": "有色金属·铜冶炼（米拉多铜矿）",
+    "cycle_stage": "强周期·铜价与加工费(TC/RC)驱动",
+    "earnings_direction": "波动大：2025归母24.15亿（EPS 0.19），2021高点31.01亿后回落",
+    "trend_direction": "近期反弹，但仍在长期均线附近震荡",
+    "valuation_position": "PE-TTM 22.34显著高于同行业（分母效应），PB 2.33处产业链中低位",
+    "research_priority": "高",
+    "notes": "有色铜·冶炼（铜冠铜箔 + 米拉多铜矿注入预期）：2025 归母 24.15 亿（EPS 0.19），2021 高点 31.01 亿后回落，盈利波动大；2026E 一致预期 4 家 0.34/0.44/0.56。PE-TTM 22.84 显著高于紫金/洛钼/江铜，是低盈利基数放大所致（分母效应），不代表更贵也不代表更便宜 → 走正常化盈利参考 + PB 分位信号。风险：米拉多铜矿注入进度与作价、硫酸/副产品价格。"
+  },
+  "technical": {
+    "support": [
+      {"level": 6.05, "method": "MA250 年线支撑（长期分水岭）", "level_ev": "A"},
+      {"level": 6.387, "method": "MA120 均线支撑", "level_ev": "B"},
+      {"level": 6.49, "method": "MA60 均线支撑", "level_ev": "B"},
+      {"level": 2.64, "method": "V_mid 价值中枢（EPS 0.1819×PE 14.49）", "level_ev": "A"}
+    ],
+    "resistance": [
+      {"level": 6.476, "method": "MA5 均线压力", "level_ev": "B"},
+      {"level": 6.575, "method": "MA10 均线压力", "level_ev": "B"},
+      {"level": 6.566, "method": "MA20 均线压力", "level_ev": "B"},
+      {"level": 4.08, "method": "V_high 卖出启动区（EPS 0.2437×PE 16.73）", "level_ev": "A"}
+    ]
+  },
+  "evidence": [
+    {"level": "A", "claim": "股价=总市值/总净利润；净利润×市盈率=总市值（业绩市盈率测算法）", "url": "https://www.ximalaya.com/sound/769568535", "date": "2024-10"},
+    {"level": "A", "claim": "合理倍数须结合基本面（ROE/净利率趋势）修正，不得按价格倒推", "url": "https://www.ximalaya.com/sound/781626243", "date": "2025-01"},
+    {"level": "A", "claim": "用未来年度利润（T+1/T+2）而非TTM；每年等1-2次下跌机会做20-30%反弹", "url": "https://www.ximalaya.com/sound/784795473", "date": "2024-12"},
+    {"level": "A", "claim": "格雷厄姆指数=(1/全市场PE)/十年国债；六档操作；历史大底约2.5", "url": "https://www.ximalaya.com/sound/525746011", "date": "2022-04"},
+    {"level": "A", "claim": "调整期底仓5-6成、进攻期+2成；牛市2成短线、2-3成活动仓", "url": "https://www.ximalaya.com/sound/772399249", "date": "2024-11"},
+    {"level": "A", "claim": "补仓三问+金字塔建仓+每跌20%-30%补一档；下跌趋势先减仓、止跌企稳再回补", "url": "https://www.ximalaya.com/sound/468418903", "date": "2021-11"},
+    {"level": "A", "claim": "缺口不破是支撑、破则转弱；首阴切十均短线买点；摸线行情逐根摸均线", "url": "https://www.ximalaya.com/sound/513525355", "date": "2022-03"},
+    {"level": "D", "claim": "中证全指000985：加权PE=19.69 / 等权PE=22.83（中证指数公司，2026-09-07）", "url": "https://www.csindex.com.cn", "date": "2026-09-07"},
+    {"level": "D", "claim": "中国国债10年收益率=1.6798%（中国债券信息网，2026-09-07）", "url": "https://www.chinabond.com.cn", "date": "2026-09-07"},
+    {"level": "D", "claim": "正常化盈利模型：bear/base/bull=0.1107/0.1819/0.2437，窗口2016-2025，10个年报", "url": "https://basic.10jqka.com.cn/000630/finance.html", "date": "2026-09-08"},
+    {"level": "D", "claim": "PE分位校准：P25=12.22/P50=14.49/P75=16.73，样本913日", "url": "https://www.baidu.com", "date": "2026-09-08"}
+  ]
+}
