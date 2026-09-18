@@ -154,7 +154,10 @@
           "retrieved_at": "2026-09-15 19:26:18"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:11",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "医药医疗"
     },
     {
@@ -224,7 +227,10 @@
       },
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:14",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "dividend_yield_ttm": {
         "value_pct": 0.0,
         "as_of": "2026-09-15",
@@ -322,7 +328,10 @@
           "retrieved_at": "2026-09-15 19:26:19"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:17",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "科技制造"
     },
     {
@@ -406,7 +415,10 @@
           "retrieved_at": "2026-09-15 19:26:19"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:19",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "医药医疗"
     },
     {
@@ -523,7 +535,8 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-09-15 19:25:07"
+        "failed_at": "2026-09-18 16:21:06",
+        "note": "东财F10抓取异常: URLError: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
       },
       "sector": "金融"
     },
@@ -608,7 +621,10 @@
           "retrieved_at": "2026-09-15 19:26:20"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:22",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "公用事业"
     },
     {
@@ -645,7 +661,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:07"
+        "failed_at": "2026-09-18 16:21:08",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601899/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBF3B0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -734,8 +751,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-09-15 19:25:08",
-        "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
+        "failed_at": "2026-09-18 16:21:10",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/002428/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBF9E0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "sector": "周期资源"
     },
@@ -773,7 +790,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:09"
+        "failed_at": "2026-09-18 16:21:12",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000725/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBF860>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -862,7 +880,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:10"
+        "failed_at": "2026-09-18 16:21:14",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000100/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95E0C560>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -1000,7 +1019,8 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-09-15 19:25:21"
+        "failed_at": "2026-09-18 16:21:27",
+        "note": "ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601818/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA954A9C70>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "bank": {
         "bps": 8.46,
@@ -1164,7 +1184,10 @@
           "retrieved_at": "2026-09-15 19:26:20"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:24",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "公用事业"
     },
     {
@@ -1376,7 +1399,8 @@
         }
       },
       "special_refresh": {
-        "ok_at": "2026-09-15 19:25:23"
+        "failed_at": "2026-09-18 16:21:29",
+        "note": "ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601186/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA954A91C0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,
@@ -1587,7 +1611,10 @@
           "retrieved_at": "2026-09-15 19:26:21"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:27",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "周期资源"
     },
     {
@@ -1680,7 +1707,10 @@
           "retrieved_at": "2026-09-15 19:26:22"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:29",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "科技制造"
     },
     {
@@ -1834,7 +1864,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:12"
+        "failed_at": "2026-09-18 16:21:16",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601225/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95E0CD70>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 6.89,
       "pe_mid": 8.74,
@@ -1907,7 +1938,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:14"
+        "failed_at": "2026-09-18 16:21:18",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/600157/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBFE00>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 14.35,
       "pe_mid": 17.62,
@@ -2004,7 +2036,10 @@
           "retrieved_at": "2026-09-15 19:26:22"
         }
       },
-      "dividend_yield_refresh": null,
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:32",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      },
       "sector": "消费零售"
     },
     {
@@ -2107,7 +2142,10 @@
           "retrieved_at": "2026-09-15 19:26:23"
         }
       },
-      "dividend_yield_refresh": null
+      "dividend_yield_refresh": {
+        "failed_at": "2026-09-18 16:22:34",
+        "note": "今日抓取失败(<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>)，沿用旧值仅作参考"
+      }
     },
     {
       "ticker": "603993",
@@ -2148,7 +2186,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:15"
+        "failed_at": "2026-09-18 16:21:20",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/603993/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBEF90>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 14.89,
       "pe_mid": 18.85,
@@ -2223,7 +2262,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:17"
+        "failed_at": "2026-09-18 16:21:22",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/600362/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95DBE900>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 10.44,
       "pe_mid": 11.51,
@@ -2298,7 +2338,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-15 19:25:19"
+        "failed_at": "2026-09-18 16:21:24",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000630/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001BA95E0C7D0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 12.22,
       "pe_mid": 14.5,
