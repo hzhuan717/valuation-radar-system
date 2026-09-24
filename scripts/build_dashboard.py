@@ -258,7 +258,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 :root{
   /* --- Tier 1 · 基础 --- */
   --space-unit:4px;
-  --r-card:8px;
+  --r-card:14px;
   --text-xs:12px; --text-sm:13px; --text-base:14px; --text-lg:24px; --text-xl:32px;
   --fs-title:12px; --fs-data:13px; --fs-meta:12px;
   /* 字体栈（含 Windows 回退 Segoe UI Variable，等宽含 DIN Alternate） */
@@ -274,8 +274,8 @@ TEMPLATE = r"""<!DOCTYPE html>
   --color-support:#34c759; --color-resist:#ff3b30;
   --color-support-bg:rgba(52,199,89,.08); --color-resist-bg:rgba(255,59,48,.08);
   /* --- Tier 3 · 组件：阴影 / 圆角 / 焦点 / 动效曲线 --- */
-  --shadow-card:0 2px 8px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
-  --shadow-lift:0 8px 24px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.06);
+  --shadow-card:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06);
+  --shadow-lift:0 4px 12px rgba(0,0,0,.08),0 20px 56px rgba(0,0,0,.12);
   --focus-ring:0 0 0 3px rgba(0,113,227,.18);
   /* 金融级动效曲线库 */
   --ease-instant:cubic-bezier(.25,.1,.25,1);   /* 点击/切换 150ms */
@@ -291,7 +291,7 @@ html[data-theme="dark"]{
   --green:#30d158; --green-d:#32d74b; --red:#ff453a; --red-d:#ff6961;
   --gold:#d0a94e; --violet:#bf5af2;
   --candle-up:#ff5f57; --candle-dn:#28d99b;
-  --shadow-card:0 2px 8px rgba(0,0,0,.4); --shadow-lift:0 8px 24px rgba(0,0,0,.5);
+  --shadow-card:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.4); --shadow-lift:0 4px 12px rgba(0,0,0,.5),0 20px 56px rgba(0,0,0,.55);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
@@ -316,8 +316,8 @@ b{font-weight:600}
   .mos-dot,.dot-ok,.dot-warn,.dot-bad{animation:none !important}
 }
 
-/* ============ 顶栏 38px（紧凑·触摸目标≥40px 由内边距保证） ============ */
-.topbar{height:38px;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--bg2);
+/* ============ 顶栏 46px（Apple 官网导航高度 · 触摸目标≥40px 由内边距保证） ============ */
+.topbar{height:46px;display:flex;align-items:center;gap:10px;padding:0 16px;background:var(--bg2);
   border-bottom:1px solid var(--hair);position:relative;z-index:30}
 .brand{display:flex;align-items:center;gap:7px;border:none;background:none;font-size:14px;font-weight:600;color:var(--ink);padding:5px 9px;border-radius:6px;transition:background var(--dur-instant) var(--ease-instant)}
 .brand:hover{background:var(--blue-lt);color:var(--blue)}
@@ -353,7 +353,7 @@ b{font-weight:600}
 .micro-date b{color:var(--blue-d);font-weight:600}
 
 /* ============ 弹出选股器 ============ */
-.popover{position:absolute;top:42px;left:12px;width:440px;background:var(--bg2);border:1px solid var(--hair);
+.popover{position:absolute;top:52px;left:12px;width:440px;background:var(--bg2);border:1px solid var(--hair);
   border-radius:10px;box-shadow:var(--shadow-lift);display:none;z-index:50;padding:8px}
 .popover.on{display:block}
 .pop-search{width:100%;border:1px solid var(--hair);border-radius:6px;padding:8px 10px;font-size:13px;margin-bottom:6px;
@@ -373,7 +373,7 @@ b{font-weight:600}
 
 /* ============ 主体三栏 Grid（100vh 单屏） ============ */
 .shell{display:grid;grid-template-columns:minmax(200px,14vw) minmax(0,1fr) 8px var(--wall-w,340px);grid-template-rows:minmax(0,1fr);
-  height:calc(100vh - 38px);overflow:hidden}
+  height:calc(100vh - 46px);overflow:hidden}
 
 /* ---- 左导航 minmax(200px,14vw) ---- */
 .sidebar{border-right:1px solid var(--hair);background:var(--bg2);display:flex;flex-direction:column;min-height:0;min-width:0}
@@ -579,7 +579,7 @@ b{font-weight:600}
 .ktip .spark{margin-top:6px;height:24px;display:block}
 .ktip .spark polyline{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .ktip .spark .last-dot{fill:var(--candle-dn)}
-.ov-wrap{flex:1;overflow-y:auto;min-height:0;padding:16px;background:var(--bg);height:calc(100vh - 38px);box-sizing:border-box}
+.ov-wrap{flex:1;overflow-y:auto;min-height:0;padding:16px;background:var(--bg);height:calc(100vh - 46px);box-sizing:border-box}
 .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 /* 板块水位行 */
 .sector-item{display:grid;grid-template-columns:minmax(0,1.2fr) auto minmax(80px,1fr) auto auto minmax(0,1fr);gap:10px;align-items:center;
@@ -984,6 +984,124 @@ body.wall-hidden .wall-grip{display:none}
   .top-gate{max-width:130px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .stock-trig{max-width:150px}
   .stock-trig .px-block{display:none}   /* 极窄屏隐藏价格块，保住名称 */
+}
+
+/* ============ Design Tokens v9 · Apple 官网风格精修层（2026-09） ============
+   叠加于 v8 之上：毛玻璃顶栏 / iOS 分段控件 / 无描边卡片 / 软投影 / 大留白。
+   约束：不改 Canvas/SVG K线绘制与任何数据标注逻辑，仅优化容器、控件与留白。 */
+/* ---- 全局质感：选中色 / 细滚动条 / 字体渲染 ---- */
+::selection{background:rgba(0,113,227,.18)}
+html{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--sub) 40%,transparent) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--sub) 32%,transparent);
+  border-radius:999px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--sub) 55%,transparent);
+  border:3px solid transparent;background-clip:padding-box}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ---- 顶栏：Apple 毛玻璃导航 + iOS 分段控件 ---- */
+.topbar{background:color-mix(in srgb,var(--bg2) 72%,transparent);
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)}
+.brand{border-radius:999px;font-size:15px;padding:6px 11px}
+.top-tabs{background:var(--bg3);border-radius:999px;padding:3px;gap:2px}
+.top-tabs .tab{border:none;background:transparent;border-radius:999px;padding:4px 18px;min-height:30px}
+.top-tabs .tab:hover{color:var(--ink)}
+.top-tabs .tab.on{background:var(--bg2);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px var(--hair)}
+.stock-trig{border:none;background:var(--bg3);border-radius:999px;height:32px;padding:4px 14px}
+.stock-trig:hover{box-shadow:inset 0 0 0 1px var(--hair2)}
+.wall-toggle-btn{border:none;background:var(--bg3);border-radius:999px}
+.wall-toggle-btn:hover{background:var(--blue-lt);color:var(--blue)}
+.micro-date{border:none;background:var(--bg3);border-radius:999px}
+.popover{border-radius:14px;box-shadow:var(--shadow-lift)}
+.pop-search{border:none;background:var(--bg3);border-radius:8px}
+.pop-item{border-radius:8px}
+.pop-item:hover{transform:none}
+
+/* ---- 左导航：Apple 边栏（圆角选中块 · 去分割线 · 灰底搜索框） ---- */
+.sidebar{background:var(--bg)}
+.sb-search{border:none;background:var(--bg3);border-radius:8px;margin:0 12px 10px}
+.sb-search:focus{outline:none;box-shadow:var(--focus-ring)}
+.sb-sec{border:none;background:var(--bg3);border-radius:999px}
+.sb-sec:hover{color:var(--ink);background:color-mix(in srgb,var(--bg3) 70%,var(--ink) 6%)}
+.sb-sec.on{background:var(--blue);color:#fff}
+.sb-grp{background:var(--bg)}
+.sb-item{width:calc(100% - 16px);margin:1px 8px;border-bottom:none;border-radius:10px}
+.sb-item:hover{background:color-mix(in srgb,var(--blue) 6%,transparent);transform:none}
+.sb-item.on{background:var(--blue-lt);box-shadow:none}
+.sb-item.on .nm{color:var(--blue-d)}
+html[data-theme="dark"] .sb-item.on .nm{color:var(--blue)}
+
+/* ---- Hero：大留白 + 价格层级（仅桌面放大；移动端沿用原规范） ---- */
+.hero-strip{padding:16px 24px;gap:24px}
+.hero-strip::after{background:var(--hair)}
+.hero-strip .eyebrow{font-weight:600;color:var(--meta)}
+.pill{border:none;background:var(--bg3);padding:4px 13px}
+.mos-val{border-radius:999px;padding:2px 8px}
+@media(min-width:768px){
+  .hero-strip h1{font-size:26px;letter-spacing:-.01em}
+  .hero-strip .price{font-size:40px}
+}
+
+/* ---- K线主图：无描边卡片容器 + 分段区间控件（绘图与标注逻辑不变） ---- */
+.chart-zone{padding:12px 16px 10px}
+.chart-wrap{border:none;box-shadow:var(--shadow-card)}
+html[data-theme="dark"] .chart-wrap{box-shadow:0 0 0 1px var(--hair),var(--shadow-card)}
+.axis-panel{border-left:none}
+.range-btns{background:var(--bg3);border-radius:999px;padding:2px;gap:1px}
+.range-btn{border:none;background:transparent;border-radius:999px;padding:3px 13px}
+.range-btn:hover{transform:none;color:var(--ink)}
+.range-btn.on{background:var(--bg2);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.ma-chip{border:none;background:var(--bg3)}
+.ma-chip:hover{transform:none;box-shadow:none;color:var(--ink)}
+.ma-chip.on{background:color-mix(in srgb,var(--bg3) 55%,var(--bg2));box-shadow:inset 0 0 0 1px var(--hair2)}
+.srfoot .cap{border:none;background:var(--bg3)}
+.srfoot .cap:hover{transform:none;color:var(--ink)}
+.ktip{border-radius:12px}
+
+/* ---- 右数据墙：Apple 卡片（无描边 · 14px 圆角 · 软投影） ---- */
+.wall{padding:14px}
+.wall-ctrl{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+.w-ctrl-btn{border:none;background:var(--bg3);border-radius:999px}
+.w-ctrl-btn:hover{background:var(--blue-lt);box-shadow:none}
+.w-card{border:none;padding:16px 18px}
+html[data-theme="dark"] .w-card{box-shadow:0 0 0 1px var(--hair),var(--shadow-card)}
+.w-title{letter-spacing:.08em}
+.w-micro{border:none;background:var(--bg3);border-radius:999px}
+.w-fold{border:none;background:var(--bg3);border-radius:999px}
+.w-fold:hover{background:var(--blue-lt)}
+.v3b{border-radius:12px}
+.sr-track{border-radius:999px}
+.sr-lbl{border-radius:6px}
+.wfall .step{border-radius:8px}
+.sens-btn{border:none;border-radius:999px}
+.badge{border:none;background:var(--bg3)}
+.src-badge{border:none;background:var(--bg3)}
+.calc-body input{border-radius:8px}
+
+/* ---- 大盘总览：卡片化表格 + 去位移行交互 ---- */
+.ov-wrap{padding:20px}
+.ov-cards{gap:16px;margin-bottom:16px}
+.ov-table{border:none;overflow:hidden;box-shadow:var(--shadow-card)}
+.ov-table tr:hover,.ts-row:hover,.sec-row:hover,.sector-item:hover,.my-sec-row:hover{transform:none}
+.my-sec{border:none;background:var(--bg2);box-shadow:var(--shadow-card)}
+.my-sec.focus{box-shadow:0 0 0 2px var(--blue-lt),var(--shadow-card)}
+.breadth-box,.cong-box{border:none;border-radius:12px;background:var(--bg)}
+.filter-row .f-tab{border:none;background:var(--bg3);border-radius:999px}
+.filter-row .f-tab.on{background:var(--blue);color:#fff}
+.modal{border-radius:18px}
+.formula-box{border:none;border-radius:10px;background:var(--bg)}
+
+/* ---- 窄屏/移动：胶囊化同步 ---- */
+@media(max-width:1099px){
+  .tablet-tabs{background:var(--bg3);border-radius:999px;padding:2px}
+  .tablet-tabs .tab{border:none;border-radius:999px}
+  .tablet-tabs .tab.on{background:var(--bg2);color:var(--ink)}
+  .sb-item{width:auto;min-width:120px;margin:2px 4px;border-right:none}
+  .brand{white-space:nowrap;font-size:14px;padding:5px 8px}
+  .top-tabs .tab{padding:4px 12px}
+}
+@media(max-width:640px){
 }
 </style>
 </head>
@@ -1390,7 +1508,7 @@ function showTab(name){
   if(name === 'overview'){
     VIEW = 'overview'; CUR = null;
     if(shell) shell.style.display = 'none';
-    if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 38px)'; }
+    if(ov){ ov.style.display = 'block'; ov.style.height = 'calc(100vh - 46px)'; }
     renderOvMarket();
     renderOvSectors();
     renderMySectors();
