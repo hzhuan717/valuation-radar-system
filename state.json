@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updated_at": "2026-09-29 18:58:05",
-    "last_data_date": "2026-09-28",
+    "updated_at": "2026-09-29 19:37:46",
+    "last_data_date": "2026-09-29",
     "as_of": null,
     "sectors": [
       {
@@ -52,22 +52,22 @@
       }
     ],
     "sector_note": "板块为人工维护的研究分组（D 级工程补充），用于聚合观察与横向对照；板块内个股仍各自走自己的估值路由与质量门，板块标签不改变任何单只的 decision_usable 判定。",
-    "pe_history_updated_at": "2026-09-29 18:59:35"
+    "pe_history_updated_at": "2026-09-29 19:39:28"
   },
   "market": {
     "cs985": {
-      "date": "2026-09-28",
-      "pe_weighted": 18.93,
-      "pe_equal": 21.78,
+      "date": "2026-09-29",
+      "pe_weighted": 18.97,
+      "pe_equal": 21.84,
       "source": "csindex-direct"
     },
     "sh": {
-      "date": "2026-09-28",
-      "pe": 15.5,
+      "date": "2026-09-29",
+      "pe": 15.52,
       "source": "csindex-direct"
     },
     "hs300": {
-      "date": "2026-09-28",
+      "date": "2026-09-29",
       "pe": 14.28,
       "source": "csindex-direct"
     },
@@ -80,37 +80,37 @@
       {
         "key": "cs985",
         "label": "中证全指·加权",
-        "pe": 18.93,
-        "graham": 3.17,
+        "pe": 18.97,
+        "graham": 3.16,
         "band": "市场估值极低",
         "formula": "(1 / market_PE) / China_10Y_yield",
         "thresholds": ">2.3 / 2.0 / 1.8 / 1.5 / 1.0",
         "role": "market_context_only",
         "not_position_instruction": true,
-        "erp": 0.0362,
-        "erp_pct": 3.62,
+        "erp": 0.036,
+        "erp_pct": 3.6,
         "erp_formula": "1/PE - China_10Y_yield",
         "erp_note": "减法模型防低利率乘数失真；无历史序列不给分档（D级）"
       },
       {
         "key": "cs985e",
         "label": "中证全指·等权",
-        "pe": 21.78,
+        "pe": 21.84,
         "graham": 2.75,
         "band": "市场估值极低",
         "formula": "(1 / market_PE) / China_10Y_yield",
         "thresholds": ">2.3 / 2.0 / 1.8 / 1.5 / 1.0",
         "role": "market_context_only",
         "not_position_instruction": true,
-        "erp": 0.0292,
-        "erp_pct": 2.92,
+        "erp": 0.0291,
+        "erp_pct": 2.91,
         "erp_formula": "1/PE - China_10Y_yield",
         "erp_note": "减法模型防低利率乘数失真；无历史序列不给分档（D级）"
       },
       {
         "key": "sh",
         "label": "上证指数",
-        "pe": 15.5,
+        "pe": 15.52,
         "graham": 3.87,
         "band": "市场估值极低",
         "formula": "(1 / market_PE) / China_10Y_yield",
@@ -138,8 +138,8 @@
         "erp_note": "减法模型防低利率乘数失真；无历史序列不给分档（D级）"
       }
     ],
-    "collected_at": "2026-09-29 18:55:03",
-    "data_date": "2026-09-28",
+    "collected_at": "2026-09-29 19:35:48",
+    "data_date": "2026-09-29",
     "graham_role": "market_context_only",
     "not_position_instruction": true
   },
@@ -2264,13 +2264,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:16"
+        "collected_at": "2026-09-29 19:35:58"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -2310,7 +2310,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:16",
+        "collected_at": "2026-09-29 19:35:58",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -4517,13 +4517,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:22"
+        "collected_at": "2026-09-29 19:36:02"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -4616,7 +4616,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/600085/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:22",
+        "retrieved_at": "2026-09-29 19:36:02",
         "forecasts": [
           {
             "year": 2026,
@@ -4701,7 +4701,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "57fa2e3f7235c9a9a7aff1605719452f8b28872e3a51f38cbce26f6ff3b99674"
+        "raw_sha256": "9b62da10261a488bac4eb9ed66e9fb3545b8fe666184795c28adfadb19aed83d"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -4709,14 +4709,14 @@
         "source_url": "https://basic.10jqka.com.cn/600085/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:22",
+        "collected_at": "2026-09-29 19:36:02",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "57fa2e3f7235c9a9a7aff1605719452f8b28872e3a51f38cbce26f6ff3b99674"
+        "raw_sha256": "9b62da10261a488bac4eb9ed66e9fb3545b8fe666184795c28adfadb19aed83d"
       },
       "valuation_model": {
         "code": "forward_pe",
@@ -4907,8 +4907,8 @@
           "title": "同仁堂(600085) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/600085/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:22",
-          "raw_sha256": "57fa2e3f7235c9a9a7aff1605719452f8b28872e3a51f38cbce26f6ff3b99674",
+          "retrieved_at": "2026-09-29 19:36:02",
+          "raw_sha256": "9b62da10261a488bac4eb9ed66e9fb3545b8fe666184795c28adfadb19aed83d",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -5126,7 +5126,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/600085/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:22",
+          "retrieved_at": "2026-09-29 19:36:02",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -5245,8 +5245,8 @@
             "title": "同仁堂(600085) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/600085/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:55:22",
-            "raw_sha256": "57fa2e3f7235c9a9a7aff1605719452f8b28872e3a51f38cbce26f6ff3b99674",
+            "retrieved_at": "2026-09-29 19:36:02",
+            "raw_sha256": "9b62da10261a488bac4eb9ed66e9fb3545b8fe666184795c28adfadb19aed83d",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -7534,13 +7534,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:28"
+        "collected_at": "2026-09-29 19:36:06"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -7622,7 +7622,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/002384/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:28",
+        "retrieved_at": "2026-09-29 19:36:06",
         "forecasts": [
           {
             "year": 2026,
@@ -7707,7 +7707,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "4e84260abbebe79ff101f1897e27e3de44a546641707def51934187f8ba0fef8"
+        "raw_sha256": "53f9d57989acbb9304b0a4b8ec111ee4977f63f48ba3ce83c2d25f2cb1fc280e"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -7715,14 +7715,14 @@
         "source_url": "https://basic.10jqka.com.cn/002384/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:28",
+        "collected_at": "2026-09-29 19:36:06",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "4e84260abbebe79ff101f1897e27e3de44a546641707def51934187f8ba0fef8"
+        "raw_sha256": "53f9d57989acbb9304b0a4b8ec111ee4977f63f48ba3ce83c2d25f2cb1fc280e"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -7929,8 +7929,8 @@
           "title": "东山精密(002384) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/002384/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:28",
-          "raw_sha256": "4e84260abbebe79ff101f1897e27e3de44a546641707def51934187f8ba0fef8",
+          "retrieved_at": "2026-09-29 19:36:06",
+          "raw_sha256": "53f9d57989acbb9304b0a4b8ec111ee4977f63f48ba3ce83c2d25f2cb1fc280e",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -8153,7 +8153,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/002384/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:28",
+          "retrieved_at": "2026-09-29 19:36:06",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -8266,8 +8266,8 @@
             "title": "东山精密(002384) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/002384/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:55:28",
-            "raw_sha256": "4e84260abbebe79ff101f1897e27e3de44a546641707def51934187f8ba0fef8",
+            "retrieved_at": "2026-09-29 19:36:06",
+            "raw_sha256": "53f9d57989acbb9304b0a4b8ec111ee4977f63f48ba3ce83c2d25f2cb1fc280e",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -10459,13 +10459,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:34"
+        "collected_at": "2026-09-29 19:36:09"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -10558,7 +10558,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/002472/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:34",
+        "retrieved_at": "2026-09-29 19:36:09",
         "forecasts": [
           {
             "year": 2026,
@@ -10643,7 +10643,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "165f3c2a2622eb658edfd70beb3305ffd8e98b3d57283e27c7428b86a5dc2129"
+        "raw_sha256": "7fea70db1dd80b8fe2312bb3056eba425606e70964c7ac6ef3050f8718b823ad"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -10651,14 +10651,14 @@
         "source_url": "https://basic.10jqka.com.cn/002472/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:34",
+        "collected_at": "2026-09-29 19:36:09",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "165f3c2a2622eb658edfd70beb3305ffd8e98b3d57283e27c7428b86a5dc2129"
+        "raw_sha256": "7fea70db1dd80b8fe2312bb3056eba425606e70964c7ac6ef3050f8718b823ad"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -10849,8 +10849,8 @@
           "title": "双环传动(002472) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/002472/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:34",
-          "raw_sha256": "165f3c2a2622eb658edfd70beb3305ffd8e98b3d57283e27c7428b86a5dc2129",
+          "retrieved_at": "2026-09-29 19:36:09",
+          "raw_sha256": "7fea70db1dd80b8fe2312bb3056eba425606e70964c7ac6ef3050f8718b823ad",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -11068,7 +11068,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/002472/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:34",
+          "retrieved_at": "2026-09-29 19:36:09",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -11187,8 +11187,8 @@
             "title": "双环传动(002472) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/002472/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:55:34",
-            "raw_sha256": "165f3c2a2622eb658edfd70beb3305ffd8e98b3d57283e27c7428b86a5dc2129",
+            "retrieved_at": "2026-09-29 19:36:09",
+            "raw_sha256": "7fea70db1dd80b8fe2312bb3056eba425606e70964c7ac6ef3050f8718b823ad",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -13476,13 +13476,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:40"
+        "collected_at": "2026-09-29 19:36:13"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -13575,7 +13575,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/300760/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:40",
+        "retrieved_at": "2026-09-29 19:36:13",
         "forecasts": [
           {
             "year": 2026,
@@ -13660,7 +13660,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "41005e4484c5cd8ce3a81a36a345766b6c179b59d4374c5be7e0bcbcc83ad837"
+        "raw_sha256": "bad5cfcdb223b72a0b0d04f870c6504172d6b633538146c90c6e9a820f463d00"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -13668,14 +13668,14 @@
         "source_url": "https://basic.10jqka.com.cn/300760/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:40",
+        "collected_at": "2026-09-29 19:36:13",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "41005e4484c5cd8ce3a81a36a345766b6c179b59d4374c5be7e0bcbcc83ad837"
+        "raw_sha256": "bad5cfcdb223b72a0b0d04f870c6504172d6b633538146c90c6e9a820f463d00"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -13862,8 +13862,8 @@
           "title": "迈瑞医疗(300760) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/300760/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:40",
-          "raw_sha256": "41005e4484c5cd8ce3a81a36a345766b6c179b59d4374c5be7e0bcbcc83ad837",
+          "retrieved_at": "2026-09-29 19:36:13",
+          "raw_sha256": "bad5cfcdb223b72a0b0d04f870c6504172d6b633538146c90c6e9a820f463d00",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -14077,7 +14077,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/300760/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:40",
+          "retrieved_at": "2026-09-29 19:36:13",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -14196,8 +14196,8 @@
             "title": "迈瑞医疗(300760) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/300760/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:55:40",
-            "raw_sha256": "41005e4484c5cd8ce3a81a36a345766b6c179b59d4374c5be7e0bcbcc83ad837",
+            "retrieved_at": "2026-09-29 19:36:13",
+            "raw_sha256": "bad5cfcdb223b72a0b0d04f870c6504172d6b633538146c90c6e9a820f463d00",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -16485,13 +16485,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:46"
+        "collected_at": "2026-09-29 19:36:17"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -16625,7 +16625,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/601318/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:46",
+        "retrieved_at": "2026-09-29 19:36:17",
         "forecasts": [
           {
             "year": 2026,
@@ -16710,7 +16710,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "f17e1d75c81f1cfa437ffe26728b99661849dba7d6abc52d008434d26a5fb1ba"
+        "raw_sha256": "ac94e4ff3b85abed42ced26aaf5e7d0ad4258731593adf5ed4d3aa044d426f48"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -16718,14 +16718,14 @@
         "source_url": "https://basic.10jqka.com.cn/601318/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:46",
+        "collected_at": "2026-09-29 19:36:17",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "f17e1d75c81f1cfa437ffe26728b99661849dba7d6abc52d008434d26a5fb1ba"
+        "raw_sha256": "ac94e4ff3b85abed42ced26aaf5e7d0ad4258731593adf5ed4d3aa044d426f48"
       },
       "valuation_model": {
         "code": "insurance_pev",
@@ -16827,7 +16827,7 @@
           "title": "中国平安2025-12-31年报内含价值",
           "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
           "as_of": "2025-12-31",
-          "retrieved_at": "2026-09-29 18:53:01"
+          "retrieved_at": "2026-09-29 19:34:04"
         }
       ],
       "decision_data": {
@@ -16961,7 +16961,7 @@
             "title": "中国平安2025-12-31年报内含价值",
             "url": "https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=1&code=SH601318",
             "as_of": "2025-12-31",
-            "retrieved_at": "2026-09-29 18:53:01"
+            "retrieved_at": "2026-09-29 19:34:04"
           }
         ]
       },
@@ -19088,13 +19088,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:52"
+        "collected_at": "2026-09-29 19:36:19"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -19187,7 +19187,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/605090/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:55:52",
+        "retrieved_at": "2026-09-29 19:36:19",
         "forecasts": [
           {
             "year": 2026,
@@ -19272,7 +19272,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "d52fd1945d58fce843a91fb7c2bd8d38eadb454a0e72ac7eb8837b8a815ee61d"
+        "raw_sha256": "c5e709ec8a7b06ef464f5279afd3d5fade71ca4b56ba211f58273858548f99e3"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -19280,14 +19280,14 @@
         "source_url": "https://basic.10jqka.com.cn/605090/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:52",
+        "collected_at": "2026-09-29 19:36:19",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "d52fd1945d58fce843a91fb7c2bd8d38eadb454a0e72ac7eb8837b8a815ee61d"
+        "raw_sha256": "c5e709ec8a7b06ef464f5279afd3d5fade71ca4b56ba211f58273858548f99e3"
       },
       "valuation_model": {
         "code": "forward_pe",
@@ -19478,8 +19478,8 @@
           "title": "九丰能源(605090) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/605090/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:52",
-          "raw_sha256": "d52fd1945d58fce843a91fb7c2bd8d38eadb454a0e72ac7eb8837b8a815ee61d",
+          "retrieved_at": "2026-09-29 19:36:19",
+          "raw_sha256": "c5e709ec8a7b06ef464f5279afd3d5fade71ca4b56ba211f58273858548f99e3",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -19697,7 +19697,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/605090/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:55:52",
+          "retrieved_at": "2026-09-29 19:36:19",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -19816,8 +19816,8 @@
             "title": "九丰能源(605090) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/605090/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:55:52",
-            "raw_sha256": "d52fd1945d58fce843a91fb7c2bd8d38eadb454a0e72ac7eb8837b8a815ee61d",
+            "retrieved_at": "2026-09-29 19:36:19",
+            "raw_sha256": "c5e709ec8a7b06ef464f5279afd3d5fade71ca4b56ba211f58273858548f99e3",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -22105,13 +22105,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:58"
+        "collected_at": "2026-09-29 19:36:21"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -22146,7 +22146,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:02"
+          "retrieved_at": "2026-09-29 19:34:05"
         }
       },
       "bvps": null,
@@ -22183,7 +22183,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:58",
+        "collected_at": "2026-09-29 19:36:21",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -22337,7 +22337,7 @@
           "title": "紫金矿业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:02"
+          "retrieved_at": "2026-09-29 19:34:05"
         },
         {
           "id": "baidu-pe-percentile-601899",
@@ -22472,7 +22472,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/601899/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:02",
+          "retrieved_at": "2026-09-29 19:34:05",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 11.38,
           "roe_mid": 21.43,
@@ -22558,7 +22558,7 @@
             "title": "紫金矿业 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/601899/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:02"
+            "retrieved_at": "2026-09-29 19:34:05"
           },
           {
             "id": "baidu-pe-percentile-601899",
@@ -24701,13 +24701,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:03"
+        "collected_at": "2026-09-29 19:36:25"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -24747,7 +24747,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:03",
+        "collected_at": "2026-09-29 19:36:25",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -26966,13 +26966,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:08"
+        "collected_at": "2026-09-29 19:36:30"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -27007,7 +27007,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:03"
+          "retrieved_at": "2026-09-29 19:34:07"
         }
       },
       "bvps": null,
@@ -27044,7 +27044,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:08",
+        "collected_at": "2026-09-29 19:36:30",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -27198,7 +27198,7 @@
           "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:03"
+          "retrieved_at": "2026-09-29 19:34:07"
         },
         {
           "id": "baidu-pe-percentile-000725",
@@ -27333,7 +27333,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/000725/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:03",
+          "retrieved_at": "2026-09-29 19:34:07",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 2.4,
           "roe_mid": 4.39,
@@ -27419,7 +27419,7 @@
             "title": "京东方Ａ 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/000725/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:03"
+            "retrieved_at": "2026-09-29 19:34:07"
           },
           {
             "id": "baidu-pe-percentile-000725",
@@ -29558,13 +29558,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:14"
+        "collected_at": "2026-09-29 19:36:35"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -29599,7 +29599,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:04"
+          "retrieved_at": "2026-09-29 19:34:08"
         }
       },
       "bvps": null,
@@ -29636,7 +29636,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:14",
+        "collected_at": "2026-09-29 19:36:35",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -29790,7 +29790,7 @@
           "title": "TCL科技 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:04"
+          "retrieved_at": "2026-09-29 19:34:08"
         },
         {
           "id": "baidu-pe-percentile-000100",
@@ -29925,7 +29925,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/000100/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:04",
+          "retrieved_at": "2026-09-29 19:34:08",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 4.27,
           "roe_mid": 9.09,
@@ -30011,7 +30011,7 @@
             "title": "TCL科技 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/000100/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:04"
+            "retrieved_at": "2026-09-29 19:34:08"
           },
           {
             "id": "baidu-pe-percentile-000100",
@@ -32150,13 +32150,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:19"
+        "collected_at": "2026-09-29 19:36:38"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -32264,7 +32264,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:19",
+        "collected_at": "2026-09-29 19:36:38",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -32405,7 +32405,7 @@
           "title": "光大银行 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601818/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:15"
+          "retrieved_at": "2026-09-29 19:34:15"
         },
         {
           "id": "baidu-pb-percentile-601818",
@@ -32600,7 +32600,7 @@
             "title": "光大银行 年度财务摘要",
             "url": "https://basic.10jqka.com.cn/601818/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:15"
+            "retrieved_at": "2026-09-29 19:34:15"
           },
           {
             "id": "baidu-pb-percentile-601818",
@@ -34750,13 +34750,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:25"
+        "collected_at": "2026-09-29 19:36:43"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -34849,7 +34849,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/600350/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:56:25",
+        "retrieved_at": "2026-09-29 19:36:43",
         "forecasts": [
           {
             "year": 2026,
@@ -34934,7 +34934,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "31f1dbe9c8766b69578644ce1943fd377d536c866293ec7bb86189c5b7326d5b"
+        "raw_sha256": "ecd4663bbe03307864b25836147e7d6771407262abb9b2b217dd3f1fbf4b898b"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -34942,14 +34942,14 @@
         "source_url": "https://basic.10jqka.com.cn/600350/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:25",
+        "collected_at": "2026-09-29 19:36:43",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "31f1dbe9c8766b69578644ce1943fd377d536c866293ec7bb86189c5b7326d5b"
+        "raw_sha256": "ecd4663bbe03307864b25836147e7d6771407262abb9b2b217dd3f1fbf4b898b"
       },
       "valuation_model": {
         "code": "forward_pe",
@@ -35136,8 +35136,8 @@
           "title": "山东高速(600350) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/600350/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:25",
-          "raw_sha256": "31f1dbe9c8766b69578644ce1943fd377d536c866293ec7bb86189c5b7326d5b",
+          "retrieved_at": "2026-09-29 19:36:43",
+          "raw_sha256": "ecd4663bbe03307864b25836147e7d6771407262abb9b2b217dd3f1fbf4b898b",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -35351,7 +35351,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/600350/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:25",
+          "retrieved_at": "2026-09-29 19:36:43",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -35470,8 +35470,8 @@
             "title": "山东高速(600350) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/600350/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:56:25",
-            "raw_sha256": "31f1dbe9c8766b69578644ce1943fd377d536c866293ec7bb86189c5b7326d5b",
+            "retrieved_at": "2026-09-29 19:36:43",
+            "raw_sha256": "ecd4663bbe03307864b25836147e7d6771407262abb9b2b217dd3f1fbf4b898b",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -37759,13 +37759,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:31"
+        "collected_at": "2026-09-29 19:36:48"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -37878,7 +37878,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:31",
+        "collected_at": "2026-09-29 19:36:48",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -38007,7 +38007,7 @@
           "title": "中国铁建 年度财务摘要",
           "url": "https://basic.10jqka.com.cn/601186/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:16"
+          "retrieved_at": "2026-09-29 19:34:16"
         },
         {
           "id": "baidu-pb-percentile-601186",
@@ -38190,7 +38190,7 @@
             "title": "中国铁建 年度财务摘要",
             "url": "https://basic.10jqka.com.cn/601186/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:16"
+            "retrieved_at": "2026-09-29 19:34:16"
           },
           {
             "id": "baidu-pb-percentile-601186",
@@ -40339,13 +40339,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:33"
+        "collected_at": "2026-09-29 19:36:51"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -40385,7 +40385,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:33",
+        "collected_at": "2026-09-29 19:36:51",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -42592,13 +42592,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:39"
+        "collected_at": "2026-09-29 19:36:55"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -42753,7 +42753,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/002340/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:56:39",
+        "retrieved_at": "2026-09-29 19:36:55",
         "forecasts": [
           {
             "year": 2026,
@@ -42838,7 +42838,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "dd0ca1646d7f9e0be5c2998ac79836c0890165e84c7cdec84376551e1373637b"
+        "raw_sha256": "e9f64121953665a96722224cabcadda88fd7c89e275df7eef90a4d1325080ad9"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -42846,14 +42846,14 @@
         "source_url": "https://basic.10jqka.com.cn/002340/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:39",
+        "collected_at": "2026-09-29 19:36:55",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "dd0ca1646d7f9e0be5c2998ac79836c0890165e84c7cdec84376551e1373637b"
+        "raw_sha256": "e9f64121953665a96722224cabcadda88fd7c89e275df7eef90a4d1325080ad9"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -43046,8 +43046,8 @@
           "title": "格林美(002340) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/002340/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:39",
-          "raw_sha256": "dd0ca1646d7f9e0be5c2998ac79836c0890165e84c7cdec84376551e1373637b",
+          "retrieved_at": "2026-09-29 19:36:55",
+          "raw_sha256": "e9f64121953665a96722224cabcadda88fd7c89e275df7eef90a4d1325080ad9",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -43267,7 +43267,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/002340/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:39",
+          "retrieved_at": "2026-09-29 19:36:55",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -43386,8 +43386,8 @@
             "title": "格林美(002340) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/002340/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:56:39",
-            "raw_sha256": "dd0ca1646d7f9e0be5c2998ac79836c0890165e84c7cdec84376551e1373637b",
+            "retrieved_at": "2026-09-29 19:36:55",
+            "raw_sha256": "e9f64121953665a96722224cabcadda88fd7c89e275df7eef90a4d1325080ad9",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -45690,13 +45690,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:45"
+        "collected_at": "2026-09-29 19:36:58"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -45736,7 +45736,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:45",
+        "collected_at": "2026-09-29 19:36:58",
         "reason": "route=loss"
       },
       "valuation_model": {
@@ -47933,13 +47933,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:50"
+        "collected_at": "2026-09-29 19:37:01"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -48032,7 +48032,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/002837/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:56:50",
+        "retrieved_at": "2026-09-29 19:37:01",
         "forecasts": [
           {
             "year": 2026,
@@ -48117,7 +48117,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "57af7ff1a5468821564899b7674940b873be130ba8d9517b724690ab02481320"
+        "raw_sha256": "b29f6f79ba005be13bdae5623fcaccd1e14c06762ce89598975e0557b164f057"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -48125,14 +48125,14 @@
         "source_url": "https://basic.10jqka.com.cn/002837/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:50",
+        "collected_at": "2026-09-29 19:37:01",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "57af7ff1a5468821564899b7674940b873be130ba8d9517b724690ab02481320"
+        "raw_sha256": "b29f6f79ba005be13bdae5623fcaccd1e14c06762ce89598975e0557b164f057"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -48329,8 +48329,8 @@
           "title": "英维克(002837) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/002837/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:50",
-          "raw_sha256": "57af7ff1a5468821564899b7674940b873be130ba8d9517b724690ab02481320",
+          "retrieved_at": "2026-09-29 19:37:01",
+          "raw_sha256": "b29f6f79ba005be13bdae5623fcaccd1e14c06762ce89598975e0557b164f057",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -48554,7 +48554,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/002837/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:56:50",
+          "retrieved_at": "2026-09-29 19:37:01",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -48673,8 +48673,8 @@
             "title": "英维克(002837) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/002837/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:56:50",
-            "raw_sha256": "57af7ff1a5468821564899b7674940b873be130ba8d9517b724690ab02481320",
+            "retrieved_at": "2026-09-29 19:37:01",
+            "raw_sha256": "b29f6f79ba005be13bdae5623fcaccd1e14c06762ce89598975e0557b164f057",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -50969,10 +50969,10 @@
         },
         {
           "d": "2026-09-29",
-          "o": 1.54,
+          "o": 1.538,
           "c": 1.57,
-          "h": 1.58,
-          "l": 1.54,
+          "h": 1.577,
+          "l": 1.538,
           "v": 2764189.0
         }
       ],
@@ -50981,13 +50981,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:55"
+        "collected_at": "2026-09-29 19:37:05"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -51027,7 +51027,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:55",
+        "collected_at": "2026-09-29 19:37:05",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -52718,13 +52718,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:59"
+        "collected_at": "2026-09-29 19:37:08"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -52764,7 +52764,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:56:59",
+        "collected_at": "2026-09-29 19:37:08",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -54975,13 +54975,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:02"
+        "collected_at": "2026-09-29 19:37:09"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -55021,7 +55021,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:02",
+        "collected_at": "2026-09-29 19:37:09",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -57232,13 +57232,13 @@
       "kline_meta": {
         "source": "tencent-fqkline",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:06"
+        "collected_at": "2026-09-29 19:37:11"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -57278,7 +57278,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:06",
+        "collected_at": "2026-09-29 19:37:11",
         "reason": "route=etf"
       },
       "valuation_model": {
@@ -59485,13 +59485,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:12"
+        "collected_at": "2026-09-29 19:37:14"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -59568,7 +59568,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:12",
+        "collected_at": "2026-09-29 19:37:14",
         "reason": "route=loss"
       },
       "valuation_model": {
@@ -61765,13 +61765,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:18"
+        "collected_at": "2026-09-29 19:37:17"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -61806,7 +61806,7 @@
           "title": "陕西煤业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601225/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:06"
+          "retrieved_at": "2026-09-29 19:34:09"
         }
       },
       "bvps": null,
@@ -61843,7 +61843,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:18",
+        "collected_at": "2026-09-29 19:37:17",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -61997,7 +61997,7 @@
           "title": "陕西煤业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/601225/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:06"
+          "retrieved_at": "2026-09-29 19:34:09"
         },
         {
           "id": "baidu-pe-percentile-601225",
@@ -62132,7 +62132,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/601225/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:06",
+          "retrieved_at": "2026-09-29 19:34:09",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 20.73,
           "roe_mid": 22.91,
@@ -62218,7 +62218,7 @@
             "title": "陕西煤业 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/601225/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:06"
+            "retrieved_at": "2026-09-29 19:34:09"
           },
           {
             "id": "baidu-pe-percentile-601225",
@@ -64357,13 +64357,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:24"
+        "collected_at": "2026-09-29 19:37:21"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -64398,7 +64398,7 @@
           "title": "永泰能源 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/600157/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:08"
+          "retrieved_at": "2026-09-29 19:34:10"
         }
       },
       "bvps": null,
@@ -64435,7 +64435,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:24",
+        "collected_at": "2026-09-29 19:37:21",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -64589,7 +64589,7 @@
           "title": "永泰能源 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/600157/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:08"
+          "retrieved_at": "2026-09-29 19:34:10"
         },
         {
           "id": "baidu-pe-percentile-600157",
@@ -64724,7 +64724,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/600157/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:08",
+          "retrieved_at": "2026-09-29 19:34:10",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 0.59,
           "roe_mid": 3.03,
@@ -64810,7 +64810,7 @@
             "title": "永泰能源 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/600157/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:08"
+            "retrieved_at": "2026-09-29 19:34:10"
           },
           {
             "id": "baidu-pe-percentile-600157",
@@ -66949,13 +66949,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:29"
+        "collected_at": "2026-09-29 19:37:24"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -67048,7 +67048,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/601888/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:57:29",
+        "retrieved_at": "2026-09-29 19:37:24",
         "forecasts": [
           {
             "year": 2026,
@@ -67133,7 +67133,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "b3889e1af0886f9e97f2bc438b5f660b4e148d77d993611983efe7bf38dd4f52"
+        "raw_sha256": "865d96281efe7c7506bc05223f68479191943a25f2b3a140586070c8276b1159"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -67141,14 +67141,14 @@
         "source_url": "https://basic.10jqka.com.cn/601888/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:29",
+        "collected_at": "2026-09-29 19:37:24",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "b3889e1af0886f9e97f2bc438b5f660b4e148d77d993611983efe7bf38dd4f52"
+        "raw_sha256": "865d96281efe7c7506bc05223f68479191943a25f2b3a140586070c8276b1159"
       },
       "valuation_model": {
         "code": "forward_pe",
@@ -67339,8 +67339,8 @@
           "title": "中国中免(601888) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/601888/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:57:29",
-          "raw_sha256": "b3889e1af0886f9e97f2bc438b5f660b4e148d77d993611983efe7bf38dd4f52",
+          "retrieved_at": "2026-09-29 19:37:24",
+          "raw_sha256": "865d96281efe7c7506bc05223f68479191943a25f2b3a140586070c8276b1159",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -67546,7 +67546,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/601888/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:57:29",
+          "retrieved_at": "2026-09-29 19:37:24",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -67665,8 +67665,8 @@
             "title": "中国中免(601888) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/601888/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:57:29",
-            "raw_sha256": "b3889e1af0886f9e97f2bc438b5f660b4e148d77d993611983efe7bf38dd4f52",
+            "retrieved_at": "2026-09-29 19:37:24",
+            "raw_sha256": "865d96281efe7c7506bc05223f68479191943a25f2b3a140586070c8276b1159",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -69954,13 +69954,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:35"
+        "collected_at": "2026-09-29 19:37:28"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -70004,7 +70004,7 @@
         "stale": true,
         "error_type": "ValueError",
         "error": "页面缺少 forecast 区块",
-        "collected_at": "2026-09-29 18:57:35"
+        "collected_at": "2026-09-29 19:37:28"
       },
       "valuation_model": {
         "code": "observe",
@@ -72200,13 +72200,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:41"
+        "collected_at": "2026-09-29 19:37:31"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -72291,7 +72291,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/688331/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:57:41",
+        "retrieved_at": "2026-09-29 19:37:31",
         "forecasts": [
           {
             "year": 2026,
@@ -72369,7 +72369,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "c6da2e836795a56b3f55077b826836224badb27f024dcc4c02b632e17e59d4c1"
+        "raw_sha256": "309d3be752f75a4e965beb729c57a44d604f73f4a502d45ce712d264cfb9b463"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -72377,14 +72377,14 @@
         "source_url": "https://basic.10jqka.com.cn/688331/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:41",
+        "collected_at": "2026-09-29 19:37:31",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "c6da2e836795a56b3f55077b826836224badb27f024dcc4c02b632e17e59d4c1"
+        "raw_sha256": "309d3be752f75a4e965beb729c57a44d604f73f4a502d45ce712d264cfb9b463"
       },
       "valuation_model": {
         "code": "observe",
@@ -74580,13 +74580,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:46"
+        "collected_at": "2026-09-29 19:37:35"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -74679,7 +74679,7 @@
         "provider": "同花顺F10",
         "url": "https://basic.10jqka.com.cn/603259/worth.html",
         "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 18:57:46",
+        "retrieved_at": "2026-09-29 19:37:35",
         "forecasts": [
           {
             "year": 2026,
@@ -74764,7 +74764,7 @@
           }
         ],
         "source_note": "同花顺页面声明：预测数据根据各机构发布的研究报告摘录所得。",
-        "raw_sha256": "ecfe877b7ba966450d6da12c8aed554f29f51f5d45a32959644a96e632aa35fb"
+        "raw_sha256": "06b4001145fd17de811e41def275d33a3153bcbcb4e741696390d17462b7c191"
       },
       "forecast_meta": {
         "source": "ths-worth",
@@ -74772,14 +74772,14 @@
         "source_url": "https://basic.10jqka.com.cn/603259/worth.html",
         "status": "ok",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:46",
+        "collected_at": "2026-09-29 19:37:35",
         "as_of": "2026-09-29",
         "forecast_years": [
           2026,
           2027,
           2028
         ],
-        "raw_sha256": "ecfe877b7ba966450d6da12c8aed554f29f51f5d45a32959644a96e632aa35fb"
+        "raw_sha256": "06b4001145fd17de811e41def275d33a3153bcbcb4e741696390d17462b7c191"
       },
       "valuation_model": {
         "code": "growth_pe",
@@ -74970,8 +74970,8 @@
           "title": "药明康德(603259) 盈利预测_F10_同花顺金融服务网",
           "url": "https://basic.10jqka.com.cn/603259/worth.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:57:46",
-          "raw_sha256": "ecfe877b7ba966450d6da12c8aed554f29f51f5d45a32959644a96e632aa35fb",
+          "retrieved_at": "2026-09-29 19:37:35",
+          "raw_sha256": "06b4001145fd17de811e41def275d33a3153bcbcb4e741696390d17462b7c191",
           "metric": "diluted_eps",
           "unit": "CNY/share"
         },
@@ -75189,7 +75189,7 @@
           "provider": "同花顺F10",
           "url": "https://basic.10jqka.com.cn/603259/worth.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:57:46",
+          "retrieved_at": "2026-09-29 19:37:35",
           "actual_eps_history": [
             {
               "year": 2019,
@@ -75308,8 +75308,8 @@
             "title": "药明康德(603259) 盈利预测_F10_同花顺金融服务网",
             "url": "https://basic.10jqka.com.cn/603259/worth.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:57:46",
-            "raw_sha256": "ecfe877b7ba966450d6da12c8aed554f29f51f5d45a32959644a96e632aa35fb",
+            "retrieved_at": "2026-09-29 19:37:35",
+            "raw_sha256": "06b4001145fd17de811e41def275d33a3153bcbcb4e741696390d17462b7c191",
             "metric": "diluted_eps",
             "unit": "CNY/share"
           },
@@ -77597,13 +77597,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:52"
+        "collected_at": "2026-09-29 19:37:39"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -77638,7 +77638,7 @@
           "title": "洛阳钼业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/603993/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:09"
+          "retrieved_at": "2026-09-29 19:34:12"
         }
       },
       "bvps": null,
@@ -77675,7 +77675,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:52",
+        "collected_at": "2026-09-29 19:37:39",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -77829,7 +77829,7 @@
           "title": "洛阳钼业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/603993/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:09"
+          "retrieved_at": "2026-09-29 19:34:12"
         },
         {
           "id": "baidu-pe-percentile-603993",
@@ -77964,7 +77964,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/603993/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:09",
+          "retrieved_at": "2026-09-29 19:34:12",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 5.83,
           "roe_mid": 12.93,
@@ -78050,7 +78050,7 @@
             "title": "洛阳钼业 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/603993/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:09"
+            "retrieved_at": "2026-09-29 19:34:12"
           },
           {
             "id": "baidu-pe-percentile-603993",
@@ -80189,13 +80189,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:59"
+        "collected_at": "2026-09-29 19:37:42"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -80230,7 +80230,7 @@
           "title": "江西铜业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/600362/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:11"
+          "retrieved_at": "2026-09-29 19:34:13"
         }
       },
       "bvps": null,
@@ -80267,7 +80267,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:57:59",
+        "collected_at": "2026-09-29 19:37:42",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -80421,7 +80421,7 @@
           "title": "江西铜业 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/600362/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:11"
+          "retrieved_at": "2026-09-29 19:34:13"
         },
         {
           "id": "baidu-pe-percentile-600362",
@@ -80556,7 +80556,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/600362/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:11",
+          "retrieved_at": "2026-09-29 19:34:13",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 4.11,
           "roe_mid": 8.36,
@@ -80642,7 +80642,7 @@
             "title": "江西铜业 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/600362/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:11"
+            "retrieved_at": "2026-09-29 19:34:13"
           },
           {
             "id": "baidu-pe-percentile-600362",
@@ -82781,13 +82781,13 @@
       "kline_meta": {
         "source": "ak-sina",
         "stale": false,
-        "collected_at": "2026-09-29 18:58:05"
+        "collected_at": "2026-09-29 19:37:45"
       },
       "spot_stale": false,
       "spot_meta": {
         "source": "tencent",
         "stale": false,
-        "collected_at": "2026-09-29 18:55:03",
+        "collected_at": "2026-09-29 19:35:48",
         "n": 32
       },
       "needs_review": true,
@@ -82822,7 +82822,7 @@
           "title": "铜陵有色 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000630/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:13"
+          "retrieved_at": "2026-09-29 19:34:14"
         }
       },
       "bvps": null,
@@ -82859,7 +82859,7 @@
         "source": "ths-worth",
         "status": "not_applicable",
         "stale": false,
-        "collected_at": "2026-09-29 18:58:05",
+        "collected_at": "2026-09-29 19:37:45",
         "reason": "route=equity"
       },
       "valuation_model": {
@@ -83013,7 +83013,7 @@
           "title": "铜陵有色 年度ROE/BPS（2016-2025）",
           "url": "https://basic.10jqka.com.cn/000630/finance.html",
           "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:13"
+          "retrieved_at": "2026-09-29 19:34:14"
         },
         {
           "id": "baidu-pe-percentile-000630",
@@ -83148,7 +83148,7 @@
           "provider": "同花顺F10财务摘要",
           "url": "https://basic.10jqka.com.cn/000630/finance.html",
           "source_as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 18:53:13",
+          "retrieved_at": "2026-09-29 19:34:14",
           "formula": "正常化EPS = 周期ROE分位(P25/P50/P75) × 最新每股净资产",
           "roe_low": 4.01,
           "roe_mid": 6.59,
@@ -83234,7 +83234,7 @@
             "title": "铜陵有色 年度ROE/BPS（2016-2025）",
             "url": "https://basic.10jqka.com.cn/000630/finance.html",
             "as_of": "2026-09-29",
-            "retrieved_at": "2026-09-29 18:53:13"
+            "retrieved_at": "2026-09-29 19:34:14"
           },
           {
             "id": "baidu-pe-percentile-000630",
@@ -83262,18 +83262,18 @@
     "000001": {
       "ok": true,
       "metric": "指数PE",
-      "pe": 15.5,
+      "pe": 15.52,
       "pe_min": 15.5,
-      "pe_max": 16.12,
-      "pe_median": 15.94,
+      "pe_max": 16.02,
+      "pe_median": 15.93,
       "pctile": null,
       "zone": "参考",
       "signal": "指数参考",
       "color": "blue",
       "hist_n": 20,
-      "hist_last_date": "2026-09-28",
+      "hist_last_date": "2026-09-29",
       "source": "中证指数官方·上证综合指数(000001)",
-      "collected_at": "2026-09-29 18:58:12",
+      "collected_at": "2026-09-29 19:37:53",
       "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "600085": {
@@ -83291,7 +83291,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:15",
+      "collected_at": "2026-09-29 19:37:55",
       "note": null
     },
     "002384": {
@@ -83309,7 +83309,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:18",
+      "collected_at": "2026-09-29 19:37:56",
       "note": null
     },
     "002472": {
@@ -83327,7 +83327,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:20",
+      "collected_at": "2026-09-29 19:37:58",
       "note": null
     },
     "300760": {
@@ -83345,7 +83345,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:23",
+      "collected_at": "2026-09-29 19:37:59",
       "note": null
     },
     "601318": {
@@ -83363,7 +83363,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:26",
+      "collected_at": "2026-09-29 19:38:01",
       "note": null
     },
     "605090": {
@@ -83381,7 +83381,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:28",
+      "collected_at": "2026-09-29 19:38:03",
       "note": null
     },
     "601899": {
@@ -83399,7 +83399,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:31",
+      "collected_at": "2026-09-29 19:38:06",
       "note": null
     },
     "002428": {
@@ -83417,7 +83417,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:33",
+      "collected_at": "2026-09-29 19:38:07",
       "note": null
     },
     "000725": {
@@ -83435,7 +83435,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:36",
+      "collected_at": "2026-09-29 19:38:09",
       "note": null
     },
     "000100": {
@@ -83453,7 +83453,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:38",
+      "collected_at": "2026-09-29 19:38:10",
       "note": null
     },
     "601818": {
@@ -83471,7 +83471,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:41",
+      "collected_at": "2026-09-29 19:38:12",
       "note": null
     },
     "600350": {
@@ -83489,7 +83489,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:44",
+      "collected_at": "2026-09-29 19:38:14",
       "note": null
     },
     "601186": {
@@ -83507,7 +83507,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:47",
+      "collected_at": "2026-09-29 19:38:15",
       "note": null
     },
     "515220": {
@@ -83524,7 +83524,7 @@
       "hist_n": 61,
       "hist_last_date": "2026-09-29",
       "source": "乐咕乐股指数估值·中证申万煤炭指数",
-      "collected_at": "2026-09-29 18:58:47",
+      "collected_at": "2026-09-29 19:38:16",
       "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"
     },
     "002340": {
@@ -83542,7 +83542,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:50",
+      "collected_at": "2026-09-29 19:38:17",
       "note": null
     },
     "600844": {
@@ -83559,7 +83559,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PB",
-      "collected_at": "2026-09-29 18:58:52",
+      "collected_at": "2026-09-29 19:38:19",
       "note": "亏损股以 PB 替代 PE 分位"
     },
     "002837": {
@@ -83577,14 +83577,14 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:58:55",
+      "collected_at": "2026-09-29 19:38:21",
       "note": null
     },
     "159583": {
       "ok": true,
       "metric": "指数PE",
-      "pe": 55.53,
-      "pe_min": 55.53,
+      "pe": 55.52,
+      "pe_min": 55.52,
       "pe_max": 62.61,
       "pe_median": 59.78,
       "pctile": null,
@@ -83592,9 +83592,9 @@
       "signal": "指数参考",
       "color": "blue",
       "hist_n": 20,
-      "hist_last_date": "2026-09-28",
+      "hist_last_date": "2026-09-29",
       "source": "中证指数官方·中证全指通信设备指数(931160)",
-      "collected_at": "2026-09-29 18:59:02",
+      "collected_at": "2026-09-29 19:39:01",
       "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "159141": {
@@ -83616,18 +83616,18 @@
     "510210": {
       "ok": true,
       "metric": "指数PE",
-      "pe": 15.5,
+      "pe": 15.52,
       "pe_min": 15.5,
-      "pe_max": 16.12,
-      "pe_median": 15.94,
+      "pe_max": 16.02,
+      "pe_median": 15.93,
       "pctile": null,
       "zone": "参考",
       "signal": "指数参考",
       "color": "blue",
       "hist_n": 20,
-      "hist_last_date": "2026-09-28",
+      "hist_last_date": "2026-09-29",
       "source": "中证指数官方·上证综合指数(000001)",
-      "collected_at": "2026-09-29 18:59:09",
+      "collected_at": "2026-09-29 19:39:08",
       "note": "官方序列仅近20交易日窗口，无5年分位，仅指数参考"
     },
     "159330": {
@@ -83644,7 +83644,7 @@
       "hist_n": 61,
       "hist_last_date": "2026-09-29",
       "source": "乐咕乐股指数估值·沪深300指数",
-      "collected_at": "2026-09-29 18:59:09",
+      "collected_at": "2026-09-29 19:39:08",
       "note": "ETF按底层指数TTM PE 5年历史分位参考（D级工程化，非公开方法公式）"
     },
     "000759": {
@@ -83661,7 +83661,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PB",
-      "collected_at": "2026-09-29 18:59:12",
+      "collected_at": "2026-09-29 19:39:11",
       "note": "亏损股以 PB 替代 PE 分位"
     },
     "601225": {
@@ -83679,7 +83679,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:14",
+      "collected_at": "2026-09-29 19:39:14",
       "note": null
     },
     "600157": {
@@ -83697,7 +83697,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:17",
+      "collected_at": "2026-09-29 19:39:16",
       "note": null
     },
     "601888": {
@@ -83715,7 +83715,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:20",
+      "collected_at": "2026-09-29 19:39:19",
       "note": null
     },
     "000620": {
@@ -83732,7 +83732,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PB",
-      "collected_at": "2026-09-29 18:59:22",
+      "collected_at": "2026-09-29 19:39:20",
       "note": "亏损股以 PB 替代 PE 分位"
     },
     "688331": {
@@ -83750,7 +83750,7 @@
       "hist_n": 1643,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:25",
+      "collected_at": "2026-09-29 19:39:23",
       "note": null
     },
     "603259": {
@@ -83768,7 +83768,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:27",
+      "collected_at": "2026-09-29 19:39:24",
       "note": null
     },
     "603993": {
@@ -83786,7 +83786,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:30",
+      "collected_at": "2026-09-29 19:39:25",
       "note": null
     },
     "600362": {
@@ -83804,7 +83804,7 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:32",
+      "collected_at": "2026-09-29 19:39:27",
       "note": null
     },
     "000630": {
@@ -83822,22 +83822,22 @@
       "hist_n": 914,
       "hist_last_date": "2026-09-29",
       "source": "百度股市通历史PE(TTM)",
-      "collected_at": "2026-09-29 18:59:35",
+      "collected_at": "2026-09-29 19:39:28",
       "note": null
     }
   },
   "market_screen": {
     "as_of": "2026-09-29",
-    "updated_at": "2026-09-29 19:25:53",
+    "updated_at": "2026-09-29 19:52:57",
     "stats": {
-      "total": 224,
+      "total": 293,
       "candidates": 300,
       "counts": {
-        "启动观察": 3,
-        "趋势观察": 64,
-        "高位观察": 29,
-        "回调观察": 43,
-        "排除": 85
+        "启动观察": 5,
+        "趋势观察": 77,
+        "高位观察": 40,
+        "回调观察": 52,
+        "排除": 119
       }
     },
     "breadth": {
@@ -83900,6 +83900,38 @@
           "dist20": 4.44584146731517,
           "watch": false,
           "why": "刚站上MA20、5日+3.5%转正、20日+1.1%"
+        },
+        {
+          "code": "600733",
+          "name": "北汽蓝谷",
+          "price": 4.93,
+          "chg": -0.40404040404041774,
+          "r5": 6.021505376344072,
+          "r10": 4.670912951167727,
+          "r20": -2.952755905511817,
+          "r60": 4.008438818565385,
+          "vr": 1.566031361946445,
+          "atr_pct": 4.071283685888151,
+          "pos250": 12.16814159292035,
+          "dist20": 2.933500365382602,
+          "watch": false,
+          "why": "刚站上MA20、5日+6.0%转正、20日-3.0%"
+        },
+        {
+          "code": "601088",
+          "name": "中国神华",
+          "price": 47.3,
+          "chg": -2.2525315147757907,
+          "r5": 1.0683760683760646,
+          "r10": 0.21186440677964935,
+          "r20": -3.0340303403034063,
+          "r60": 15.704500978473558,
+          "vr": 0.909354466410175,
+          "atr_pct": 2.1790999697976465,
+          "pos250": 79.8728813559322,
+          "dist20": 0.052882072977267214,
+          "watch": false,
+          "why": "刚站上MA20、5日+1.1%转正、20日-3.0%"
         }
       ],
       "趋势观察": [
@@ -84000,6 +84032,38 @@
           "why": "站上MA20且MA20上行+7.9%"
         },
         {
+          "code": "300369",
+          "name": "绿盟科技",
+          "price": 9.1,
+          "chg": 1.6759776536312998,
+          "r5": -3.9070749736008548,
+          "r10": 5.2023121387283044,
+          "r20": 20.529801324503303,
+          "r60": 64.55696202531644,
+          "vr": 1.2251608287721358,
+          "atr_pct": 7.762951334379907,
+          "pos250": 58.518518518518505,
+          "dist20": 8.929853962173784,
+          "watch": false,
+          "why": "站上MA20且MA20上行+8.9%"
+        },
+        {
+          "code": "301373",
+          "name": "凌玮科技",
+          "price": 132.27,
+          "chg": 7.957884427032336,
+          "r5": 7.205381747446915,
+          "r10": 34.85929853181078,
+          "r20": 19.907533315202606,
+          "r60": -1.4161138853692856,
+          "vr": 1.1461390935941538,
+          "atr_pct": 9.016729849118146,
+          "pos250": 60.25120880342356,
+          "dist20": 17.931846145616028,
+          "watch": false,
+          "why": "站上MA20且MA20上行+17.9%"
+        },
+        {
           "code": "603920",
           "name": "世运电路",
           "price": 46.13,
@@ -84030,38 +84094,6 @@
           "dist20": 13.122171945701355,
           "watch": false,
           "why": "站上MA20且MA20上行+13.1%"
-        },
-        {
-          "code": "002119",
-          "name": "康强电子",
-          "price": 28.27,
-          "chg": -4.846852911477617,
-          "r5": 14.17609046849757,
-          "r10": 17.15706589307915,
-          "r20": 18.433179723502292,
-          "r60": -19.550369948776325,
-          "vr": 1.8858791191282447,
-          "atr_pct": 5.495477285360551,
-          "pos250": 48.8855307895731,
-          "dist20": 15.328913819479851,
-          "watch": false,
-          "why": "站上MA20且MA20上行+15.3%"
-        },
-        {
-          "code": "001330",
-          "name": "博纳影业",
-          "price": 6.63,
-          "chg": 4.245283018867907,
-          "r5": 19.244604316546777,
-          "r10": 17.13780918727914,
-          "r20": 18.181818181818166,
-          "r60": 24.858757062146907,
-          "vr": 1.0099659477262,
-          "atr_pct": 5.763843999138116,
-          "pos250": 25.681341719077565,
-          "dist20": 13.956686146442078,
-          "watch": false,
-          "why": "站上MA20且MA20上行+14.0%"
         }
       ],
       "高位观察": [
@@ -84114,6 +84146,38 @@
           "why": "250日位置98%（近高位）"
         },
         {
+          "code": "601811",
+          "name": "新华文轩",
+          "price": 20.37,
+          "chg": 9.989200863930892,
+          "r5": 33.22432962720734,
+          "r10": 69.32668329177059,
+          "r20": 82.85457809694793,
+          "r60": 76.66955767562882,
+          "vr": 2.0212746190688575,
+          "atr_pct": 6.090889964233118,
+          "pos250": 82.7054794520548,
+          "dist20": 47.13424103434578,
+          "watch": false,
+          "why": "250日位置83%（近高位）"
+        },
+        {
+          "code": "301132",
+          "name": "满坤科技",
+          "price": 71.42,
+          "chg": 10.301158301158297,
+          "r5": 12.899146380018966,
+          "r10": 22.357375364056885,
+          "r20": 82.00815494393477,
+          "r60": 59.99103942652331,
+          "vr": 1.3460731682853118,
+          "atr_pct": 8.913069568348204,
+          "pos250": 86.2878093492209,
+          "dist20": 30.06382998096937,
+          "watch": false,
+          "why": "250日位置86%（近高位）"
+        },
+        {
           "code": "002815",
           "name": "崇达技术",
           "price": 24.44,
@@ -84128,6 +84192,22 @@
           "dist20": 20.49796622704303,
           "watch": false,
           "why": "250日位置88%（近高位）"
+        },
+        {
+          "code": "603230",
+          "name": "内蒙新华",
+          "price": 15.31,
+          "chg": -7.882069795427194,
+          "r5": 3.236682400539448,
+          "r10": 46.92898272552783,
+          "r20": 65.6926406926407,
+          "r60": 66.77559912854032,
+          "vr": 2.1037911947718118,
+          "atr_pct": 8.290566389847905,
+          "pos250": 68.30491474423272,
+          "dist20": 25.43525459833682,
+          "watch": false,
+          "why": "20日涨幅65.7%>25%"
         },
         {
           "code": "000993",
@@ -84162,68 +84242,20 @@
           "why": "250日位置88%（近高位）"
         },
         {
-          "code": "301251",
-          "name": "威尔高",
-          "price": 87.37,
-          "chg": 5.672472181906141,
-          "r5": 8.157959891062138,
-          "r10": 33.064270484313155,
-          "r20": 57.14028776978417,
-          "r60": 106.49964547388326,
-          "vr": 1.2116020811617914,
-          "atr_pct": 7.901535342304482,
-          "pos250": 87.6206946245857,
-          "dist20": 25.686007955174837,
-          "watch": false,
-          "why": "250日位置88%（近高位）"
-        },
-        {
-          "code": "000823",
-          "name": "超声电子",
-          "price": 24.4,
-          "chg": 10.009017132551845,
-          "r5": -3.1746031746031744,
-          "r10": 7.821475916924436,
-          "r20": 54.23514538558785,
-          "r60": 21.57448928749377,
-          "vr": 1.2539574865769956,
-          "atr_pct": 9.212529274004682,
-          "pos250": 70.71973827699018,
-          "dist20": 17.12749615975422,
-          "watch": false,
-          "why": "20日涨幅54.2%>25%"
-        },
-        {
-          "code": "301047",
-          "name": "义翘神州",
-          "price": 143.26,
-          "chg": -1.8767123287671272,
-          "r5": 22.08965399693199,
-          "r10": 40.09387834930567,
-          "r20": 48.05704836709381,
-          "r60": 107.38274464389113,
-          "vr": 1.5422287099722072,
-          "atr_pct": 8.162980395285297,
-          "pos250": 84.66070902484533,
-          "dist20": 29.34739427209361,
+          "code": "300852",
+          "name": "四会富仕",
+          "price": 75.69,
+          "chg": 11.456339272566641,
+          "r5": 4.761245674740477,
+          "r10": 12.919588244069825,
+          "r20": 59.75094976783453,
+          "r60": 15.822494261667952,
+          "vr": 0.9276443971741751,
+          "atr_pct": 8.43383726855784,
+          "pos250": 85.3028798411122,
+          "dist20": 20.178147551265035,
           "watch": false,
           "why": "250日位置85%（近高位）"
-        },
-        {
-          "code": "688112",
-          "name": "鼎阳科技",
-          "price": 104.25,
-          "chg": 1.5488018702513262,
-          "r5": 13.574463449177454,
-          "r10": 53.69305616983635,
-          "r20": 46.4185393258427,
-          "r60": 34.74214811942613,
-          "vr": 2.1033812208452973,
-          "atr_pct": 8.728331620417952,
-          "pos250": 79.90035103612276,
-          "dist20": 30.698878559742248,
-          "watch": false,
-          "why": "20日涨幅46.4%>25%"
         }
       ],
       "回调观察": [
@@ -84274,6 +84306,22 @@
           "dist20": -3.0080237531370457,
           "watch": false,
           "why": "跌破MA20-3.0%，20日+7.3%"
+        },
+        {
+          "code": "002980",
+          "name": "华盛昌",
+          "price": 106.62,
+          "chg": 6.322297566812929,
+          "r5": -9.98733642887294,
+          "r10": -13.65403304178814,
+          "r20": 5.251727541954598,
+          "r60": -3.9805475504322785,
+          "vr": 0.8921393165512179,
+          "atr_pct": 7.794704826218611,
+          "pos250": 73.76503711287434,
+          "dist20": -8.139264390395207,
+          "watch": false,
+          "why": "跌破MA20-8.1%，20日+5.3%"
         },
         {
           "code": "603228",
@@ -84340,6 +84388,22 @@
           "why": "跌破MA20-2.5%，20日-2.5%"
         },
         {
+          "code": "301486",
+          "name": "致尚科技",
+          "price": 189.9,
+          "chg": 4.340659340659347,
+          "r5": -13.398394746442898,
+          "r10": 5.266075388026614,
+          "r20": 6.148686416992732,
+          "r60": 1.5833957419493006,
+          "vr": 0.8013052926955502,
+          "atr_pct": 7.363273903558263,
+          "pos250": 51.62708883025506,
+          "dist20": -2.3625285997069367,
+          "watch": false,
+          "why": "跌破MA20-2.4%，20日+6.1%"
+        },
+        {
           "code": "000807",
           "name": "云铝股份",
           "price": 26.47,
@@ -84354,41 +84418,25 @@
           "dist20": -2.06814902512118,
           "watch": false,
           "why": "跌破MA20-2.1%，20日-2.4%"
-        },
-        {
-          "code": "603186",
-          "name": "华正新材",
-          "price": 212.0,
-          "chg": 3.616813294232646,
-          "r5": -8.502373759171334,
-          "r10": -7.302142544818535,
-          "r20": 16.164383561643824,
-          "r60": 13.654640004288844,
-          "vr": 0.7384447416712752,
-          "atr_pct": 8.798180592991914,
-          "pos250": 75.10646535036778,
-          "dist20": -0.12743174393050616,
-          "watch": false,
-          "why": "跌破MA20-0.1%，20日+16.2%"
-        },
-        {
-          "code": "601869",
-          "name": "长飞光纤",
-          "price": 407.95,
-          "chg": 3.4828268479529134,
-          "r5": -11.120067975337156,
-          "r10": -11.249619283818479,
-          "r20": -2.5372100246075946,
-          "r60": -7.630476621759308,
-          "vr": 0.8792933882026328,
-          "atr_pct": 6.939751019907901,
-          "pos250": 63.66254832107935,
-          "dist20": -5.867177999755424,
-          "watch": false,
-          "why": "跌破MA20-5.9%，20日-2.5%"
         }
       ],
       "排除": [
+        {
+          "code": "603823",
+          "name": "百合花",
+          "price": 42.69,
+          "chg": -9.993674889310567,
+          "r5": -22.38181818181818,
+          "r10": -22.19792236194642,
+          "r20": -34.744726383369006,
+          "r60": -35.180686304281814,
+          "vr": 1.2450404176200387,
+          "atr_pct": 9.814944951979388,
+          "pos250": 37.43295497068729,
+          "dist20": -21.85040090799253,
+          "watch": false,
+          "why": "跌破MA20且20日跌-34.7%"
+        },
         {
           "code": "600547",
           "name": "山东黄金",
@@ -84422,6 +84470,38 @@
           "why": "跌破MA20且20日跌-25.7%"
         },
         {
+          "code": "688802",
+          "name": "沐曦股份",
+          "price": 518.46,
+          "chg": -0.29423642762360647,
+          "r5": -8.074468085106378,
+          "r10": 12.439817826935595,
+          "r20": -24.99131944444445,
+          "r60": -29.075239398084808,
+          "vr": 1.0409659871528767,
+          "atr_pct": 7.0765894599941594,
+          "pos250": 11.575872142979897,
+          "dist20": -6.505787711189692,
+          "watch": false,
+          "why": "跌破MA20且20日跌-25.0%"
+        },
+        {
+          "code": "300390",
+          "name": "天华新能",
+          "price": 49.05,
+          "chg": 2.1874999999999867,
+          "r5": -9.485144860675398,
+          "r10": -8.76116071428572,
+          "r20": -23.835403726708083,
+          "r60": -46.15806805708013,
+          "vr": 0.9089364313729251,
+          "atr_pct": 4.032328527741372,
+          "pos250": 27.92134253062905,
+          "dist20": -10.434679399976265,
+          "watch": false,
+          "why": "跌破MA20且20日跌-23.8%"
+        },
+        {
           "code": "688795",
           "name": "摩尔线程",
           "price": 409.48,
@@ -84436,6 +84516,22 @@
           "dist20": -2.9903874059025837,
           "watch": false,
           "why": "跌破MA20且20日跌-23.6%"
+        },
+        {
+          "code": "688629",
+          "name": "华丰科技",
+          "price": 104.5,
+          "chg": -1.619280738090756,
+          "r5": -18.61370716510904,
+          "r10": -16.845707010424128,
+          "r20": -23.325262308313157,
+          "r60": -48.07711418066183,
+          "vr": 0.9803650235155555,
+          "atr_pct": 6.2679425837320615,
+          "pos250": 21.912099014902754,
+          "dist20": -15.81779587628036,
+          "watch": false,
+          "why": "跌破MA20且20日跌-23.3%"
         },
         {
           "code": "688702",
@@ -84484,70 +84580,6 @@
           "dist20": -8.261015028096597,
           "watch": false,
           "why": "跌破MA20且20日跌-21.1%"
-        },
-        {
-          "code": "300750",
-          "name": "宁德时代",
-          "price": 286.8,
-          "chg": -1.7774581321278071,
-          "r5": -3.4668461797374706,
-          "r10": -14.923912076176915,
-          "r20": -21.111263925182232,
-          "r60": -23.13258824475356,
-          "vr": 0.9261248643535644,
-          "atr_pct": 3.6292090057780437,
-          "pos250": 0.5836683002037345,
-          "dist20": -10.879228614355341,
-          "watch": false,
-          "why": "跌破MA20且20日跌-21.1%"
-        },
-        {
-          "code": "002738",
-          "name": "中矿资源",
-          "price": 43.31,
-          "chg": 6.596111247846426,
-          "r5": -3.8623751387347305,
-          "r10": -2.848811126065487,
-          "r20": -19.707081942899507,
-          "r60": -31.763037655585315,
-          "vr": 1.0410717364768962,
-          "atr_pct": 4.6393112775010685,
-          "pos250": 6.167763157894737,
-          "dist20": -5.8785178746061035,
-          "watch": false,
-          "why": "跌破MA20且20日跌-19.7%"
-        },
-        {
-          "code": "002460",
-          "name": "赣锋锂业",
-          "price": 43.38,
-          "chg": 3.532219570405748,
-          "r5": -6.829896907216493,
-          "r10": -7.069408740359895,
-          "r20": -19.50269066617183,
-          "r60": -30.791320995532857,
-          "vr": 1.037606283554778,
-          "atr_pct": 3.136731871171704,
-          "pos250": 3.4302908726178556,
-          "dist20": -7.893200276023149,
-          "watch": false,
-          "why": "跌破MA20且20日跌-19.5%"
-        },
-        {
-          "code": "000938",
-          "name": "紫光股份",
-          "price": 31.53,
-          "chg": 0.2225047679593084,
-          "r5": -6.8262411347517755,
-          "r10": -3.6663611365719384,
-          "r20": -19.050064184852378,
-          "r60": -5.343740618432902,
-          "vr": 0.7507488627009068,
-          "atr_pct": 3.5227221240541846,
-          "pos250": 36.942112240388866,
-          "dist20": -7.60033408061892,
-          "watch": false,
-          "why": "跌破MA20且20日跌-19.1%"
         }
       ]
     },
@@ -84560,7 +84592,7 @@
       "total_count": 5210,
       "history": {
         "source": "legulegu-akshare",
-        "updated_at": "2026-09-29 19:25:54",
+        "updated_at": "2026-09-29 19:53:00",
         "points": 3604,
         "first_date": "2011-09-05",
         "last_date": "2026-07-20",
@@ -84616,29 +84648,17 @@
   },
   "sector_strength": {
     "as_of": "2026-09-29",
-    "updated_at": "2026-09-29 19:31:25",
+    "updated_at": "2026-09-29 19:53:44",
     "stats": {
       "total": 90,
       "counts": {
-        "持续强势": 11,
+        "持续强势": 10,
         "正在加强": 5,
-        "走弱/观望": 74
+        "走弱/观望": 75
       }
     },
     "classes": {
       "持续强势": [
-        {
-          "name": "元件",
-          "chg": 4.42,
-          "net_inflow": 43.59,
-          "up_cnt": 58.0,
-          "dn_cnt": 5.0,
-          "leader": "迅捷兴",
-          "leader_chg": 20.01,
-          "r5": -6.347416474438816,
-          "r20": 9.55188830136624,
-          "up_ratio": 92.06349206349206
-        },
         {
           "name": "风电设备",
           "chg": 0.5,
@@ -84848,18 +84868,6 @@
           "up_ratio": 58.536585365853654
         },
         {
-          "name": "房地产",
-          "chg": 3.82,
-          "net_inflow": 32.49,
-          "up_cnt": 84.0,
-          "dn_cnt": 3.0,
-          "leader": "特发服务",
-          "leader_chg": 13.49,
-          "r5": 1.1626498585934675,
-          "r20": -0.15372625120922967,
-          "up_ratio": 96.55172413793103
-        },
-        {
           "name": "光学光电子",
           "chg": 0.38,
           "net_inflow": -8.71,
@@ -84942,6 +84950,18 @@
           "r5": -3.8580374196406253,
           "r20": -0.768178968195321,
           "up_ratio": 50.617283950617285
+        },
+        {
+          "name": "军工电子",
+          "chg": 0.06,
+          "net_inflow": -6.76,
+          "up_cnt": 26.0,
+          "dn_cnt": 33.0,
+          "leader": "高凌信息",
+          "leader_chg": 11.92,
+          "r5": -3.3484071928658987,
+          "r20": -0.8707441352049927,
+          "up_ratio": 44.06779661016949
         },
         {
           "name": "汽车整车",
