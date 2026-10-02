@@ -141,17 +141,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 2.15,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:55",
+        "value_pct": 2.11,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:31",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-600085",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sh600085",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:55"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:31"
         }
       },
       "dividend_yield_refresh": null,
@@ -227,16 +227,16 @@
       "dividend_yield_refresh": null,
       "dividend_yield_ttm": {
         "value_pct": 0.0,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:56",
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:32",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002384",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sz002384",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:56"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:32"
         }
       },
       "sector": "科技制造"
@@ -309,17 +309,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 1.19,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:56",
+        "value_pct": 1.21,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:32",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002472",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sz002472",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:56"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:32"
         }
       },
       "dividend_yield_refresh": null,
@@ -393,17 +393,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 2.67,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:57",
+        "value_pct": 2.63,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:33",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-300760",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sz300760",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:57"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:33"
         }
       },
       "dividend_yield_refresh": null,
@@ -523,7 +523,8 @@
         "shares_yi": 181.08
       },
       "ev_refresh": {
-        "ok_at": "2026-09-29 19:34:04"
+        "failed_at": "2026-10-02 16:28:27",
+        "note": "东财F10抓取异常: URLError: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
       },
       "sector": "金融"
     },
@@ -595,17 +596,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 0.82,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:57",
+        "value_pct": 0.8,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:34",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-605090",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sh605090",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:57"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:34"
         }
       },
       "dividend_yield_refresh": null,
@@ -645,7 +646,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:05"
+        "failed_at": "2026-10-02 16:28:29",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601899/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC2559E8A0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.7875,
@@ -734,8 +736,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "failed_at": "2026-09-29 19:34:06",
-        "note": "周期ROE分位含非正(-4.06/0.58/1.37)，亏损周期禁止套PE"
+        "failed_at": "2026-10-02 16:28:31",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/002428/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC2559FD10>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "sector": "周期资源"
     },
@@ -773,7 +775,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:07"
+        "failed_at": "2026-10-02 16:28:33",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000725/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC2559EEA0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.0862,
@@ -862,7 +865,8 @@
         "spot_source": "tencent"
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:08"
+        "failed_at": "2026-10-02 16:28:35",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000100/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC255EC830>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "normalized": {
         "eps_bear": 0.126,
@@ -1000,7 +1004,8 @@
         "spot_source": "tencent"
       },
       "special_refresh": {
-        "ok_at": "2026-09-29 19:34:15"
+        "failed_at": "2026-10-02 16:28:47",
+        "note": "ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601818/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC24C7A000>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "bank": {
         "bps": 8.46,
@@ -1151,17 +1156,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 4.22,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:58",
+        "value_pct": 4.13,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:35",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-600350",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sh600350",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:58"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:35"
         }
       },
       "dividend_yield_refresh": null,
@@ -1376,7 +1381,8 @@
         }
       },
       "special_refresh": {
-        "ok_at": "2026-09-29 19:34:16"
+        "failed_at": "2026-10-02 16:28:50",
+        "note": "ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601186/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC24C79550>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pb_low": 0.41,
       "pb_mid": 0.46,
@@ -1574,17 +1580,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 1.57,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:59",
+        "value_pct": 1.55,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:35",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002340",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sz002340",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:59"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:35"
         }
       },
       "dividend_yield_refresh": null,
@@ -1667,17 +1673,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 0.23,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:34:59",
+        "value_pct": 0.24,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:36",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-002837",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sz002837",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:34:59"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:36"
         }
       },
       "dividend_yield_refresh": null,
@@ -1834,7 +1840,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:09"
+        "failed_at": "2026-10-02 16:28:37",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/601225/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC255ED040>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 6.89,
       "pe_mid": 8.77,
@@ -1907,7 +1914,8 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:10"
+        "failed_at": "2026-10-02 16:28:39",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/600157/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC2559FF20>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 14.56,
       "pe_mid": 17.83,
@@ -1957,31 +1965,31 @@
       "bootstrap_date": "2026-08-26",
       "needs_review": true,
       "notes": "免税消费（海南离岛+口岸）：前瞻PE路由，机构覆盖≥3家门槛由引擎判定；PE-TTM 17.74（2026-08-26盘中截图）",
-      "pe_low": 28.29,
-      "pe_mid": 37.03,
-      "pe_high": 47.78,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-29）：P25=28.29/P50=37.03/P75=47.78，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_low": 28.34,
+      "pe_mid": 36.96,
+      "pe_high": 47.77,
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-10-02）：P25=28.34/P50=36.96/P75=47.77，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-601888",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
         "quality": "C",
-        "as_of": "2026-09-29",
+        "as_of": "2026-10-02",
         "source_id": "baidu-601888",
         "type": "valuation_multiple",
         "metric": "forward_pe",
         "unit": "x"
       },
       "multiple": {
-        "low": 28.29,
-        "mid": 37.03,
-        "high": 47.78,
+        "low": 28.34,
+        "mid": 36.96,
+        "high": 47.77,
         "source": {
           "id": "baidu-pe-percentile-601888",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
           "quality": "C",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-02",
           "source_id": "baidu-601888",
           "type": "valuation_multiple",
           "metric": "forward_pe",
@@ -1991,17 +1999,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 1.37,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:35:00",
+        "value_pct": 1.36,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:36",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-601888",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sh601888",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:35:00"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:36"
         }
       },
       "dividend_yield_refresh": null,
@@ -2062,14 +2070,14 @@
       "shares": 29.8375,
       "pe_low": 17.87,
       "pe_mid": 21.46,
-      "pe_high": 28.35,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-29）：P25=17.87/P50=21.46/P75=28.35，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_high": 28.32,
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-10-02）：P25=17.87/P50=21.46/P75=28.32，样本 913 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-603259",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
         "quality": "C",
-        "as_of": "2026-09-29",
+        "as_of": "2026-10-02",
         "source_id": "baidu-603259",
         "type": "valuation_multiple",
         "metric": "forward_pe",
@@ -2078,13 +2086,13 @@
       "multiple": {
         "low": 17.87,
         "mid": 21.46,
-        "high": 28.35,
+        "high": 28.32,
         "source": {
           "id": "baidu-pe-percentile-603259",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
           "quality": "C",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-02",
           "source_id": "baidu-603259",
           "type": "valuation_multiple",
           "metric": "forward_pe",
@@ -2094,17 +2102,17 @@
       "multiple_source_method": "history_percentile_calibration",
       "multiple_source_quality": "C",
       "dividend_yield_ttm": {
-        "value_pct": 1.28,
-        "as_of": "2026-09-29",
-        "retrieved_at": "2026-09-29 19:35:00",
+        "value_pct": 1.23,
+        "as_of": "2026-10-02",
+        "retrieved_at": "2026-10-02 16:29:37",
         "quality": "C",
         "source": {
           "id": "tencent-divyield-603259",
           "provider": "腾讯行情",
           "url": "https://qt.gtimg.cn/q=sh603259",
           "method": "spot_snapshot_dividend_yield_ttm",
-          "as_of": "2026-09-29",
-          "retrieved_at": "2026-09-29 19:35:00"
+          "as_of": "2026-10-02",
+          "retrieved_at": "2026-10-02 16:29:37"
         }
       },
       "dividend_yield_refresh": null
@@ -2148,33 +2156,34 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:12"
+        "failed_at": "2026-10-02 16:28:41",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/603993/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC2559E8D0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
-      "pe_low": 14.72,
-      "pe_mid": 18.63,
-      "pe_high": 25.59,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-29）：P25=14.72/P50=18.63/P75=25.59，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_low": 14.69,
+      "pe_mid": 18.66,
+      "pe_high": 25.73,
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-10-02）：P25=14.69/P50=18.66/P75=25.73，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-603993",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
         "quality": "C",
-        "as_of": "2026-09-29",
+        "as_of": "2026-10-02",
         "source_id": "baidu-603993",
         "type": "valuation_multiple",
         "metric": "forward_pe",
         "unit": "x"
       },
       "multiple": {
-        "low": 14.72,
-        "mid": 18.63,
-        "high": 25.59,
+        "low": 14.69,
+        "mid": 18.66,
+        "high": 25.73,
         "source": {
           "id": "baidu-pe-percentile-603993",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
           "quality": "C",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-02",
           "source_id": "baidu-603993",
           "type": "valuation_multiple",
           "metric": "forward_pe",
@@ -2223,18 +2232,19 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:13"
+        "failed_at": "2026-10-02 16:28:43",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/600362/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC255ED400>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
       "pe_low": 10.44,
-      "pe_mid": 11.51,
-      "pe_high": 14.62,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-29）：P25=10.44/P50=11.51/P75=14.62，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_mid": 11.49,
+      "pe_high": 14.6,
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-10-02）：P25=10.44/P50=11.49/P75=14.6，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-600362",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
         "quality": "C",
-        "as_of": "2026-09-29",
+        "as_of": "2026-10-02",
         "source_id": "baidu-600362",
         "type": "valuation_multiple",
         "metric": "forward_pe",
@@ -2242,14 +2252,14 @@
       },
       "multiple": {
         "low": 10.44,
-        "mid": 11.51,
-        "high": 14.62,
+        "mid": 11.49,
+        "high": 14.6,
         "source": {
           "id": "baidu-pe-percentile-600362",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
           "quality": "C",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-02",
           "source_id": "baidu-600362",
           "type": "valuation_multiple",
           "metric": "forward_pe",
@@ -2298,33 +2308,34 @@
         }
       },
       "normalized_refresh": {
-        "ok_at": "2026-09-29 19:34:14"
+        "failed_at": "2026-10-02 16:28:45",
+        "note": "同花顺财务摘要抓取异常: ProxyError: HTTPSConnectionPool(host='basic.10jqka.com.cn', port=443): Max retries exceeded with url: /new/000630/finance.html (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x000001CC255EC1A0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。')))"
       },
-      "pe_low": 12.22,
-      "pe_mid": 14.5,
-      "pe_high": 16.84,
-      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-09-29）：P25=12.22/P50=14.5/P75=16.84，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
+      "pe_low": 12.19,
+      "pe_mid": 14.51,
+      "pe_high": 16.9,
+      "pe_source": "百度股市通 5 年 PE(TTM) 历史分位自动校准（2026-10-02）：P25=12.19/P50=14.51/P75=16.9，样本 914 日；TTM 分位向 Forward 转换存在基数错配风险（spec 3.1/3.2，C 级仅参考）",
       "multiple_source": {
         "id": "baidu-pe-percentile-000630",
         "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
         "method": "history_percentile_calibration",
         "quality": "C",
-        "as_of": "2026-09-29",
+        "as_of": "2026-10-02",
         "source_id": "baidu-000630",
         "type": "valuation_multiple",
         "metric": "forward_pe",
         "unit": "x"
       },
       "multiple": {
-        "low": 12.22,
-        "mid": 14.5,
-        "high": 16.84,
+        "low": 12.19,
+        "mid": 14.51,
+        "high": 16.9,
         "source": {
           "id": "baidu-pe-percentile-000630",
           "title": "百度股市通 5 年 PE(TTM) 分位校准（P25/P50/P75）",
           "method": "history_percentile_calibration",
           "quality": "C",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-02",
           "source_id": "baidu-000630",
           "type": "valuation_multiple",
           "metric": "forward_pe",
